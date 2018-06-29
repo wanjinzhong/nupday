@@ -1,4 +1,4 @@
-package com.nupday;
+package com.nupday.config;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Value;
