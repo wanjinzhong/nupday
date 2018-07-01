@@ -2,7 +2,10 @@
   <div class="hello">
     <h1>代佳琪</h1>
     <!--<IconFont name="icon-xin"></IconFont>-->
-    <img src="https://ijiaqi-1252535357.cos.ap-chengdu.myqcloud.com/assets/xin.png"/>
+    <!--<img src="https://ijiaqi-1252535357.cos.ap-chengdu.myqcloud.com/assets/xin.png"/>-->
+    <svg class="icon" aria-hidden="true" color="red" font-size="100px">
+      <use xlink:href="#icon-xin"></use>
+    </svg>
     <h1>万进忠</h1>
   </div>
 </template>
