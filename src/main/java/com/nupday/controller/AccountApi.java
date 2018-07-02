@@ -1,25 +1,25 @@
 package com.nupday.controller;
 
 import com.nupday.bo.LoginBo;
+import com.nupday.bo.SimpleOwnerBo;
 import com.nupday.constant.Role;
+import com.nupday.exception.BizException;
 import com.nupday.service.AccountService;
 import com.nupday.service.OwnerService;
 import com.nupday.service.WebService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api
-@RequestMapping("public/api")
+@RequestMapping("api")
 @RestController
+@CrossOrigin
 public class AccountApi {
 
     @Autowired
@@ -41,7 +41,7 @@ public class AccountApi {
     @RequiresAuthentication
     public JsonEntity<Object> getCurrentUser() {
         if (Role.OWNER.equals(webService.getUserType())) {
-            return ResponseHelper.createInstance(ownerService.ownerToBo(webService.getCurrentUser()));
+            return ResponseHelper.createInstance(ownerService.ownerToSimpleBo(webService.getCurrentUser()));
         } else {
             return ResponseHelper.createInstance("这是一个访客");
         }
@@ -51,5 +51,10 @@ public class AccountApi {
     public JsonEntity logout() {
         accountService.logout();
         return ResponseHelper.ofNothing();
+    }
+
+    @GetMapping("getAllOwners")
+    public JsonEntity<List<SimpleOwnerBo>> getAllOwners() {
+        return ResponseHelper.createInstance(ownerService.getAllSimpleOwner());
     }
 }

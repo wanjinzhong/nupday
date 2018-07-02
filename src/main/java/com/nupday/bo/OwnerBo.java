@@ -1,10 +1,7 @@
 package com.nupday.bo;
 import java.util.Date;
 
-public class OwnerBo {
-    private Integer id;
-
-    private String name;
+public class OwnerBo extends SimpleOwnerBo{
 
     private String password;
 
@@ -19,22 +16,6 @@ public class OwnerBo {
     private String email;
 
     private String avatar;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getPassword() {
         return password;
