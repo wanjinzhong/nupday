@@ -1,4 +1,4 @@
-package com.nupday.dao.Entity.base;
+package com.nupday.dao.entity.base;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import com.nupday.dao.Entity.Owner;
+import com.nupday.dao.entity.Owner;
 
 @MappedSuperclass
 public class BaseUpdateEntity extends BaseCreateEntity {

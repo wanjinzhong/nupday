@@ -2,7 +2,7 @@ package com.nupday.cache;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nupday.dao.Entity.Visitor;
+import com.nupday.dao.entity.Visitor;
 
 public class VisitorCache {
 

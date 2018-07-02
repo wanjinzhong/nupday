@@ -1,4 +1,4 @@
-package com.nupday.dao.Entity;
+package com.nupday.dao.entity;
 
 import java.util.Date;
 

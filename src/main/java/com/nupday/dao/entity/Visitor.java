@@ -1,4 +1,4 @@
-package com.nupday.dao.Entity;
+package com.nupday.dao.entity;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.nupday.dao.Entity.base.BaseUpdateEntity;
+import com.nupday.dao.entity.base.BaseUpdateEntity;
 
 @Entity
 @Table(name = "visitor")

@@ -2,7 +2,7 @@ package com.nupday.cache;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nupday.dao.Entity.Owner;
+import com.nupday.dao.entity.Owner;
 
 public class OwnerCache {
     private static List<Owner> owners = new ArrayList<>();

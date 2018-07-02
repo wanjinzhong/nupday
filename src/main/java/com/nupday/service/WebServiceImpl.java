@@ -2,7 +2,7 @@ package com.nupday.service;
 import com.nupday.bo.Principal;
 import com.nupday.cache.OwnerCache;
 import com.nupday.constant.Role;
-import com.nupday.dao.Entity.Owner;
+import com.nupday.dao.entity.Owner;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

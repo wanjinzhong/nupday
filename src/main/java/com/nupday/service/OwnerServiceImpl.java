@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.nupday.bo.OwnerBo;
 import com.nupday.cache.OwnerCache;
-import com.nupday.dao.Entity.Owner;
+import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

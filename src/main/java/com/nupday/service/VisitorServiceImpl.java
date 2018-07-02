@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.nupday.bo.VisitorBo;
 import com.nupday.cache.VisitorCache;
-import com.nupday.dao.Entity.Visitor;
+import com.nupday.dao.entity.Visitor;
 import com.nupday.dao.repository.VisitorRepository;
 import com.nupday.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;

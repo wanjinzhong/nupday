@@ -1,5 +1,5 @@
 package com.nupday.dao.repository;
-import com.nupday.dao.Entity.Visitor;
+import com.nupday.dao.entity.Visitor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

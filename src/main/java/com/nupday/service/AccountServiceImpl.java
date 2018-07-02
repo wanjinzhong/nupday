@@ -3,7 +3,7 @@ import com.nupday.bo.LoginBo;
 import com.nupday.cache.VisitorCache;
 import com.nupday.config.NupDayToken;
 import com.nupday.constant.Role;
-import com.nupday.dao.Entity.Visitor;
+import com.nupday.dao.entity.Visitor;
 import com.nupday.dao.repository.OwnerRepository;
 import com.nupday.dao.repository.VisitorRepository;
 import org.apache.shiro.SecurityUtils;
