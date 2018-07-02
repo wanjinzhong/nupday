@@ -1,7 +1,6 @@
 package com.nupday.util;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
