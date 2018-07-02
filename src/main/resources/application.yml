@@ -26,6 +26,7 @@ spring:
          url: jdbc:mysql://mysql.potafish.com:3408/NUP_DAY?zeroDateTimeBehavior=convertToNull&verifyServerCertificate=false&useSSL=true&useUnicode=true&characterEncoding=utf-8
          username:
          password:
+         url: jdbc:mysql://mysql.potafish.com:3408/NUP_DAY_TEST?zeroDateTimeBehavior=convertToNull&verifyServerCertificate=false&useSSL=true&useUnicode=true&characterEncoding=utf-8
       jackson:
          date-format: yyyy-MM-dd HH:mm:ss
          time-zone: GMT+8
