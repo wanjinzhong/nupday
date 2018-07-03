@@ -12,7 +12,15 @@ import axios from "axios"
 Vue.use(VueRouter);
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
-axios.defaults.baseURL=process.env.API_ROOT;
+
+let apiUrl = '';
+// 根据 process.env.HOST 的值判断当前是什么环境
+// 命令：npm run build -- test ，process.env.HOST就设置为：'test'
+let HOST = process.env.HOST;
+HOST = HOST === 'prod' ? '' :  HOST + '-';
+apiUrl = 'http://' + HOST +'love.potafish.com';
+
+axios.defaults.baseURL=apiUrl;
 Vue.prototype.axios = axios;
 axios.interceptors.response.use(function (response) {
   return response;
