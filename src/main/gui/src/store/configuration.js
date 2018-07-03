@@ -1,14 +1,21 @@
 const state = {
-  loginBackgound:''
+  loginBackground:'',
+  homeBackground:''
 };
 const getters = {
-  getLoginBackgound(state) {
-    return state.loginBackgound;
+  getLoginBackground(state) {
+    return state.loginBackground;
+  },
+  getHomeBackground(state) {
+    return state.homeBackground;
   }
 };
 const mutations = {
-  setLoginBackgound(state, loginBackgound) {
-    state.loginBackgound = loginBackgound;
+  setLoginBackground(state, loginBackground) {
+    state.loginBackground = loginBackground;
+  },
+  setHomeBackground(state, homeBackground) {
+    state.homeBackground = homeBackground;
   }
 };
 const actions = {

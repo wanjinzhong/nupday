@@ -1,5 +1,4 @@
 package com.nupday.controller;
-import java.io.IOException;
 
 import com.nupday.service.COSService;
 import com.nupday.service.ConfigurationService;
@@ -7,15 +6,11 @@ import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Api
 @RestController
@@ -29,19 +24,29 @@ public class ConfigurationApi {
     @Autowired
     private COSService cosService;
 
-    private Logger logger = LoggerFactory.getLogger(ConfigurationApi.class);
-
     @GetMapping("loginBackground")
     public JsonEntity<String> getLoginBackground() {
-        logger.info("Enter getLoginBackground Api");
-        return ResponseHelper.createInstance(configurationService.getBackGroundUrl());
+        return ResponseHelper.createInstance(configurationService.getLoginBackGroundUrl());
     }
 
     @RequiresAuthentication
     @PostMapping("loginBackground")
     public JsonEntity<String> setLoginBackground(MultipartFile file) throws IOException {
-        logger.info("Enter setLoginBackground Api");
         String key = configurationService.uploadLoginBackGround(file);
+        String url = cosService.generatePresignedUrl(key);
+        return ResponseHelper.createInstance(url);
+    }
+
+    @RequiresAuthentication
+    @GetMapping("homeBackground")
+    public JsonEntity<String> getHomeBackground() {
+        return ResponseHelper.createInstance(configurationService.getHomeBackGroundUrl());
+    }
+
+    @RequiresAuthentication
+    @PostMapping("homeBackground")
+    public JsonEntity<String> setHomeBackground(MultipartFile file) throws IOException {
+        String key = configurationService.uploadHomeBackGround(file);
         String url = cosService.generatePresignedUrl(key);
         return ResponseHelper.createInstance(url);
     }

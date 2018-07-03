@@ -1,4 +1,5 @@
 package com.nupday.constant;
 public enum ConfigurationItem {
-    LOGIN_BACKGROUND
+    LOGIN_BACKGROUND,
+    HOME_BACKGROUND
 }

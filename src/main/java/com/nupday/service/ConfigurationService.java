@@ -6,5 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ConfigurationService {
     String uploadLoginBackGround(MultipartFile file) throws IOException;
 
-    String getBackGroundUrl();
+    String getLoginBackGroundUrl();
+
+    String uploadHomeBackGround(MultipartFile file) throws IOException;
+
+    String getHomeBackGroundUrl();
 }

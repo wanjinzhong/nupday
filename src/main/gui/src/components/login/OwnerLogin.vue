@@ -1,33 +1,36 @@
 <template>
   <div>
     <Form>
-      <!--<FormItem label-width="0px">-->
+      <FormItem label-width="0px">
         <Select v-model="selectedOwner" style="width: 300px">
           <Option v-for="owner in allOwners"
-          :key="owner.id"
-          :label="owner.name"
-          :value="owner.id"></Option>
+                  :key="owner.id"
+                  :label="owner.name"
+                  :value="owner.id"></Option>
         </Select>
-      <!--</FormItem>-->
-      <!--<FormItem label-width="0px">-->
+      </FormItem>
+      <FormItem label-width="0px">
         <Input type="password" v-model="password" placeholder="密码" class="password" @focus="onFocus" @blur="onBlur"
-        style="width: 300px;"/>
-      <!--</FormItem>-->
-      <Button native-type	="submit" type="primary" style="width:300px" @click.prevent="login">登陆</Button>
+               style="width: 300px;"/>
+      </FormItem>
+      <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="btnLoading" :loading="btnLoading">登陆
+      </Button>
     </Form>
   </div>
 </template>
 
 <script>
-  import {Form, FormItem, Select, Option,Input, Button} from "element-ui"
+  import {Form, FormItem, Select, Option, Input, Button} from "element-ui"
   import $ from "jquery"
+
   export default {
     name: "OwnerLogin",
-    components: {Form, FormItem, Select, Option,Input, Button},
+    components: {Form, FormItem, Select, Option, Input, Button},
     data() {
       return {
-        selectedOwner:1,
+        selectedOwner: 1,
         password: "",
+        btnLoading: false
       }
     },
     computed: {
@@ -37,14 +40,34 @@
     },
     methods: {
       login() {
+        if (this.password == "") {
+          this.$message({
+            type: "warning",
+            message: "密码不能为空"
+          });
+          return;
+        }
+        var self = this;
+        this.btnLoading = true;
         const data = {
           type: "OWNER",
           userId: this.selectedOwner,
           password: this.password
         }
         this.axios.post("/api/login", data).then((response) => {
-          console.log(response.data);
-        })
+          var name = '';
+          for (var i in self.allOwners) {
+            if (self.allOwners[i].id == this.selectedOwner) {
+              name = self.allOwners[i].name;
+            }
+          }
+          self.$message({
+            type: "success",
+            message: name + "，欢迎回家！"
+          });
+          self.$router.push("/");
+        });
+        this.btnLoading = false;
       },
       onFocus() {
         $("#left_hand").animate({
@@ -95,7 +118,7 @@
 </script>
 
 <style scoped>
-* {
-  margin: 10px;
-}
+  * {
+    margin: 10px;
+  }
 </style>

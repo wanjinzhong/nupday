@@ -1,5 +1,5 @@
 <template>
-  <div class="body" :style="{background:'url(' + backgroundUrl + ')  0% 0% / cover  no-repeat'}" >
+  <div class="body" :style="{background:'url(' + backgroundUrl + ')  0% 0% / cover  no-repeat'}">
     <div class="container">
       <div style="width: 165px; height: 96px; position: absolute; margin-left: 20px">
         <div class="tou"></div>
@@ -7,30 +7,50 @@
         <div class="initial_right_hand" id="right_hand"></div>
       </div>
       <section id="content">
-        <form action="">
-          <router-view></router-view>
-        </form><!-- form -->
+        <Menu mode="horizontal"
+              background-color="#f8f8f8"
+              active-text-color="#f699b4"
+              default-active="1"
+              @select="changeMenu">
+          <MenuItem index="1">主人</MenuItem>
+          <MenuItem index="2">访客</MenuItem>
+        </Menu>
+        <OwnerLogin v-if="isOwnerLogin"></OwnerLogin>
+        <VisitorLogin v-else></VisitorLogin>
       </section><!-- content -->
     </div>
   </div>
 </template>
 
 <script>
+  import {Menu, MenuItem} from "element-ui";
+  import OwnerLogin from "../components/login/OwnerLogin"
+  import VisitorLogin from "../components/login/VisitorLogin"
+
   export default {
     name: "LoginPage",
+    components: {Menu, MenuItem, OwnerLogin, VisitorLogin},
     data() {
       return {
-
+        isOwnerLogin: true
       }
     },
     created() {
       this.axios.get("/api/loginBackground").then((res) => {
-           this.$store.commit("setLoginBackgound", res.data.data);
-        })
+        this.$store.commit("setLoginBackground", res.data.data);
+      });
+      this.axios.get("/api/getAllOwners").then((response) => {
+        this.$store.commit("setOwners", response.data.data);
+      });
     },
     computed: {
       backgroundUrl() {
-        return this.$store.getters.getLoginBackgound;
+        return this.$store.getters.getLoginBackground;
+      }
+    },
+    methods: {
+      changeMenu(index) {
+          this.isOwnerLogin = index == 1;
       }
     }
   }

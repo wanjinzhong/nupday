@@ -31,11 +31,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public String uploadLoginBackGround(MultipartFile file) throws IOException {
         FileUtil.validatePicFile(file);
         String key = cosService.putObject(file, "config");
-        List<Configuration> configurationList = configurationRepository.findByItem(ConfigurationItem.LOGIN_BACKGROUND);
+        uploadBackground(key, ConfigurationItem.LOGIN_BACKGROUND);
+        return key;
+    }
+
+    private void uploadBackground(String key, ConfigurationItem type) {
+        List<Configuration> configurationList = configurationRepository.findByItem(type);
         Configuration configuration;
         if (CollectionUtils.isEmpty(configurationList)) {
             configuration = new Configuration();
-            configuration.setItem(ConfigurationItem.LOGIN_BACKGROUND);
+            configuration.setItem(type);
             configuration.setEntryDatetime(new Date());
             configuration.setEntryUser(webService.getCurrentUser());
 
@@ -49,12 +54,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         configuration.setCode(key);
         configurationRepository.save(configuration);
+    }
+
+    @Override
+    public String getLoginBackGroundUrl() {
+        List<Configuration> configurationList = configurationRepository.findByItem(ConfigurationItem.LOGIN_BACKGROUND);
+        if (CollectionUtils.isEmpty(configurationList)) {
+            return null;
+        } else {
+            return cosService.generatePresignedUrl(configurationList.get(0).getCode());
+        }
+    }
+
+    @Override
+    public String uploadHomeBackGround(MultipartFile file) throws IOException {
+        FileUtil.validatePicFile(file);
+        String key = cosService.putObject(file, "config");
+        uploadBackground(key, ConfigurationItem.HOME_BACKGROUND);
         return key;
     }
 
     @Override
-    public String getBackGroundUrl() {
-        List<Configuration> configurationList = configurationRepository.findByItem(ConfigurationItem.LOGIN_BACKGROUND);
+    public String getHomeBackGroundUrl() {
+        List<Configuration> configurationList = configurationRepository.findByItem(ConfigurationItem.HOME_BACKGROUND);
         if (CollectionUtils.isEmpty(configurationList)) {
             return null;
         } else {
