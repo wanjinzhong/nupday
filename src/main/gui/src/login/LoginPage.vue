@@ -42,6 +42,8 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background-size: cover;
+
     /*  -webkit-animation: animate-cloud 20s linear infinite;
       -moz-animation: animate-cloud 20s linear infinite;
       -ms-animation: animate-cloud 20s linear infinite;

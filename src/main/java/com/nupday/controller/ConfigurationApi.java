@@ -7,6 +7,8 @@ import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,14 +29,18 @@ public class ConfigurationApi {
     @Autowired
     private COSService cosService;
 
+    private Logger logger = LoggerFactory.getLogger(ConfigurationApi.class);
+
     @GetMapping("loginBackground")
     public JsonEntity<String> getLoginBackground() {
+        logger.info("Enter getLoginBackground Api");
         return ResponseHelper.createInstance(configurationService.getBackGroundUrl());
     }
 
     @RequiresAuthentication
     @PostMapping("loginBackground")
     public JsonEntity<String> setLoginBackground(MultipartFile file) throws IOException {
+        logger.info("Enter setLoginBackground Api");
         String key = configurationService.uploadLoginBackGround(file);
         String url = cosService.generatePresignedUrl(key);
         return ResponseHelper.createInstance(url);
