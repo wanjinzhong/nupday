@@ -1,18 +1,18 @@
 <template>
   <div>
     <Form>
-      <FormItem >
+      <!--<FormItem label-width="0px">-->
         <Select v-model="selectedOwner" style="width: 300px">
           <Option v-for="owner in allOwners"
           :key="owner.id"
           :label="owner.name"
           :value="owner.id"></Option>
         </Select>
-      </FormItem>
-      <FormItem>
+      <!--</FormItem>-->
+      <!--<FormItem label-width="0px">-->
         <Input type="password" v-model="password" placeholder="密码" class="password" @focus="onFocus" @blur="onBlur"
         style="width: 300px;"/>
-      </FormItem>
+      <!--</FormItem>-->
       <Button native-type	="submit" type="primary" style="width:300px" @click.prevent="login">登陆</Button>
     </Form>
   </div>

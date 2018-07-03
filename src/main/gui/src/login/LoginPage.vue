@@ -1,7 +1,7 @@
 <template>
-  <div class="body" :style="{background:'url(' + backgroundUrl + ') no-repeat'}">
+  <div class="body" :style="{background:'url(' + backgroundUrl + ')  0% 0% / cover  no-repeat'}" >
     <div class="container">
-      <div style="width: 165px; height: 96px; position: absolute; margin-left: 260px">
+      <div style="width: 165px; height: 96px; position: absolute; margin-left: 20px">
         <div class="tou"></div>
         <div class="initial_left_hand" id="left_hand"></div>
         <div class="initial_right_hand" id="right_hand"></div>
@@ -42,8 +42,6 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-size: cover;
-
     /*  -webkit-animation: animate-cloud 20s linear infinite;
       -moz-animation: animate-cloud 20s linear infinite;
       -ms-animation: animate-cloud 20s linear infinite;
@@ -62,7 +60,7 @@
   .container {
     margin: 200px auto 0 auto;
     position: relative;
-    width: 900px;
+    width: 400px;
   }
 
   #content {

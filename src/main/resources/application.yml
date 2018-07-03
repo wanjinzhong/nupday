@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 80
   servlet:
     context-path: /
 
@@ -14,7 +14,7 @@ nupday:
 
 COS:
   secretId: AKIDtis4A9UaUJxQtE5v672oSxLYbTB2N3FF
-  secretKey: 
+  secretKey: zmSxGYdqAPTMCtESUKyRkhtwtjOtDUZc
   region: ap-chengdu
   bucketName: ijiaqi-1252535357
 
@@ -24,6 +24,8 @@ spring:
       datasource:
          driverClassName: com.mysql.jdbc.Driver
          url: jdbc:mysql://mysql.potafish.com:3408/NUP_DAY_TEST?zeroDateTimeBehavior=convertToNull&verifyServerCertificate=false&useSSL=true&useUnicode=true&characterEncoding=utf-8
+         username: root
+         password: Neil19940908
       jackson:
          date-format: yyyy-MM-dd HH:mm:ss
          time-zone: GMT+8
