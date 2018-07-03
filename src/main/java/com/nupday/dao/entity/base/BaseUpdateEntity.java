@@ -18,11 +18,11 @@ public class BaseUpdateEntity extends BaseCreateEntity {
     @Column(name = "update_datetime")
     private Date updateDatetime;
 
-    public Owner getupdateUser() {
+    public Owner getUpdateUser() {
         return updateUser;
     }
 
-    public void setupdateUser(Owner updateUser) {
+    public void setUpdateUser(Owner updateUser) {
         this.updateUser = updateUser;
     }
 

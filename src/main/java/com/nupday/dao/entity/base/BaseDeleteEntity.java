@@ -18,11 +18,11 @@ public class BaseDeleteEntity extends BaseUpdateEntity{
     @Column(name = "delete_datetime")
     private Date deleteDatetime;
 
-    public Owner getdeleteUser() {
+    public Owner getDeleteUser() {
         return deleteUser;
     }
 
-    public void setdeleteUser(Owner deleteUser) {
+    public void setDeleteUser(Owner deleteUser) {
         this.deleteUser = deleteUser;
     }
 

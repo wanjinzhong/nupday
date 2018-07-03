@@ -4,5 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface COSService {
     String generatePresignedUrl(String key);
 
-    void putObject(MultipartFile file, String prefix);
+    String putObject(MultipartFile file, String prefix);
+
+    void deleteObject(String key);
 }

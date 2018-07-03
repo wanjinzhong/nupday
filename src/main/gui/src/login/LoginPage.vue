@@ -20,12 +20,17 @@
     name: "LoginPage",
     data() {
       return {
-        backgroundUrl: "",
-        // backgroundUrl: "https://ijiaqi-1252535357.cos.ap-chengdu.myqcloud.com/assets/8079593da80481644bf2576f4af58656.jpg?" +
-      // "sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDO2X8AK977jr1fBTq7aiLaFSOEsx5v7SM%26q-sign-time%3D1530542247%3B1530544047%" +
-      // "26q-key-time%3D1530542247%3B1530544047%26q-header-list%3D%26q-url-param-list%3D%26q-signature%3Dda5c9a1d9aea092" +
-      // "9122ffd40d1447d43fb10d640&token=20d18df9676e9465f1e2cdd2e1510c489cc8970110001&clientIP=171.221.0.100&clientUA=7" +
-      // "d4a8cdb-6564-4310-9295-a6f8he2b4ce22",
+
+      }
+    },
+    created() {
+      this.axios.get("/api/loginBackground").then((res) => {
+           this.$store.commit("setLoginBackgound", res.data.data);
+        })
+    },
+    computed: {
+      backgroundUrl() {
+        return this.$store.getters.getLoginBackgound;
       }
     }
   }

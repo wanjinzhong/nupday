@@ -14,7 +14,7 @@ public class ViewController {
         "/visitorLogin",
         "/forgot"
     })
-    public ModelAndView openCisCreationIndexPage() {
+    public ModelAndView openIndexPage() {
         return new ModelAndView("/");
     }
 }

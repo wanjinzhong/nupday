@@ -38,7 +38,7 @@ public class COSServiceImpl implements COSService {
     }
 
     @Override
-    public void putObject(MultipartFile file, String prefix) {
+    public String putObject(MultipartFile file, String prefix) {
         if (file == null) {
             throw new BizException("文件不能为空");
         }
@@ -71,8 +71,14 @@ public class COSServiceImpl implements COSService {
         }
         try {
             cosClient.putObject(bucketName, key.toString(), inputStream, metadata);
+            return key.toString();
         } catch (CosClientException e) {
             throw new BizException("文件上传失败", e);
         }
+    }
+
+    @Override
+    public void deleteObject(String key) {
+        cosClient.deleteObject(bucketName, key);
     }
 }

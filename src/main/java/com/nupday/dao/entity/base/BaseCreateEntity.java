@@ -18,11 +18,11 @@ public class BaseCreateEntity {
     @Column(name = "entry_datetime")
     private Date entryDatetime;
 
-    public Owner getentryUser() {
+    public Owner getEntryUser() {
         return entryUser;
     }
 
-    public void setentryUser(Owner entryUser) {
+    public void setEntryUser(Owner entryUser) {
         this.entryUser = entryUser;
     }
 
