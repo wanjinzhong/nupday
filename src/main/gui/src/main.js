@@ -39,11 +39,7 @@ axios.interceptors.response.use(function (response) {
       type: "error"
     });
   } else {
-    Vue.prototype.$alert("您还没有登陆或者登陆已过期，请先登录", "登录", {
-      callback: function(action){
         router.push("/login");
-      }
-    });
   }
   return Promise.reject(error);
 });
