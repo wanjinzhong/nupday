@@ -19,4 +19,9 @@
     color: #2c3e50;
     height: 100%;
   }
+
+  @font-face {
+    font-family: aiqingxijian;
+    src: url("assets/aiqingxijian.ttf");
+  }
 </style>

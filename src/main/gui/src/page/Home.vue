@@ -2,6 +2,7 @@
 <div style="height: 100%;">
   <Header></Header>
   <Banner></Banner>
+  <router-view style="margin-top: 20px"></router-view>
 </div>
 </template>
 
@@ -17,7 +18,7 @@
         });
         this.axios.get("/api/homeBackground").then((response) => {
           this.$store.commit("setHomeBackground", response.data.data);
-        })
+        });
       }
     }
 </script>

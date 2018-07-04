@@ -14,7 +14,7 @@ nupday:
 
 COS:
   secretId: AKIDtis4A9UaUJxQtE5v672oSxLYbTB2N3FF
-  secretKey: zmSxGYdqAPTMCtESUKyRkhtwtjOtDUZc
+  secretKey: 
   region: ap-chengdu
   bucketName: ijiaqi-1252535357
 

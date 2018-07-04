@@ -2,12 +2,7 @@
   <div style="margin-top: 20px;margin-bottom: 20px">
     <Form>
       <FormItem label-width="0px">
-        <Input v-model="accessCode" style="width: 280px;" placeholder="访问码"/>
-        <Tooltip placement="top" :content="tipMessage" effect="light">
-          <svg class="icon" aria-hidden="true" font-size="20px" color="#555">
-            <use xlink:href="#icon-bangzhu"></use>
-          </svg>
-        </Tooltip>
+        <Input v-model="accessCode" style="width: 300px;" placeholder="访问码"/>
       </FormItem>
       <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="btnLoading" :loading="btnLoading">登陆
       </Button>
@@ -25,7 +20,6 @@
       return {
         btnLoading: false,
         accessCode: "",
-        tipMessage: "如果没有访问码，请向代佳琪或者万进忠申请访问码"
       }
     },
     methods: {
