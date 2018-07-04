@@ -1,6 +1,5 @@
 package com.nupday.service;
 import com.nupday.bo.LoginBo;
-import com.nupday.cache.VisitorCache;
 import com.nupday.config.NupDayToken;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Visitor;
@@ -16,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class AccountServiceImpl implements AccountService {
-
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     @Autowired
     private VisitorRepository visitorRepository;
@@ -38,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
             throw new AuthenticationException("密码错误", e);
         }
         if (Role.VISITOR.equals(loginBo.getType())) {
-            Visitor visitor = VisitorCache.getVisitorByCode(loginBo.getAccessCode());
+            Visitor visitor = visitorRepository.findByCode(loginBo.getAccessCode());
             visitorService.updateLoginCount(visitor.getId(), 1);
         }
     }

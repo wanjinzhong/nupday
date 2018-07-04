@@ -1,16 +1,15 @@
 package com.nupday.config;
 import static com.google.common.collect.Sets.newHashSet;
 
-import java.util.Date;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 
 import com.nupday.bo.Principal;
-import com.nupday.cache.OwnerCache;
-import com.nupday.cache.VisitorCache;
 import com.nupday.constant.Constants;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Visitor;
+import com.nupday.dao.repository.OwnerRepository;
+import com.nupday.dao.repository.VisitorRepository;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -21,8 +20,16 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NupDayRealm extends AuthorizingRealm {
+
+    @Autowired
+    private OwnerRepository ownerRepository;
+
+    @Autowired
+    private VisitorRepository visitorRepository;
+
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         Principal principal = (Principal) SecurityUtils.getSubject().getPrincipal();
@@ -45,15 +52,16 @@ public class NupDayRealm extends AuthorizingRealm {
         if (principal.getKey() == null) {
             throw new AuthenticationException("登陆信息不能为空");
         }
-        Visitor visitor = VisitorCache.getVisitorByCode(principal.getKey());
+        Visitor visitor = visitorRepository.findByCode(principal.getKey());
         if (visitor == null) {
             throw new AuthenticationException("访问码不正确");
         }
         if (visitor.getMaxCount() != null && visitor.getLoginCount() + 1 > visitor.getMaxCount()) {
             throw new AuthenticationException("访问码超过最大访问次数");
         }
-        Date now = new Date();
-        if ((visitor.getFrom() != null && now.before(visitor.getFrom())) || (visitor.getTo() != null && now.after(visitor.getTo()))) {
+        LocalDateTime now = LocalDateTime.now();
+        if ((visitor.getFrom() != null && now.isBefore(visitor.getFrom())) ||
+            (visitor.getTo() != null && now.isAfter(visitor.getTo()))) {
             throw new AuthenticationException("该时间不在访问码有效时间段");
         }
         return new SimpleAuthenticationInfo(principal, Constants.ACCESS_CODE_PASSWORD, getName());
@@ -64,7 +72,7 @@ public class NupDayRealm extends AuthorizingRealm {
         if (principal.getKey() == null) {
             throw new AuthenticationException("登陆信息不能为空");
         }
-        Owner owner = OwnerCache.getOwnerById(Integer.valueOf(principal.getKey()));
+        Owner owner = ownerRepository.getOne(Integer.valueOf(principal.getKey()));
         if (owner == null) {
             throw new AuthenticationException("用户不存在");
         }

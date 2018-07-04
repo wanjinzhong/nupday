@@ -8,5 +8,4 @@ public interface VisitorService {
 
     List<VisitorBo> getAllVisitor();
 
-    void refreshCache();
 }

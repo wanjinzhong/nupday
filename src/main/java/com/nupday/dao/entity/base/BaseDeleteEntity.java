@@ -1,5 +1,5 @@
 package com.nupday.dao.entity.base;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -16,7 +16,7 @@ public class BaseDeleteEntity extends BaseUpdateEntity{
     private Owner deleteUser;
 
     @Column(name = "delete_datetime")
-    private Date deleteDatetime;
+    private LocalDateTime deleteDatetime;
 
     public Owner getDeleteUser() {
         return deleteUser;
@@ -26,11 +26,11 @@ public class BaseDeleteEntity extends BaseUpdateEntity{
         this.deleteUser = deleteUser;
     }
 
-    public Date getDeleteDatetime() {
+    public LocalDateTime getDeleteDatetime() {
         return deleteDatetime;
     }
 
-    public void setDeleteDatetime(Date deleteDatetime) {
+    public void setDeleteDatetime(LocalDateTime deleteDatetime) {
         this.deleteDatetime = deleteDatetime;
     }
 }

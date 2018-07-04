@@ -1,4 +1,5 @@
 package com.nupday.bo;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class VisitorBo {
@@ -8,9 +9,9 @@ public class VisitorBo {
 
     private Boolean forever;
 
-    private Date from;
+    private LocalDateTime from;
 
-    private Date to;
+    private LocalDateTime to;
 
     private Integer loginCount;
 
@@ -40,19 +41,19 @@ public class VisitorBo {
         this.forever = forever;
     }
 
-    public Date getFrom() {
+    public LocalDateTime getFrom() {
         return from;
     }
 
-    public void setFrom(Date from) {
+    public void setFrom(LocalDateTime from) {
         this.from = from;
     }
 
-    public Date getTo() {
+    public LocalDateTime getTo() {
         return to;
     }
 
-    public void setTo(Date to) {
+    public void setTo(LocalDateTime to) {
         this.to = to;
     }
 

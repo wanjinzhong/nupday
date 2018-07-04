@@ -1,15 +1,19 @@
 package com.nupday.service;
 import com.nupday.bo.Principal;
-import com.nupday.cache.OwnerCache;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Owner;
+import com.nupday.dao.repository.OwnerRepository;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class WebServiceImpl implements WebService {
+
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     @Override
     public Role getUserType() {
@@ -20,7 +24,7 @@ public class WebServiceImpl implements WebService {
     public Owner getCurrentUser() {
         Principal principal = (Principal) SecurityUtils.getSubject().getPrincipal();
         if (Role.OWNER.equals(principal.getType())) {
-            return OwnerCache.getOwnerById(Integer.valueOf(principal.getKey()));
+            return ownerRepository.getOne(Integer.valueOf(principal.getKey()));
         }
         return null;
     }

@@ -54,7 +54,7 @@ public class AccountApi {
         return ResponseHelper.ofNothing();
     }
 
-    @GetMapping("getAllOwners")
+    @GetMapping("allSimpleOwners")
     public JsonEntity<List<SimpleOwnerBo>> getAllOwners() {
         return ResponseHelper.createInstance(ownerService.getAllSimpleOwner());
     }

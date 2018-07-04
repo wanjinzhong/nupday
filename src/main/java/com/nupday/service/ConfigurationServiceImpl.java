@@ -1,5 +1,6 @@
 package com.nupday.service;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (CollectionUtils.isEmpty(configurationList)) {
             configuration = new Configuration();
             configuration.setItem(type);
-            configuration.setEntryDatetime(new Date());
+            configuration.setEntryDatetime(LocalDateTime.now());
             configuration.setEntryUser(webService.getCurrentUser());
 
         } else {
@@ -50,7 +51,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 cosService.deleteObject(configuration.getCode());
             }
             configuration.setUpdateUser(webService.getCurrentUser());
-            configuration.setUpdateDatetime(new Date());
+            configuration.setUpdateDatetime(LocalDateTime.now());
         }
         configuration.setCode(key);
         configurationRepository.save(configuration);

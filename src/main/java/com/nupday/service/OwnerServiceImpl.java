@@ -1,16 +1,19 @@
 package com.nupday.service;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.nupday.bo.OwnerBo;
 import com.nupday.bo.SimpleOwnerBo;
-import com.nupday.cache.OwnerCache;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.OwnerRepository;
+import com.nupday.util.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -19,6 +22,11 @@ public class OwnerServiceImpl implements OwnerService {
     @Autowired
     private OwnerRepository ownerRepository;
 
+    @Autowired
+    private COSService cosService;
+
+    @Autowired
+    private WebService webService;
 
     @Override
     public List<OwnerBo> getAllOwner() {
@@ -32,25 +40,18 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public void refreshCache() {
-        OwnerCache.setOwnerCache(ownerRepository.findAll());
-    }
-
-    @Override
     public OwnerBo ownerToBo(Owner user) {
         if (user == null) {
             return null;
         }
         OwnerBo ownerBo = new OwnerBo();
-        ownerBo.setAvatar(user.getAvatar());
-        ownerBo.setBirthday(user.getBirthday());
-        ownerBo.setEmail(user.getEmail());
+        String avatar = user.getAvatar();
+        if (StringUtils.isNotBlank(avatar)) {
+            avatar = cosService.generatePresignedUrl(avatar);
+        }
+        ownerBo.setAvatar(avatar);
         ownerBo.setId(user.getId());
-        ownerBo.setMale(user.getMale());
         ownerBo.setName(user.getName());
-        ownerBo.setPassword(user.getPassword());
-        ownerBo.setPhone(user.getPhone());
-        ownerBo.setSalt(user.getSalt());
         return ownerBo;
     }
 
@@ -93,5 +94,18 @@ public class OwnerServiceImpl implements OwnerService {
             }
         }
         return ownerBos;
+    }
+
+    @Override
+    public String updateAvatar(MultipartFile file) throws IOException {
+        FileUtil.validatePicFile(file);
+        String key = cosService.putObject(file, "avatar");
+        Owner me = webService.getCurrentUser();
+        if (StringUtils.isNotBlank(me.getAvatar())) {
+            cosService.deleteObject(me.getAvatar());
+        }
+        me.setAvatar(key);
+        ownerRepository.save(me);
+        return key;
     }
 }

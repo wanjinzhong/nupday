@@ -39,7 +39,7 @@
       this.axios.get("/api/loginBackground").then((res) => {
         this.$store.commit("setLoginBackground", res.data.data);
       });
-      this.axios.get("/api/getAllOwners").then((response) => {
+      this.axios.get("/api/allSimpleOwners").then((response) => {
         this.$store.commit("setOwners", response.data.data);
       });
     },

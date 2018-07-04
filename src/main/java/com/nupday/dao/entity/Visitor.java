@@ -1,5 +1,6 @@
 package com.nupday.dao.entity;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,10 +23,10 @@ public class Visitor extends BaseUpdateEntity {
     private String code;
 
     @Column(name = "time_from")
-    private Date from;
+    private LocalDateTime from;
 
     @Column(name = "time_to")
-    private Date to;
+    private LocalDateTime to;
 
     @Column(name = "login_count")
     private Integer loginCount;
@@ -49,19 +50,19 @@ public class Visitor extends BaseUpdateEntity {
         this.code = code;
     }
 
-    public Date getFrom() {
+    public LocalDateTime getFrom() {
         return from;
     }
 
-    public void setFrom(Date from) {
+    public void setFrom(LocalDateTime from) {
         this.from = from;
     }
 
-    public Date getTo() {
+    public LocalDateTime getTo() {
         return to;
     }
 
-    public void setTo(Date to) {
+    public void setTo(LocalDateTime to) {
         this.to = to;
     }
 
