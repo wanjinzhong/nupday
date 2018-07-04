@@ -1,5 +1,8 @@
 package com.nupday.config;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.Date;
+import java.util.HashSet;
 
 import com.nupday.bo.Principal;
 import com.nupday.cache.OwnerCache;
@@ -8,11 +11,13 @@ import com.nupday.constant.Constants;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Visitor;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
@@ -20,7 +25,10 @@ import org.apache.shiro.util.ByteSource;
 public class NupDayRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
+        Principal principal = (Principal) SecurityUtils.getSubject().getPrincipal();
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.setRoles(newHashSet(principal.getType().getValue()));
+        return info;
     }
 
     @Override

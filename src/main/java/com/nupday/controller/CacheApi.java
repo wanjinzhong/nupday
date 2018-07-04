@@ -1,11 +1,13 @@
 package com.nupday.controller;
 
+import com.nupday.constant.Constants;
 import com.nupday.service.OwnerService;
 import com.nupday.service.VisitorService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api")
 @RestController
 @RequiresAuthentication
+@RequiresRoles(value = {Constants.OWNER})
 @CrossOrigin
 public class CacheApi {
 

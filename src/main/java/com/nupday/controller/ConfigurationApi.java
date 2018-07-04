@@ -1,11 +1,14 @@
 package com.nupday.controller;
 
+import com.nupday.constant.Constants;
+import com.nupday.constant.Role;
 import com.nupday.service.COSService;
 import com.nupday.service.ConfigurationService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,7 @@ public class ConfigurationApi {
     }
 
     @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
     @PostMapping("loginBackground")
     public JsonEntity<String> setLoginBackground(MultipartFile file) throws IOException {
         String key = configurationService.uploadLoginBackGround(file);
@@ -44,6 +48,7 @@ public class ConfigurationApi {
     }
 
     @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
     @PostMapping("homeBackground")
     public JsonEntity<String> setHomeBackground(MultipartFile file) throws IOException {
         String key = configurationService.uploadHomeBackGround(file);
