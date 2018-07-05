@@ -79,12 +79,14 @@ public class ArticleServiceImpl implements ArticleService {
             List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
             articleBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             StringBuilder content = new StringBuilder();
+            content.append("<div style='margin: 0 auto; text-align: center;'>");
             for (ArticlePhoto articlePhoto : articlePhotos) {
-                content.append("<img style='max-width: 1000px' src='")
+                content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey()+ "/" + articlePhoto.getPhoto().getKey()))
                        .append("'/>")
                        .append("<br/>");
             }
+            content.append("</div>");
             articleBo.setContent(content.toString());
         }
         articleBo.setType(ArticleType.valueOf(article.getType().getCode()));
