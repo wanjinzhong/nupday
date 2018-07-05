@@ -110,6 +110,8 @@
     font-size: 200px;
     color: red;
     line-height: 200px;
+    padding-top: 50px;
+    margin-bottom: -50px;
     -webkit-animation-name: scaleDraw; /*关键帧名称*/
     -webkit-animation-timing-function: ease-in-out; /*动画的速度曲线*/
     -webkit-animation-iteration-count: infinite; /*动画播放的次数*/

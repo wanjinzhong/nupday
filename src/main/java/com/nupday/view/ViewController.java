@@ -8,11 +8,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class ViewController {
 
     @RequestMapping(value = {
-        "/login",
-        "/loginPage",
-        "/ownerLogin",
-        "/visitorLogin",
-        "/forgot"
+            "/login",
+            "/loginPage",
+            "/ownerLogin",
+            "/visitorLogin",
+            "/forgot",
+            "/newArticle",
+            "/editArticle/:articleId",
+            "/article/:articleId"
+
     })
     public ModelAndView openIndexPage() {
         return new ModelAndView("/");

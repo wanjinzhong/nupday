@@ -1,9 +1,8 @@
 package com.nupday.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.nupday.bo.ArticleBo;
+import com.nupday.bo.ArticlePermissionBo;
+import com.nupday.bo.DeleteArticleBo;
 import com.nupday.constant.ArticleType;
 import com.nupday.constant.ListBoxCateogry;
 import com.nupday.constant.Role;
@@ -17,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,34 +40,48 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Integer newArticle(ArticleBo articleBo) {
         validateArticle(articleBo);
-        ListBox type = listBoxRepository.findByNameAndCode(ListBoxCateogry.ARTICLE_TYPE.name(), articleBo.getType().name());
-        Article article = new Article();
-        if (ArticleType.ARTICLE.equals(articleBo.getType())) {
-            article.setTitle(articleBo.getTitle());
-            article.setContent(articleBo.getContent());
+        Optional<Article> optional = articleRepository.findById(articleBo.getId());
+        if (optional.isPresent()) {
+            throw new BizException("文章已存在");
         }
-        article.setIsOpen(articleBo.getIsOpen() != null ? articleBo.getIsOpen() : true);
-        article.setIsDraft(articleBo.getIsDraft() != null ? articleBo.getIsDraft() : false);
-        article.setLikes(0);
-        article.setType(type);
+        Article article = new Article();
+        boToArticle(article, articleBo);
         article.setEntryUser(webService.getCurrentUser());
         article.setEntryDatetime(LocalDateTime.now());
         articleRepository.save(article);
         return article.getId();
     }
 
+    private void boToArticle(Article article, ArticleBo articleBo) {
+        ListBox type = listBoxRepository.findByNameAndCode(ListBoxCateogry.ARTICLE_TYPE.name(), articleBo.getType().name());
+        if (ArticleType.ARTICLE.equals(articleBo.getType())) {
+            article.setTitle(articleBo.getTitle());
+            article.setContent(articleBo.getContent());
+        }
+        article.setIsOpen(articleBo.getIsOpen() != null ? articleBo.getIsOpen() : true);
+        article.setIsDraft(articleBo.getIsDraft() != null ? articleBo.getIsDraft() : false);
+        article.setCommentable(articleBo.getPermission().getCommentable() != null ? articleBo.getPermission().getCommentable() : true);
+        article.setLikes(0);
+        article.setType(type);
+    }
+
     @Override
-    public ArticleBo getArticle(Integer articleId) {
+    public ArticleBo getArticleBo(Integer articleId) {
+        Article article = getArticle(articleId);
+        if (article == null) {
+            throw new BizException("文章不存在");
+        }
+        return articleToBo(article);
+    }
+
+    private Article getArticle(Integer articleId) {
         Article article;
         if (Role.OWNER.getValue().equals(webService.getUserType())) {
             article = articleRepository.findByIdAndIsDraftAndDeleteDatetimeIsNull(articleId, false);
         } else {
             article = articleRepository.findByIdAndIsDraftAndIsOpenAndDeleteDatetimeIsNull(articleId, false, true);
         }
-        if (article == null) {
-            throw new BizException("文章不存在");
-        }
-        return articleToBo(article);
+        return article;
     }
 
     private ArticleBo articleToBo(Article article) {
@@ -80,11 +97,14 @@ public class ArticleServiceImpl implements ArticleService {
             articleBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             StringBuilder content = new StringBuilder();
             content.append("<div style='margin: 0 auto; text-align: center;'>");
+            content.append("<div style='margin: 10px auto;'><a href='/album/")
+                    .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                    .append("'style='margin:10px auto'>去相册查看</a></div>");
             for (ArticlePhoto articlePhoto : articlePhotos) {
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
-                       .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey()+ "/" + articlePhoto.getPhoto().getKey()))
-                       .append("'/>")
-                       .append("<br/>");
+                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getKey()))
+                        .append("'/>")
+                        .append("<br/>");
             }
             content.append("</div>");
             articleBo.setContent(content.toString());
@@ -93,8 +113,30 @@ public class ArticleServiceImpl implements ArticleService {
         articleBo.setId(article.getId());
         articleBo.setIsDraft(article.getIsDraft());
         articleBo.setIsOpen(article.getIsOpen());
-        articleBo.setLike(article.getLikes());
+        articleBo.setLikes(article.getLikes());
+        articleBo.setEntryUser(article.getEntryUser().getName());
+        articleBo.setEntryDatetime(article.getUpdateDatetime() != null ? article.getUpdateDatetime() : article.getEntryDatetime());
+        ArticlePermissionBo permission = getArticlePermissionBo(article);
+        articleBo.setPermission(permission);
         return articleBo;
+    }
+
+    private ArticlePermissionBo getArticlePermissionBo(Article article) {
+        ArticlePermissionBo permission = new ArticlePermissionBo();
+        if (Role.VISITOR.equals(webService.getUserType())) {
+            permission.setDeletable(false);
+            permission.setEditable(false);
+        } else {
+            if (webService.getCurrentUser().getId().equals(article.getEntryUser().getId())) {
+                permission.setEditable(true);
+                permission.setDeletable(true);
+            } else {
+                permission.setDeletable(false);
+                permission.setEditable(false);
+            }
+        }
+        permission.setCommentable(article.getCommentable());
+        return permission;
     }
 
     private void validateArticle(ArticleBo articleBo) {
@@ -105,6 +147,54 @@ public class ArticleServiceImpl implements ArticleService {
             if (StringUtils.isBlank(articleBo.getTitle())) {
                 throw new BizException("文章标题不能为空");
             }
+        }
+    }
+
+    @Override
+    public Integer likeArticle(Integer articleId) {
+        Article article = getArticle(articleId);
+        if (article == null) {
+            throw new BizException("文章不存在");
+        }
+        Integer likes = article.getLikes() + 1;
+        article.setLikes(likes);
+        articleRepository.save(article);
+        return likes;
+    }
+
+    @Override
+    public Integer updateArticle(ArticleBo articleBo) {
+        validateArticle(articleBo);
+        Optional<Article> optional = articleRepository.findById(articleBo.getId());
+        if (!optional.isPresent()) {
+            throw new BizException("文章不已存在");
+        }
+        Article article = optional.get();
+        ArticlePermissionBo permissionBo = getArticlePermissionBo(article);
+        if (!permissionBo.getEditable()) {
+            throw new BizException("你没有权限编辑这篇文章");
+        }
+        boToArticle(article, articleBo);
+        articleRepository.save(article);
+        return article.getId();
+    }
+
+    @Override
+    public void deleteArticle(DeleteArticleBo deleteArticleBo) {
+        Article article = articleRepository.getOne(deleteArticleBo.getId());
+        if (article == null) {
+            throw new BizException("文章不已存在");
+        }
+        ArticlePermissionBo permissionBo = getArticlePermissionBo(article);
+        if (!permissionBo.getDeletable()) {
+            throw new BizException("你没有权限删除这篇文章");
+        }
+        if (deleteArticleBo.getToDustbin()) {
+            article.setDeleteUser(webService.getCurrentUser());
+            article.setDeleteDatetime(LocalDateTime.now());
+            articleRepository.save(article);
+        } else {
+            articleRepository.delete(article);
         }
     }
 }

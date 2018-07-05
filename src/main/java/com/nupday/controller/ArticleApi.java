@@ -1,6 +1,7 @@
 package com.nupday.controller;
 
 import com.nupday.bo.ArticleBo;
+import com.nupday.bo.DeleteArticleBo;
 import com.nupday.constant.Constants;
 import com.nupday.service.ArticleService;
 import com.nupday.util.JsonEntity;
@@ -9,17 +10,13 @@ import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Api
 @RequiresAuthentication
 @RequestMapping("api")
+@CrossOrigin
 public class ArticleApi {
 
     @Autowired
@@ -33,6 +30,22 @@ public class ArticleApi {
 
     @GetMapping("article/{articleId}")
     public JsonEntity<ArticleBo> getArticle(@PathVariable(value = "articleId") Integer articleId) {
-        return ResponseHelper.createInstance(articleService.getArticle(articleId));
+        return ResponseHelper.createInstance(articleService.getArticleBo(articleId));
+    }
+
+    @PutMapping("article/{articleId}/like")
+    public JsonEntity<Integer> likeArticle(@PathVariable(name = "articleId") Integer articleId) {
+        return ResponseHelper.createInstance(articleService.likeArticle(articleId));
+    }
+
+    @PutMapping("article")
+    public JsonEntity<Integer> updateArticle(@RequestBody ArticleBo articleBo) {
+        return ResponseHelper.createInstance(articleService.updateArticle(articleBo));
+    }
+
+    @DeleteMapping("article")
+    public JsonEntity deleteArticle(DeleteArticleBo deleteArticleBo) {
+        articleService.deleteArticle(deleteArticleBo);
+        return ResponseHelper.ofNothing();
     }
 }

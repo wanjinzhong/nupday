@@ -33,6 +33,9 @@ public class Article extends BaseDeleteEntity {
     @Column(name = "is_open")
     private Boolean isOpen;
 
+    @Column
+    private Boolean commentable;
+
     @OneToMany(mappedBy = "article")
 
     private List<ArticlePhoto> articlePhotos = new ArrayList<>();
@@ -108,5 +111,13 @@ public class Article extends BaseDeleteEntity {
 
     public void setArticlePhotos(List<ArticlePhoto> articlePhotos) {
         this.articlePhotos = articlePhotos;
+    }
+
+    public Boolean getCommentable() {
+        return commentable;
+    }
+
+    public void setCommentable(Boolean commentable) {
+        this.commentable = commentable;
     }
 }

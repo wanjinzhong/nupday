@@ -31,6 +31,14 @@
             </svg>
             设置
           </MenuItem>
+          <MenuItem index="logout" class="secondLevelMenuItem">
+            <div @click="logout">
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-084tuichu"></use>
+              </svg>
+              退出登陆
+            </div>
+          </MenuItem>
         </Submenu>
       </Menu>
 
@@ -52,6 +60,14 @@
     computed: {
       homeBackground() {
         return this.$store.getters.getHomeBackground;
+      }
+    },
+    methods: {
+      logout() {
+        var that = this;
+        this.axios.get("/api/logout").then(res => {
+          that.$router.push("/login");
+        })
       }
     }
   }
@@ -104,10 +120,12 @@
     font-size: 18px;
     height: 50px;
   }
+
   .secondLevelMenuItem {
     font-size: 16px;
   }
-  .el-menu-item:not(.is-disabled):hover, .is-opened,.el-submenu__title:hover {
+
+  .el-menu-item:not(.is-disabled):hover, .is-opened, .el-submenu__title:hover {
     background-color: rgba(255, 255, 255, 0.2) !important;
   }
 </style>

@@ -1,8 +1,8 @@
 <template>
-<div style="height: 100%;">
+<div style="height: 100%">
   <Header></Header>
   <Banner></Banner>
-  <router-view style="margin-top: 20px"></router-view>
+  <router-view style="margin: 20px auto"></router-view>
 </div>
 </template>
 

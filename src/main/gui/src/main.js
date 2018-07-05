@@ -8,6 +8,7 @@ import ElementUI from "element-ui";
 import 'element-ui/lib/theme-chalk/index.css';
 import {store} from "./store/store"
 import axios from "axios"
+import {formatDate} from "./utils/TimeFormater"
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -43,7 +44,7 @@ axios.interceptors.response.use(function (response) {
   }
   return Promise.reject(error);
 });
-
+Vue.filter("formatDate", formatDate);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

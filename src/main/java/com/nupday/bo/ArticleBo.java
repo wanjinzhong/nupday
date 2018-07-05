@@ -16,9 +16,11 @@ public class ArticleBo {
 
     private String content;
 
-    private Integer like;
+    private Integer likes;
 
     private String entryUser;
+
+    private ArticlePermissionBo permission;
 
     private LocalDateTime entryDatetime;
 
@@ -70,12 +72,12 @@ public class ArticleBo {
         this.content = content;
     }
 
-    public Integer getLike() {
-        return like;
+    public Integer getLikes() {
+        return likes;
     }
 
-    public void setLike(Integer like) {
-        this.like = like;
+    public void setLikes(Integer likes) {
+        this.likes = likes;
     }
 
     public String getEntryUser() {
@@ -93,4 +95,13 @@ public class ArticleBo {
     public void setEntryDatetime(LocalDateTime entryDatetime) {
         this.entryDatetime = entryDatetime;
     }
+
+    public ArticlePermissionBo getPermission() {
+        return permission;
+    }
+
+    public void setPermission(ArticlePermissionBo permission) {
+        this.permission = permission;
+    }
+
 }
