@@ -14,8 +14,8 @@ public class ViewController {
             "/visitorLogin",
             "/forgot",
             "/newArticle",
-            "/editArticle/:articleId",
-            "/article/:articleId"
+            "/editArticle/*",
+            "/article/*"
 
     })
     public ModelAndView openIndexPage() {
