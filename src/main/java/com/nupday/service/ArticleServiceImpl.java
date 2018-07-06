@@ -197,4 +197,22 @@ public class ArticleServiceImpl implements ArticleService {
             articleRepository.delete(article);
         }
     }
+
+    @Override
+    public Boolean isVisible(Integer articleId) {
+        Optional<Article> articleOptional = articleRepository.findById(articleId);
+        if (!articleOptional.isPresent()) {
+            return false;
+        }
+        Article article = articleOptional.get();
+        return isVisible(article);
+    }
+
+    @Override
+    public Boolean isVisible(Article article) {
+        if (!article.getIsOpen() && Role.VISITOR.equals(webService.getUserType())) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -1,4 +1,4 @@
 package com.nupday.constant;
 public enum ListBoxCateogry {
-    ARTICLE_TYPE
+    ARTICLE_TYPE, COMMENT_TARGET
 }

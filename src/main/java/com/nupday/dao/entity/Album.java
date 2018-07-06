@@ -31,6 +31,9 @@ public class Album extends BaseDeleteEntity {
     @Column(name = "is_deletable")
     private Boolean isDeletable;
 
+    @Column
+    private Boolean commentable;
+
     public Integer getId() {
         return id;
     }
@@ -77,5 +80,13 @@ public class Album extends BaseDeleteEntity {
 
     public void setIsDeletable(Boolean deletable) {
         isDeletable = deletable;
+    }
+
+    public Boolean getCommentable() {
+        return commentable;
+    }
+
+    public void setCommentable(Boolean commentable) {
+        this.commentable = commentable;
     }
 }
