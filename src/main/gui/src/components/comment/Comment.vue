@@ -3,7 +3,7 @@
     <div style="padding: 20px 50px; margin: 0 auto; border: 2px solid #eee; border-radius: 30px"
     v-if="commentable">
       <div class="comment-title">献上祝福</div>
-      <AddComment :target-type="targetType" :target-id="targetId" @refreshComments="refresh"></AddComment>
+      <AddComment :target-type="targetType" :target-id="targetId" @refresh="refresh"></AddComment>
     </div>
     <CommentList :target-type="targetType" :target-id="targetId"
                  style="width: 1000px; margin: 20px auto;"></CommentList>

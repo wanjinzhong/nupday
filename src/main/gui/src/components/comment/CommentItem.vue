@@ -5,8 +5,8 @@
     </div>
     <div style="display: inline-block; margin-left: 10px; width:calc(100% - 50px)"
          @mouseenter.self="hover = true" @mouseleave.self="hover = false">
-      <div class="header"><span style="font-size: 16px; font-weight: bold">{{this.comment.name}}</span> {{new
-        Date(this.comment.dateTime) | formatDate("DATETIME")}}
+      <div class="header"><span style="font-size: 16px; font-weight: bold">{{this.comment.name}}</span>
+        {{new Date(this.comment.dateTime) | formatDate("DATETIME")}}
         <div style="float: right;" v-if="hover">
           <span style="cursor: pointer" @click="dialogVisible = true">回复</span>&nbsp;
           <span style="cursor: pointer" v-if="$store.getters.getType == 'OWNER'" @click="readyToDelete">删除</span>
@@ -20,10 +20,10 @@
     <CommentItem v-for="child in comment.replies" :key="child.id" :comment="child"
                  :level="level + 1" style="margin-left: 50px"
                  :root-type="rootType" :root-id="rootId"></CommentItem>
-    <Dialog :title="'回复' + comment.name" :visible.sync="dialogVisible">
+    <Dialog width="500px" :title="'回复' + comment.name" :visible.sync="dialogVisible">
       <AddComment target-type="COMMENT" :target-id="comment.id" @refresh="refresh"></AddComment>
     </Dialog>
-    <Dialog title="确认删除" :visible.sync="showDeleteDialog" width="520px">
+    <Dialog title="确认删除" :visible.sync="showDeleteDialog" width="520px" v-loading="deleting">
       <span>确认要删除这个评论吗？{{comment.replies.length > 0 ? "包括这条评论的回复也会一起删除" :""}}</span>
       <span slot="footer" class="dialog-footer" v-loading="">
         <Button @click="showDeleteDialog = false">取消</Button>
@@ -45,7 +45,8 @@
       return {
         hover: false,
         dialogVisible: false,
-        showDeleteDialog: false
+        showDeleteDialog: false,
+        deleting: false,
       }
     },
     methods: {
@@ -71,7 +72,9 @@
         this.showDeleteDialog = true;
       },
       deleteComment() {
+        this.deleting = true;
         this.axios.delete("/api/comment/" + this.comment.id).then(res => {
+          this.deleting = false;
           this.showDeleteDialog = false;
           this.$message({
             type: 'success',
