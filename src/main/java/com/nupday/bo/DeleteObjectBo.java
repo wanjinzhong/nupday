@@ -1,6 +1,6 @@
 package com.nupday.bo;
 
-public class DeleteArticleBo {
+public class DeleteObjectBo {
     private Integer id;
     private Boolean toDustbin;
 

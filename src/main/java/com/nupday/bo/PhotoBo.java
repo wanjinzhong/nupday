@@ -4,8 +4,6 @@ public class PhotoBo {
 
     private Integer id;
 
-    private String key;
-
     private String smallKey;
 
     private Integer like;
@@ -16,14 +14,6 @@ public class PhotoBo {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public String getSmallKey() {

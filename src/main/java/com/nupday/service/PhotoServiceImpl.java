@@ -95,7 +95,6 @@ public class PhotoServiceImpl implements PhotoService {
         }
         PhotoBo photoBo = new PhotoBo();
         photoBo.setId(photo.getId());
-        photoBo.setKey(cosService.generatePresignedUrl(photo.getAlbum().getKey() + "/" + photo.getKey()));
         photoBo.setSmallKey(cosService.generatePresignedUrl(photo.getAlbum().getKey() + "/" + photo.getSmallKey()));
         photoBo.setLike(photo.getLike());
         return photoBo;

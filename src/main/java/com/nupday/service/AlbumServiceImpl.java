@@ -1,7 +1,9 @@
 package com.nupday.service;
 
 import com.nupday.bo.AlbumBo;
-import com.nupday.bo.CreateAlbumBo;
+import com.nupday.bo.DeleteObjectBo;
+import com.nupday.bo.EditAlbumBo;
+import com.nupday.constant.Constants;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
 import com.nupday.dao.repository.AlbumRepository;
@@ -94,7 +96,7 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public Integer createAlbum(CreateAlbumBo albumBo) {
+    public Integer createAlbum(EditAlbumBo albumBo) {
         if (albumBo == null) {
             throw new BizException("相册信息不能为空");
         }
@@ -107,7 +109,7 @@ public class AlbumServiceImpl implements AlbumService {
         album.setIsOpen(albumBo.getIsOpen() != null ? albumBo.getIsOpen() : true);
         album.setCommentable(albumBo.getCommentable() != null ? albumBo.getCommentable() : true);
         album.setIsDeletable(true);
-        album.setKey(UUID.randomUUID().toString().toLowerCase().replace("-",""));
+        album.setKey(Constants.ALBUM_KEY + UUID.randomUUID().toString().toLowerCase().replace("-", ""));
         album.setEntryUser(webService.getCurrentUser());
         album.setEntryDatetime(LocalDateTime.now());
         albumRepository.save(album);
@@ -124,5 +126,51 @@ public class AlbumServiceImpl implements AlbumService {
             throw new BizException("你没有权限查看这个相册");
         }
         return albumToBo(album);
+    }
+
+    @Override
+    public Integer updateAlbum(EditAlbumBo albumBo) {
+        if (albumBo == null) {
+            throw new BizException("相册信息不能为空");
+        }
+        if (StringUtils.isBlank(albumBo.getName())) {
+            throw new BizException("相册名称不能为空");
+        }
+        Optional<Album> albumOptional = albumRepository.findById(albumBo.getId());
+        if (!albumOptional.isPresent()) {
+            throw new BizException("相册不存在");
+        }
+        if (!CollectionUtils.isEmpty(albumRepository.findByNameAndIdNotEquals(albumBo.getName(), albumBo.getId()))) {
+            throw new BizException("相册名字已被使用，换一个吧");
+        }
+
+        Album album = albumOptional.get();
+        album.setName(albumBo.getName());
+        album.setDescription(albumBo.getDescription());
+        album.setIsOpen(albumBo.getIsOpen() != null ? albumBo.getIsOpen() : true);
+        album.setCommentable(albumBo.getCommentable() != null ? albumBo.getCommentable() : true);
+        album.setUpdateUser(webService.getCurrentUser());
+        album.setUpdateDatetime(LocalDateTime.now());
+        albumRepository.save(album);
+        return album.getId();
+    }
+
+    @Override
+    public void deleteAlbum(DeleteObjectBo deleteObjectBo) {
+        Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(deleteObjectBo.getId());
+        if (album == null) {
+            throw new BizException("相册不存在");
+        }
+
+        if (deleteObjectBo.getToDustbin()) {
+            album.setDeleteDatetime(LocalDateTime.now());
+            album.setDeleteUser(webService.getCurrentUser());
+            albumRepository.save(album);
+        } else {
+            List<String> keys = album.getPhotos().stream().map(photo -> photo.getAlbum().getKey() + "/" + photo.getKey()).collect(Collectors.toList());
+            keys.addAll(album.getPhotos().stream().map(photo -> photo.getAlbum().getKey() + "/" + photo.getSmallKey()).collect(Collectors.toList()));
+            albumRepository.delete(album);
+            keys.stream().forEach(key -> cosService.deleteObject(key));
+        }
     }
 }

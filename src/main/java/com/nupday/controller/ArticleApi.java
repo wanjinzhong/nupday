@@ -1,7 +1,7 @@
 package com.nupday.controller;
 
 import com.nupday.bo.ArticleBo;
-import com.nupday.bo.DeleteArticleBo;
+import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.constant.ArticleType;
@@ -51,8 +51,8 @@ public class ArticleApi {
 
     @DeleteMapping("article")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity deleteArticle(DeleteArticleBo deleteArticleBo) {
-        articleService.deleteArticle(deleteArticleBo);
+    public JsonEntity deleteArticle(DeleteObjectBo deleteObjectBo) {
+        articleService.deleteArticle(deleteObjectBo);
         return ResponseHelper.ofNothing();
     }
 

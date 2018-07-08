@@ -182,8 +182,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void deleteArticle(DeleteArticleBo deleteArticleBo) {
-        Article article = articleRepository.getOne(deleteArticleBo.getId());
+    public void deleteArticle(DeleteObjectBo deleteObjectBo) {
+        Article article = articleRepository.getOne(deleteObjectBo.getId());
         if (article == null) {
             throw new BizException("文章不已存在");
         }
@@ -191,7 +191,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (!permissionBo.getDeletable()) {
             throw new BizException("你没有权限删除这篇文章");
         }
-        if (deleteArticleBo.getToDustbin()) {
+        if (deleteObjectBo.getToDustbin()) {
             article.setDeleteUser(webService.getCurrentUser());
             article.setDeleteDatetime(LocalDateTime.now());
             articleRepository.save(article);

@@ -1,6 +1,9 @@
 package com.nupday.bo;
 
-public class CreateAlbumBo {
+public class EditAlbumBo {
+
+    private Integer id;
+
     private String name;
 
     private String description;
@@ -8,6 +11,22 @@ public class CreateAlbumBo {
     private Boolean isOpen;
 
     private Boolean commentable;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Boolean getOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(Boolean open) {
+        isOpen = open;
+    }
 
     public String getName() {
         return name;

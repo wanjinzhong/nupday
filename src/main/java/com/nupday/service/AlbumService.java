@@ -1,6 +1,7 @@
 package com.nupday.service;
 import com.nupday.bo.AlbumBo;
-import com.nupday.bo.CreateAlbumBo;
+import com.nupday.bo.DeleteObjectBo;
+import com.nupday.bo.EditAlbumBo;
 import com.nupday.dao.entity.Album;
 
 import java.util.List;
@@ -13,7 +14,11 @@ public interface AlbumService {
 
     List<AlbumBo> getAlbums();
 
-    Integer createAlbum(CreateAlbumBo albumBo);
+    Integer createAlbum(EditAlbumBo albumBo);
 
     AlbumBo getAlbum(Integer albumId);
+
+    Integer updateAlbum(EditAlbumBo editAlbumBo);
+
+    void deleteAlbum(DeleteObjectBo deleteObjectBo);
 }

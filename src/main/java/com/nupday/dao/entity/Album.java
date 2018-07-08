@@ -36,7 +36,7 @@ public class Album extends BaseDeleteEntity {
     @JoinColumn(name = "cover_id")
     private Photo cover;
 
-    @OneToMany(mappedBy = "album")
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
     private List<Photo> photos = new ArrayList();
 
     public Integer getId() {

@@ -3,10 +3,10 @@
     <div class="title">
       <div class="title-content">相册</div>
       <Button plain v-if="$store.getters.getType == 'OWNER'" type="danger" size="small" round
-              style="margin-left: 10px" @click="showAddDialog = true">新建相册
+              style="margin-left: 10px" @click="isShowAddDialog = true">新建相册
       </Button>
     </div>
-    <Dialog title="添加相册" :visible.sync="showAddDialog" width="500px" v-loading="saving">
+    <Dialog title="添加相册" :visible.sync="isShowAddDialog" width="500px" v-loading="saving">
       <Form @submit.native.prevent lebel-position="left" label-width="50px">
         <FormItem label="标题">
           <Input v-model="name"/>
@@ -21,7 +21,7 @@
                      inactive-text="禁止评论"></el-switch>
         </FormItem>
         <div style="text-align: right">
-          <Button @click="showAddDialog = false">关闭</Button>
+          <Button @click="isShowAddDialog = false">关闭</Button>
           <Button @click="createAlbum" type="primary">创建</Button>
         </div>
       </Form>
@@ -41,7 +41,7 @@
       return {
         albums: [],
         loading: false,
-        showAddDialog: false,
+        isShowAddDialog: false,
         name: '',
         description: '',
         isOpen: true,
@@ -68,7 +68,7 @@
         var that = this;
         this.axios.post("/api/album", data).then(res => {
           that.saving = false;
-          that.showAddDialog = false;
+          that.isShowAddDialog = false;
           that.refresh();
         }).catch(res => {
           that.saving = false;

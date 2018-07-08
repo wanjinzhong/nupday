@@ -17,7 +17,8 @@
       return {
         hover: false,
         style: {
-          boxShadow: '2px 2px 5px #aaa'
+          transform: 'scale(1.05)',
+          boxShadow: '5px 5px 5px rgba(200,200,200,0.4)'
         }
       }
     }
@@ -39,6 +40,8 @@
     text-align: center;
     display: table-cell;
     position: relative;
+    transition: all 0.3s;
+    box-shadow: 3px 3px 3px rgba(200,200,200,0.6);
   }
 
   .border {

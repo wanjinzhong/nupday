@@ -1,6 +1,6 @@
 package com.nupday.service;
 import com.nupday.bo.ArticleBo;
-import com.nupday.bo.DeleteArticleBo;
+import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.dao.entity.Article;
@@ -15,7 +15,7 @@ public interface ArticleService {
 
     Integer updateArticle(EditArticleBo articleBo);
 
-    void deleteArticle(DeleteArticleBo deleteArticleBo);
+    void deleteArticle(DeleteObjectBo deleteObjectBo);
 
     Boolean isVisible(Integer articleId);
 
