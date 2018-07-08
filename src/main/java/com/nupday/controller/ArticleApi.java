@@ -2,6 +2,9 @@ package com.nupday.controller;
 
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.DeleteArticleBo;
+import com.nupday.bo.EditArticleBo;
+import com.nupday.bo.OpenStatus;
+import com.nupday.constant.ArticleType;
 import com.nupday.constant.Constants;
 import com.nupday.service.ArticleService;
 import com.nupday.util.JsonEntity;
@@ -24,7 +27,8 @@ public class ArticleApi {
 
     @PostMapping("article")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity<Integer> newArticle(@RequestBody ArticleBo articleBo) {
+    public JsonEntity<Integer> newArticle(@RequestBody EditArticleBo articleBo) {
+        articleBo.setType(ArticleType.ARTICLE);
         return ResponseHelper.createInstance(articleService.newArticle(articleBo));
     }
 
@@ -39,13 +43,23 @@ public class ArticleApi {
     }
 
     @PutMapping("article")
-    public JsonEntity<Integer> updateArticle(@RequestBody ArticleBo articleBo) {
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity<Integer> updateArticle(@RequestBody EditArticleBo articleBo) {
+        articleBo.setType(ArticleType.ARTICLE);
         return ResponseHelper.createInstance(articleService.updateArticle(articleBo));
     }
 
     @DeleteMapping("article")
+    @RequiresRoles(value = {Constants.OWNER})
     public JsonEntity deleteArticle(DeleteArticleBo deleteArticleBo) {
         articleService.deleteArticle(deleteArticleBo);
+        return ResponseHelper.ofNothing();
+    }
+
+    @PutMapping("article/{articleId}/{status}")
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity changeOpenStatus(@PathVariable("articleId") Integer articleId, @PathVariable("status") OpenStatus openStatus) {
+        articleService.changeOpenStatus(articleId, openStatus);
         return ResponseHelper.ofNothing();
     }
 }

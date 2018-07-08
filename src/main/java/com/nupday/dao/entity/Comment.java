@@ -20,6 +20,9 @@ public class Comment extends BaseCreateEntity {
     private Integer id;
 
     @Column
+    private String avatar;
+
+    @Column
     private String name;
 
     @Column
@@ -81,5 +84,13 @@ public class Comment extends BaseCreateEntity {
 
     public void setTargetId(Integer targetId) {
         this.targetId = targetId;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

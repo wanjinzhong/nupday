@@ -1,23 +1,14 @@
 package com.nupday.bo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import com.nupday.constant.CommentTargetType;
-
-public class CommentBo {
+public class CommentBo extends CreateCommentBo {
     private Integer id;
 
-    private String name;
+    private LocalDateTime dateTime;
 
-    private String content;
-
-    private String ip;
-
-    private CommentTargetType targetType;
-
-    private Integer targetId;
-
-    private LocalDateTime time;
+    private List<CommentBo> replies;
 
     public Integer getId() {
         return id;
@@ -27,51 +18,19 @@ public class CommentBo {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
-    public String getContent() {
-        return content;
+    public List<CommentBo> getReplies() {
+        return replies;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public CommentTargetType getTargetType() {
-        return targetType;
-    }
-
-    public void setTargetType(CommentTargetType targetType) {
-        this.targetType = targetType;
-    }
-
-    public Integer getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(Integer targetId) {
-        this.targetId = targetId;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
+    public void setReplies(List<CommentBo> replies) {
+        this.replies = replies;
     }
 }

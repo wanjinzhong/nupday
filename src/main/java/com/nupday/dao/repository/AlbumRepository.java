@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Integer> {
+    Album findByIdAndDeleteDatetimeIsNull(Integer id);
 }

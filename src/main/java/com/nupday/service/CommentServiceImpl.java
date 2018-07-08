@@ -1,32 +1,25 @@
 package com.nupday.service;
 
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.nupday.bo.CommentBo;
+import com.nupday.bo.CommentObject;
+import com.nupday.bo.CreateCommentBo;
 import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.ListBoxCateogry;
 import com.nupday.constant.Role;
-import com.nupday.dao.entity.Album;
-import com.nupday.dao.entity.Article;
-import com.nupday.dao.entity.Comment;
-import com.nupday.dao.entity.ListBox;
-import com.nupday.dao.entity.Photo;
-import com.nupday.dao.repository.AlbumRepository;
-import com.nupday.dao.repository.ArticleRepository;
-import com.nupday.dao.repository.CommentRepository;
-import com.nupday.dao.repository.ListBoxRepository;
-import com.nupday.dao.repository.PhotoRepository;
+import com.nupday.dao.entity.*;
+import com.nupday.dao.repository.*;
 import com.nupday.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hibernate.validator.internal.util.CollectionHelper.newHashSet;
 
 @Service
 @Transactional
@@ -58,112 +51,191 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private WebService webService;
 
+    @Autowired
+    private COSService cosService;
+
 
     @Override
-    public Integer newComment(CommentBo commentBo) {
-        validateComment(commentBo);
-        Comment comment = boToComment(commentBo);
+    public Integer newComment(CreateCommentBo createCommentBo) {
+        validateComment(createCommentBo);
+        Comment comment = boToComment(createCommentBo);
         commentRepository.save(comment);
         return comment.getId();
     }
 
-    private void validateComment(CommentBo commentBo) {
-        if (StringUtils.isBlank(commentBo.getContent())) {
+    private void validateComment(CreateCommentBo createCommentBo) {
+        if (StringUtils.isBlank(createCommentBo.getContent())) {
             throw new BizException("评论不能为空");
         }
-        if (Role.VISITOR.getValue().equals(webService.getUserType()) && StringUtils.isBlank(commentBo.getName())) {
+        if (Role.VISITOR.getValue().equals(webService.getUserType()) && StringUtils.isBlank(createCommentBo.getName())) {
             throw new BizException("用户名不能为空");
         }
 
-        Optional optional = getCommentTarget(commentBo);
-        if (!optional.isPresent()) {
-            throw new BizException("评论目标不存在");
-        }
-        if (!newArrayList(CommentTargetType.values()).contains(commentBo.getTargetType())) {
+        if (!newArrayList(CommentTargetType.values()).contains(createCommentBo.getTargetType())) {
             throw new BizException("评论目标类型不正确");
         }
 
-        if (CommentTargetType.ARTICLE.equals(commentBo.getTargetType()) && !articleService.isVisible(((Article) optional.get()))) {
-            throw new BizException("你没有权限查看这篇文章");
-        } else if (CommentTargetType.ALBUM.equals(commentBo.getTargetType()) && !albumService.isVisible(((Album) optional.get()))) {
-            throw new BizException("你没有权限查看这个相册");
-        } else if (CommentTargetType.PHOTO.equals(commentBo.getTargetType()) && !photoService.isVisible(((Photo) optional.get()))) {
-            throw new BizException("你没有权限查看这张照片");
-        } else if (CommentTargetType.COMMENT.equals(commentBo.getTargetType()) && !isCommentRootTargetVisible((Comment) optional.get(), new ArrayList<>())) {
-            throw new BizException("评论主体不可见");
+        CommentObject root = getCommentRootTarget(createCommentBo.getTargetType(), createCommentBo.getTargetId(), new ArrayList<>());
+        if (root == null) {
+            throw new BizException("评论目标不存在");
         }
-        if ((CommentTargetType.ARTICLE.equals(commentBo.getTargetType()) && !((Article) optional.get()).getCommentable())
-            || (CommentTargetType.ALBUM.equals(commentBo.getTargetType()) && !((Album) optional.get()).getCommentable())
-            || (CommentTargetType.PHOTO.equals(commentBo.getTargetType()) && !((Photo) optional.get()).getAlbum().getCommentable())) {
-            throw new BizException("管理员关闭了评论功能");
+        if (CommentTargetType.ARTICLE.equals(root.getTargetType())) {
+            Article article = (Article) root.getTarget();
+            if (!articleService.isVisible(article)) {
+                throw new BizException("你没有权限查看这篇文章");
+            }
+            if (!article.getCommentable()) {
+                throw new BizException("这篇文章不可评论");
+            }
+        } else if (CommentTargetType.ALBUM.equals(root.getTargetType())) {
+            Album album = (Album) root.getTarget();
+            if (!albumService.isVisible(album)) {
+                throw new BizException("你没有权限查看这个相册");
+            }
+            if (!album.getCommentable()) {
+                throw new BizException("这个相册不可评论");
+            }
+        } else if (CommentTargetType.PHOTO.equals(root.getTargetType())) {
+            Photo photo = (Photo) root.getTarget();
+            if (!photoService.isVisible(photo)) {
+                throw new BizException("你没有权限查看这张照片");
+            }
+            if (!photo.getAlbum().getCommentable()) {
+                throw new BizException("这张照片不可评论");
+            }
         }
     }
 
-    private Comment boToComment(CommentBo commentBo) {
-        if (commentBo == null) {
+    private Comment boToComment(CreateCommentBo createCommentBo) {
+        if (createCommentBo == null) {
             return null;
         }
         Comment comment = new Comment();
-        comment.setContent(commentBo.getContent());
-        comment.setIp(commentBo.getIp());
-        ListBox targetType = listBoxRepository.findByNameAndCode(ListBoxCateogry.COMMENT_TARGET.name(), commentBo.getTargetType().name());
+        comment.setContent(createCommentBo.getContent());
+        comment.setIp(createCommentBo.getIp());
+        ListBox targetType = listBoxRepository.findByNameAndCode(ListBoxCateogry.COMMENT_TARGET.name(), createCommentBo.getTargetType().name());
         comment.setTargetType(targetType);
-        comment.setTargetId(commentBo.getTargetId());
+        comment.setTargetId(createCommentBo.getTargetId());
         comment.setEntryDatetime(LocalDateTime.now());
         if (Role.OWNER.equals(webService.getUserType())) {
             comment.setEntryUser(webService.getCurrentUser());
         } else {
-            comment.setName(commentBo.getName());
+            comment.setAvatar(createCommentBo.getAvatar());
+            comment.setName(createCommentBo.getName());
         }
         return comment;
     }
 
-    private Optional getCommentTarget(CommentBo commentBo) {
-        Optional optional = null;
-        if (CommentTargetType.ARTICLE.equals(commentBo.getTargetType())) {
-            optional = articleRepository.findById(commentBo.getTargetId());
-        } else if (CommentTargetType.ALBUM.equals(commentBo.getTargetType())) {
-            optional = albumRepository.findById(commentBo.getTargetId());
-        } else if (CommentTargetType.PHOTO.equals(commentBo.getTargetType())) {
-            optional = photoRepository.findById(commentBo.getTargetId());
-        } else {
-            optional = commentRepository.findById(commentBo.getTargetId());
-        }
-        return optional;
-    }
-
     @Override
-    public Boolean isCommentRootTargetVisible(Integer commentId) {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
-        if (!commentOptional.isPresent()) {
-            return false;
-        }
-        Comment comment = commentOptional.get();
-        return isCommentRootTargetVisible(comment, new ArrayList<>());
-    }
-
-    @Override
-    public Boolean isCommentRootTargetVisible(Comment comment, List<Integer> commentParentsId) {
+    public CommentObject getCommentRootTarget(CommentTargetType targetType, Integer targetId, List<Integer> commentParentsId) {
         if (commentParentsId == null) {
             commentParentsId = new ArrayList<>();
         }
-        if (CommentTargetType.COMMENT.name().equals(comment.getTargetType().getCode())) {
-            Optional<Comment> commentOptional = commentRepository.findById(comment.getTargetId());
+        if (CommentTargetType.COMMENT.equals(targetType)) {
+            Optional<Comment> commentOptional = commentRepository.findById(targetId);
             if (!commentOptional.isPresent()) {
-                return false;
+                return null;
             }
-            if (commentParentsId.contains(comment.getTargetId())) {
+            if (commentParentsId.contains(targetId)) {
                 throw new BizException("发现环式评论");
             }
-            commentParentsId.add(comment.getTargetId());
-            return isCommentRootTargetVisible(commentOptional.get(), commentParentsId);
-        } else if (CommentTargetType.ARTICLE.name().equals(comment.getTargetType().getCode())) {
-            return articleService.isVisible(comment.getTargetId());
-        } else if (CommentTargetType.ALBUM.name().equals(comment.getTargetType().getCode())) {
-            return albumService.isVisible(comment.getTargetId());
+            commentParentsId.add(targetId);
+            Comment comment = commentOptional.get();
+            return getCommentRootTarget(CommentTargetType.valueOf(comment.getTargetType().getCode()), commentOptional.get().getTargetId(), commentParentsId);
+        } else if (CommentTargetType.ARTICLE.equals(targetType)) {
+            Article article = articleRepository.findByIdAndIsDraftAndDeleteDatetimeIsNull(targetId, false);
+            return new CommentObject(CommentTargetType.ARTICLE, article);
+        } else if (CommentTargetType.ALBUM.equals(targetType)) {
+            Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(targetId);
+            return new CommentObject(CommentTargetType.ALBUM, album);
         } else {
-            return photoService.isVisible(comment.getTargetId());
+            Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(targetId);
+            return new CommentObject(CommentTargetType.PHOTO, photo);
         }
     }
 
+    @Override
+    public List<CommentBo> getComments(CommentTargetType targetType, Integer targetId) {
+        CommentObject root = getCommentRootTarget(targetType, targetId, new ArrayList<>());
+        if (root == null || root.getTarget() == null) {
+            throw new BizException("评论目标不存在");
+        }
+        if (CommentTargetType.ARTICLE.equals(root.getTargetType())) {
+            Article article = (Article) root.getTarget();
+            if (!articleService.isVisible(article)) {
+                throw new BizException("你没有权限查看这篇文章");
+            }
+        } else if (CommentTargetType.ALBUM.equals(root.getTargetType())) {
+            Album album = (Album) root.getTarget();
+            if (!albumService.isVisible(album)) {
+                throw new BizException("你没有权限查看这个相册");
+            }
+        } else if (CommentTargetType.PHOTO.equals(root.getTargetType())) {
+            Photo photo = (Photo) root.getTarget();
+            if (!photoService.isVisible(photo)) {
+                throw new BizException("你没有权限查看这张照片");
+            }
+        }
+        return getComments(targetType, targetId, new ArrayList());
+    }
+
+    private List<CommentBo> getComments(CommentTargetType targetType, Integer targetId, List<Integer> route) {
+        List<Comment> comments = commentRepository.findByTargetTypeCodeAndTargetId(targetType.name(), targetId);
+        if (CollectionUtils.isEmpty(comments)) {
+            return new ArrayList<>();
+        }
+        if (route.contains(targetId)) {
+            throw new BizException("发现环式评论");
+        }
+
+        route.add(targetId);
+        List<CommentBo> commentBos = new ArrayList<>();
+        for (Comment comment : comments) {
+            CommentBo commentBo = new CommentBo();
+            commentBo.setId(comment.getId());
+            commentBo.setContent(comment.getContent());
+            commentBo.setName(comment.getEntryUser() == null ? comment.getName() : comment.getEntryUser().getName());
+            commentBo.setTargetType(CommentTargetType.valueOf(comment.getTargetType().getCode()));
+            commentBo.setTargetId(comment.getTargetId());
+            commentBo.setIp(comment.getIp());
+            commentBo.setDateTime(comment.getEntryDatetime());
+            if (comment.getEntryUser() != null) {
+                commentBo.setAvatar(cosService.generatePresignedUrl(comment.getEntryUser().getAvatar()));
+            } else {
+                commentBo.setAvatar("/static/avatar/" + comment.getAvatar() + ".png");
+            }
+            List<CommentBo> replies = getComments(CommentTargetType.COMMENT, comment.getId(), newArrayList(route));
+            if (replies == null) {
+                commentBo.setReplies(new ArrayList<>());
+            } else {
+                commentBo.setReplies(replies);
+            }
+            commentBos.add(commentBo);
+        }
+        return commentBos;
+    }
+
+    @Override
+    public void deleteComment(Integer commentId) {
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        if (!commentOptional.isPresent()) {
+            throw new BizException("评论不存在");
+        }
+        Set<Integer> ids = new HashSet<>();
+        ids.add(commentId);
+        List<CommentBo> commentBos = getComments(CommentTargetType.COMMENT, commentId, newArrayList());
+        ids.addAll(getIds(commentBos));
+        commentRepository.deleteByIdIn(ids);
+    }
+
+    private List<Integer> getIds(List<CommentBo> commentBos) {
+        List<Integer> ids = newArrayList();
+        for (CommentBo commentBo : commentBos) {
+            ids.add(commentBo.getId());
+            if (!CollectionUtils.isEmpty(commentBo.getReplies())) {
+                ids.addAll(getIds(commentBo.getReplies()));
+            }
+        }
+        return ids;
+    }
 }

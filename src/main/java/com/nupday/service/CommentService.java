@@ -1,14 +1,18 @@
 package com.nupday.service;
 
+import com.nupday.bo.CommentBo;
+import com.nupday.bo.CreateCommentBo;
+import com.nupday.bo.CommentObject;
+import com.nupday.constant.CommentTargetType;
+
 import java.util.List;
 
-import com.nupday.bo.CommentBo;
-import com.nupday.dao.entity.Comment;
-
 public interface CommentService {
-    Integer newComment(CommentBo commentBo);
+    Integer newComment(CreateCommentBo createCommentBo);
 
-    Boolean isCommentRootTargetVisible(Integer commentId);
+    CommentObject getCommentRootTarget(CommentTargetType targetType, Integer targetId, List<Integer> commentParentsId);
 
-    Boolean isCommentRootTargetVisible(Comment comment, List<Integer> commentParentsId);
+    List<CommentBo> getComments(CommentTargetType targetType, Integer targetId);
+
+    void deleteComment(Integer commentId);
 }

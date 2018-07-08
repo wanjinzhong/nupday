@@ -22,7 +22,11 @@ public class ArticleBo {
 
     private ArticlePermissionBo permission;
 
+    private Boolean operatable;
+
     private LocalDateTime entryDatetime;
+
+    private Boolean isMyArticle;
 
     public Integer getId() {
         return id;
@@ -104,4 +108,19 @@ public class ArticleBo {
         this.permission = permission;
     }
 
+    public Boolean getIsMyArticle() {
+        return isMyArticle;
+    }
+
+    public void setIsMyArticle(Boolean myArticle) {
+        isMyArticle = myArticle;
+    }
+
+    public Boolean getOperatable() {
+        return operatable;
+    }
+
+    public void setOperatable(Boolean operatable) {
+        this.operatable = operatable;
+    }
 }

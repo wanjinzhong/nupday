@@ -1,6 +1,10 @@
 <template>
-  <div id="newArticle" v-loading="pushing" :element-loading-text="loadingText">
-    文章标题 <Input style="width: 100%; margin-top: 10px; margin-bottom: 20px" v-model="title"/><br/>
+  <div id="newArticle" v-loading="loading" :element-loading-text="loadingText">
+    <div>
+    <span >文章标题</span>
+      <router-link :to="'/article/' + id" style="float: right">返回文章</router-link>
+    </div>
+    <Input style="width: 100%; margin-top: 10px; margin-bottom: 20px" v-model="title"/><br/>
     <el-switch style="margin-bottom: 20px;" v-model="isOpen" active-text="开放" inactive-text="隐私"></el-switch>
     <div class="break"></div>
     <el-switch style="margin-bottom: 20px;" v-model="isNotDraft" active-text="发布" inactive-text="草稿"></el-switch>
@@ -30,7 +34,7 @@
 
 <script>
   import {TinymceSetting, VueTinymce} from '@packy-tang/vue-tinymce';
-  import {Button, Form, FormItem, Input, Switch, Dialog} from 'element-ui'
+  import {Button, Dialog, Form, FormItem, Input, Switch} from 'element-ui'
 
   export default {
     name: 'EditArticle',
@@ -38,10 +42,10 @@
     data: function () {
       return {
         id: -1,
-        type:'',
+        type: '',
         content: '',
         title: '',
-        pushing: false,
+        loading: false,
         btnDisabled: false,
         isOpen: true,
         isNotDraft: true,
@@ -50,6 +54,7 @@
         showDeleteDialog: false,
         loadingText: '正在发布文章',
         deleting: false,
+        loading: true,
         setting: {
           ...TinymceSetting,
           height: 200,
@@ -71,14 +76,10 @@
           id: this.id,
           title: this.title,
           content: this.content,
-          type: "ARTICLE",
-          permission:{
-            commentable: this.commentable
-          },
+          commentable: this.commentable,
           isDraft: !this.isNotDraft,
           isOpen: this.isOpen
         };
-        var that = this;
         var message;
         if (this.isNotDraft) {
           this.loadingText = "正在发布文章";
@@ -91,40 +92,22 @@
           this.loadingText = "正在保存到草稿箱";
           message = "文章已存到草稿箱";
         }
-        this.pushing = true;
+        this.loading = true;
         this.btnDisabled = true;
-        this.id > -1 ? this.updateArticle(data, message) : this.newArticle(data, message);
-      },
-      newArticle(data, message) {
-        var that = this;
-        this.axios.post("/api/article", data).then((res) => {
-          var id = res.data.data;
-          this.pushing = false;
-          that.$message({
-            type: "success",
-            message: message,
-            onClose: function () {
-              that.$router.push("/article/" + id);
-            }
-          });
-        }).catch((res) => {
-          this.pushing = false
-        });
+        this.updateArticle(data, message);
       },
       updateArticle(data, message) {
         var that = this;
         this.axios.put("/api/article", data).then((res) => {
           var id = res.data.data;
-          that.pushing = false;
+          that.loading = false;
           that.$message({
             type: "success",
             message: message,
-            onClose: function () {
-              that.$router.push("/article/" + id);
-            }
-          })
+          });
+          that.$router.push("/article/" + id);
         }).catch((res) => {
-          this.pushing = false
+          this.loading = false
         });
       },
       readyToDelete() {
@@ -148,55 +131,56 @@
         }
         this.showDeleteDialog = true;
       },
-    deleteArticle(toDustbin) {
-      var that = this;
-      this.deleting = true;
-      var params = "?id=" + this.id + "&toDustbin=" + toDustbin;
-      this.axios.delete("/api/article" + params).then(res => {
-        that.$message({
-          type: "success",
-          message: "文章删除成功",
-          onClose: function () {
-            that.showDeleteDialog = false;
-            that.$router.push("/");
-          }
-        });
-      });
-    }},
-    created() {
-      if (this.$route.fullPath.indexOf("editArticle") >= 0) {
-        var articleId = this.$route.params.articleId;
+      deleteArticle(toDustbin) {
         var that = this;
-        this.axios.get("/api/article/" + articleId).then((res) => {
-          var data = res.data.data;
-          if (data.type != 'ARTICLE') {
-            that.$notify({
-              title: '不可编辑',
-              message: '这不是一篇文章',
-              type: 'error'
-            });
-            that.$router.push("/");
-            return;
-          }
-          if (!data.permission.editable) {
-            that.$notify({
-              title: '不可编辑',
-              message: '你没有权限编辑这篇文章',
-              type: 'error'
-            });
-            that.$router.push("/");
-            return;
-          }
-          this.id = data.id;
-          this.type = data.type;
-          this.title = data.title;
-          this.content = data.content;
-          this.isOpen = data.isOpen;
-          this.isNotDraft = !data.isDraft;
-          this.commentable = data.permission.commentable;
-          this.deletable = data.permission.deletable;
+        this.deleting = true;
+        var params = "?id=" + this.id + "&toDustbin=" + toDustbin;
+        this.axios.delete("/api/article" + params).then(res => {
+          that.$message({
+            type: "success",
+            message: "文章删除成功",
+            onClose: function () {
+              that.showDeleteDialog = false;
+              that.$router.push("/");
+            }
+          });
         });
       }
+    },
+    created() {
+      var articleId = this.$route.params.articleId;
+      var that = this;
+      this.loading = true;
+      this.axios.get("/api/article/" + articleId).then((res) => {
+        this.loading = false;
+        var data = res.data.data;
+        if (data.type != 'ARTICLE') {
+          that.$notify({
+            title: '不可编辑',
+            message: '这不是一篇文章',
+            type: 'error'
+          });
+          that.$router.push("/");
+          return;
+        }
+        if (!data.permission.editable) {
+          that.$notify({
+            title: '不可编辑',
+            message: '你没有权限编辑这篇文章',
+            type: 'error'
+          });
+          that.$router.push("/");
+          return;
+        }
+        this.id = data.id;
+        this.type = data.type;
+        this.title = data.title;
+        this.content = data.content;
+        this.isOpen = data.isOpen;
+        this.isNotDraft = !data.isDraft;
+        this.commentable = data.permission.commentable;
+        this.deletable = data.permission.deletable;
+      });
     }
   }
 </script>

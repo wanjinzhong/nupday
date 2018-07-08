@@ -1,8 +1,6 @@
 package com.nupday.service;
 
-import com.nupday.bo.ArticleBo;
-import com.nupday.bo.ArticlePermissionBo;
-import com.nupday.bo.DeleteArticleBo;
+import com.nupday.bo.*;
 import com.nupday.constant.ArticleType;
 import com.nupday.constant.ListBoxCateogry;
 import com.nupday.constant.Role;
@@ -38,12 +36,8 @@ public class ArticleServiceImpl implements ArticleService {
     private COSService cosService;
 
     @Override
-    public Integer newArticle(ArticleBo articleBo) {
+    public Integer newArticle(EditArticleBo articleBo) {
         validateArticle(articleBo);
-        Optional<Article> optional = articleRepository.findById(articleBo.getId());
-        if (optional.isPresent()) {
-            throw new BizException("文章已存在");
-        }
         Article article = new Article();
         boToArticle(article, articleBo);
         article.setEntryUser(webService.getCurrentUser());
@@ -52,7 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
         return article.getId();
     }
 
-    private void boToArticle(Article article, ArticleBo articleBo) {
+    private void boToArticle(Article article, EditArticleBo articleBo) {
         ListBox type = listBoxRepository.findByNameAndCode(ListBoxCateogry.ARTICLE_TYPE.name(), articleBo.getType().name());
         if (ArticleType.ARTICLE.equals(articleBo.getType())) {
             article.setTitle(articleBo.getTitle());
@@ -60,7 +54,7 @@ public class ArticleServiceImpl implements ArticleService {
         }
         article.setIsOpen(articleBo.getIsOpen() != null ? articleBo.getIsOpen() : true);
         article.setIsDraft(articleBo.getIsDraft() != null ? articleBo.getIsDraft() : false);
-        article.setCommentable(articleBo.getPermission().getCommentable() != null ? articleBo.getPermission().getCommentable() : true);
+        article.setCommentable(articleBo.getCommentable() != null ? articleBo.getCommentable() : true);
         article.setLikes(0);
         article.setType(type);
     }
@@ -76,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     private Article getArticle(Integer articleId) {
         Article article;
-        if (Role.OWNER.getValue().equals(webService.getUserType())) {
+        if (Role.OWNER.equals(webService.getUserType())) {
             article = articleRepository.findByIdAndIsDraftAndDeleteDatetimeIsNull(articleId, false);
         } else {
             article = articleRepository.findByIdAndIsDraftAndIsOpenAndDeleteDatetimeIsNull(articleId, false, true);
@@ -100,7 +94,13 @@ public class ArticleServiceImpl implements ArticleService {
             content.append("<div style='margin: 10px auto;'><a href='/album/")
                     .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
                     .append("'style='margin:10px auto'>去相册查看</a></div>");
-            for (ArticlePhoto articlePhoto : articlePhotos) {
+            for (int i = 0; i < articlePhotos.size(); i++) {
+                if (i >= 5) {
+                    content.append("<a href='/album/")
+                            .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                            .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                }
+                ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
                         .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getKey()))
                         .append("'/>")
@@ -118,6 +118,8 @@ public class ArticleServiceImpl implements ArticleService {
         articleBo.setEntryDatetime(article.getUpdateDatetime() != null ? article.getUpdateDatetime() : article.getEntryDatetime());
         ArticlePermissionBo permission = getArticlePermissionBo(article);
         articleBo.setPermission(permission);
+        articleBo.setIsMyArticle(isMyArticle(article));
+        articleBo.setOperatable(isArticleOperatable(article));
         return articleBo;
     }
 
@@ -139,7 +141,7 @@ public class ArticleServiceImpl implements ArticleService {
         return permission;
     }
 
-    private void validateArticle(ArticleBo articleBo) {
+    private void validateArticle(EditArticleBo articleBo) {
         if (articleBo == null) {
             throw new BizException("文章不能为空");
         }
@@ -163,7 +165,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Integer updateArticle(ArticleBo articleBo) {
+    public Integer updateArticle(EditArticleBo articleBo) {
         validateArticle(articleBo);
         Optional<Article> optional = articleRepository.findById(articleBo.getId());
         if (!optional.isPresent()) {
@@ -214,5 +216,29 @@ public class ArticleServiceImpl implements ArticleService {
             return false;
         }
         return true;
+    }
+
+    private Boolean isMyArticle(Article article) {
+        if (Role.VISITOR.equals(webService.getUserType())) {
+            return false;
+        }
+        return article.getEntryUser().getId().equals(webService.getCurrentUser().getId());
+    }
+
+    @Override
+    public void changeOpenStatus(Integer articleId, OpenStatus openStatus) {
+        Article article = getArticle(articleId);
+        if (article == null) {
+            throw new BizException("文章不存在");
+        }
+        if (!isMyArticle(article)) {
+            throw new BizException("这不是你的文章");
+        }
+        article.setIsOpen(openStatus.getValue());
+        articleRepository.save(article);
+    }
+
+    private Boolean isArticleOperatable(Article article) {
+        return Role.OWNER.equals(webService.getUserType()) && article.getEntryUser().getId().equals(webService.getCurrentUser().getId());
     }
 }
