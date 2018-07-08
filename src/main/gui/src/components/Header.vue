@@ -7,7 +7,7 @@
             class="mainMenu" router text-color="#333">
         <MenuItem index="home" :route="{name:'home'}" class="menuItems"><span>主页</span></MenuItem>
         <MenuItem index="article" class="menuItems"><span>文章</span></MenuItem>
-        <MenuItem index="album" class="menuItems"><span>相册</span></MenuItem>
+        <MenuItem index="album" class="menuItems" :route="{name:'album'}"><span>相册</span></MenuItem>
         <MenuItem index="guestBook" class="menuItems"><span>留言</span></MenuItem>
         <MenuItem index="memorialDay" class="menuItems"><span>纪念日</span></MenuItem>
         <Button plain v-if="$store.getters.getType == 'OWNER'" type="danger" size="small" round

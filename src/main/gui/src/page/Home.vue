@@ -2,7 +2,7 @@
 <div style="height: 100%">
   <Header></Header>
   <Banner></Banner>
-  <router-view style="margin: 20px auto"></router-view>
+  <router-view style="margin: 20px auto; width: 1100px"></router-view>
 </div>
 </template>
 

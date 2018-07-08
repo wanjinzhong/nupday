@@ -1,12 +1,10 @@
 package com.nupday.dao.entity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.nupday.dao.entity.base.BaseDeleteEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
@@ -19,7 +17,7 @@ public class Album extends BaseDeleteEntity {
     @Column
     private String name;
 
-    @Column
+    @Column(name = "cos_key")
     private String key;
 
     @Column
@@ -33,6 +31,13 @@ public class Album extends BaseDeleteEntity {
 
     @Column
     private Boolean commentable;
+
+    @ManyToOne
+    @JoinColumn(name = "cover_id")
+    private Photo cover;
+
+    @OneToMany(mappedBy = "album")
+    private List<Photo> photos = new ArrayList();
 
     public Integer getId() {
         return id;
@@ -88,5 +93,21 @@ public class Album extends BaseDeleteEntity {
 
     public void setCommentable(Boolean commentable) {
         this.commentable = commentable;
+    }
+
+    public Photo getCover() {
+        return cover;
+    }
+
+    public void setCover(Photo cover) {
+        this.cover = cover;
+    }
+
+    public List<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<Photo> photos) {
+        this.photos = photos;
     }
 }

@@ -23,8 +23,11 @@ public class Photo extends BaseDeleteEntity {
     @JoinColumn(name = "album_id")
     private Album album;
 
-    @Column
+    @Column(name = "cos_key")
     private String key;
+
+    @Column(name = "cos_key_small")
+    private String smallKey;
 
     @Column
     private Integer like;
@@ -59,5 +62,13 @@ public class Photo extends BaseDeleteEntity {
 
     public void setLike(Integer like) {
         this.like = like;
+    }
+
+    public String getSmallKey() {
+        return smallKey;
+    }
+
+    public void setSmallKey(String smallKey) {
+        this.smallKey = smallKey;
     }
 }
