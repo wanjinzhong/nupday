@@ -101,6 +101,7 @@ public class ArticleServiceImpl implements ArticleService {
                     content.append("<a href='/album/")
                             .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
                             .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                    break;
                 }
                 ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
