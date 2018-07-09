@@ -20,14 +20,6 @@ public class EditAlbumBo {
         this.id = id;
     }
 
-    public Boolean getOpen() {
-        return isOpen;
-    }
-
-    public void setOpen(Boolean open) {
-        isOpen = open;
-    }
-
     public String getName() {
         return name;
     }

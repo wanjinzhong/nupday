@@ -9,9 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.nupday.dao.entity.base.BaseCreateEntity;
+
 @Entity
 @Table(name = "article_photo")
-public class ArticlePhoto {
+public class ArticlePhoto extends BaseCreateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

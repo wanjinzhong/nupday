@@ -4,18 +4,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.PhotoBo;
 import com.nupday.bo.PhotoPage;
+import com.nupday.constant.ArticleType;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
+import com.nupday.dao.entity.Article;
+import com.nupday.dao.entity.ArticlePhoto;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
+import com.nupday.dao.repository.ArticlePhotoRepository;
 import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
 import net.coobird.thumbnailator.Thumbnails;
@@ -38,6 +45,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Autowired
     private AlbumRepository albumRepository;
+
+    @Autowired
+    private ArticlePhotoRepository articlePhotoRepository;
+
+    @Autowired
+    private ArticleService articleService;
 
     @Autowired
     private COSService cosService;
@@ -131,6 +144,33 @@ public class PhotoServiceImpl implements PhotoService {
             cosService.deleteObject(resizedKey);
             throw new BizException("保存上传结果失败");
         }
+        updatePhotoArticle(photo);
+    }
+
+    private void updatePhotoArticle(Photo photo) {
+        LocalDateTime today = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        List<ArticlePhoto> articlePhotos = articlePhotoRepository.findByAlbumAfterDay(photo.getAlbum().getId(), today);
+        Article article;
+        if (!CollectionUtils.isEmpty(articlePhotos)) {
+            article = articlePhotos.get(0).getArticle();
+            article.setUpdateUser(webService.getCurrentUser());
+            article.setUpdateDatetime(LocalDateTime.now());
+        } else {
+            EditArticleBo editArticleBo = new EditArticleBo();
+            editArticleBo.setType(ArticleType.PHOTO);
+            editArticleBo.setCommentable(true);
+            editArticleBo.setIsDraft(false);
+            editArticleBo.setIsOpen(true);
+            Integer articleId = articleService.newArticle(editArticleBo);
+            article = new Article();
+            article.setId(articleId);
+        }
+        ArticlePhoto articlePhoto = new ArticlePhoto();
+        articlePhoto.setArticle(article);
+        articlePhoto.setPhoto(photo);
+        articlePhoto.setEntryUser(webService.getCurrentUser());
+        articlePhoto.setEntryDatetime(LocalDateTime.now());
+        articlePhotoRepository.save(articlePhoto);
     }
 
     private InputStream compressPhoto(MultipartFile file) throws IOException {

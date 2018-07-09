@@ -112,6 +112,8 @@ public class AlbumServiceImpl implements AlbumService {
         album.setKey(Constants.ALBUM_KEY + UUID.randomUUID().toString().toLowerCase().replace("-", ""));
         album.setEntryUser(webService.getCurrentUser());
         album.setEntryDatetime(LocalDateTime.now());
+        album.setUpdateUser(webService.getCurrentUser());
+        album.setUpdateDatetime(LocalDateTime.now());
         albumRepository.save(album);
         return album.getId();
     }

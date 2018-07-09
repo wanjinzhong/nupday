@@ -57,6 +57,8 @@ public class ArticleServiceImpl implements ArticleService {
         article.setCommentable(articleBo.getCommentable() != null ? articleBo.getCommentable() : true);
         article.setLikes(0);
         article.setType(type);
+        article.setUpdateUser(webService.getCurrentUser());
+        article.setUpdateDatetime(LocalDateTime.now());
     }
 
     @Override
