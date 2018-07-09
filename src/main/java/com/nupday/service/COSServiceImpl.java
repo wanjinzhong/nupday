@@ -1,4 +1,6 @@
 package com.nupday.service;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -34,7 +36,7 @@ public class COSServiceImpl implements COSService {
         Date expirationDate = new Date(System.currentTimeMillis() + 5L * 60L * 1000L);
         request.setExpiration(expirationDate);
         URL url = cosClient.generatePresignedUrl(request);
-        return  url.toString();
+        return url.toString();
     }
 
     @Override
@@ -61,21 +63,63 @@ public class COSServiceImpl implements COSService {
         if (StringUtils.isBlank(prefix)) {
             throw new BizException("文件目录不能为空");
         }
-        StringBuilder key = new StringBuilder()
+        String filename = file.getOriginalFilename();
+        String photoKey;
+        String uuid = UUID.randomUUID().toString().toLowerCase().replace("-", "");
+        StringBuilder fillKey = new StringBuilder()
             .append(prefix.trim())
             .append("/")
-            .append(UUID.randomUUID().toString().toLowerCase().replace("-",""));
-        String filename = file.getOriginalFilename();
+            .append(uuid);
+        photoKey = uuid;
         if (filename != null && filename.indexOf(".") > -1) {
-            key.append(filename.substring(filename.lastIndexOf(".")));
+            String suffix = filename.substring(filename.lastIndexOf("."));
+            fillKey.append(suffix);
+            photoKey += suffix;
         }
         try {
-            cosClient.putObject(bucketName, key.toString(), inputStream, metadata);
-            return key.toString();
+            cosClient.putObject(bucketName, fillKey.toString(), inputStream, metadata);
+            return photoKey;
         } catch (CosClientException e) {
             throw new BizException("文件上传失败", e);
         }
     }
+
+    @Override
+    public String putObject(InputStream inputStream, String filename, String prefix) {
+
+        if (inputStream == null) {
+            throw new BizException("文件不能为空");
+        }
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        try {
+            metadata.setContentLength(inputStream.available());
+        } catch (IOException e) {
+            throw new BizException("文件损坏");
+        }
+        if (StringUtils.isBlank(prefix)) {
+            throw new BizException("文件目录不能为空");
+        }
+        String photoKey;
+        String uuid = UUID.randomUUID().toString().toLowerCase().replace("-", "");
+        StringBuilder fillKey = new StringBuilder()
+            .append(prefix.trim())
+            .append("/")
+            .append(uuid);
+        photoKey = uuid;
+        if (filename != null && filename.indexOf(".") > -1) {
+            String suffix = filename.substring(filename.lastIndexOf("."));
+            fillKey.append(suffix);
+            photoKey += suffix;
+        }
+        try {
+            cosClient.putObject(bucketName, fillKey.toString(), inputStream, metadata);
+            return photoKey;
+        } catch (CosClientException e) {
+            throw new BizException("文件上传失败", e);
+        }
+    }
+
 
     @Override
     public void deleteObject(String key) {

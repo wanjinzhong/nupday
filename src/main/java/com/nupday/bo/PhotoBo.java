@@ -6,7 +6,7 @@ public class PhotoBo {
 
     private String smallKey;
 
-    private Integer like;
+    private Integer likes;
 
     public Integer getId() {
         return id;
@@ -24,12 +24,12 @@ public class PhotoBo {
         this.smallKey = smallKey;
     }
 
-    public Integer getLike() {
-        return like;
+    public Integer getLikes() {
+        return likes;
     }
 
-    public void setLike(Integer like) {
-        this.like = like;
+    public void setLikes(Integer likes) {
+        this.likes = likes;
     }
 
 }

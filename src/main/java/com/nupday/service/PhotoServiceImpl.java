@@ -1,5 +1,14 @@
 package com.nupday.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.nupday.bo.PageBo;
 import com.nupday.bo.PhotoBo;
 import com.nupday.bo.PhotoPage;
@@ -9,16 +18,14 @@ import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -96,7 +103,54 @@ public class PhotoServiceImpl implements PhotoService {
         PhotoBo photoBo = new PhotoBo();
         photoBo.setId(photo.getId());
         photoBo.setSmallKey(cosService.generatePresignedUrl(photo.getAlbum().getKey() + "/" + photo.getSmallKey()));
-        photoBo.setLike(photo.getLike());
+        photoBo.setLikes(photo.getLikes());
         return photoBo;
+    }
+
+    @Override
+    public void uploadPhoto(Integer albumId, MultipartFile file) throws IOException {
+        Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
+        if (album == null) {
+            throw new BizException("相册不存在");
+        }
+        InputStream compressedPhoto = compressPhoto(file);
+        InputStream resizedPhoto = resizePhoto(file);
+        String compressedKey = cosService.putObject(compressedPhoto, file.getOriginalFilename(), album.getKey());
+        String resizedKey = cosService.putObject(resizedPhoto, file.getOriginalFilename(), album.getKey());
+        Photo photo = new Photo();
+        photo.setAlbum(album);
+        photo.setKey(compressedKey);
+        photo.setSmallKey(resizedKey);
+        photo.setLikes(0);
+        photo.setEntryUser(webService.getCurrentUser());
+        photo.setEntryDatetime(LocalDateTime.now());
+        try {
+            photoRepository.save(photo);
+        } catch (Exception e) {
+            cosService.deleteObject(compressedKey);
+            cosService.deleteObject(resizedKey);
+            throw new BizException("保存上传结果失败");
+        }
+    }
+
+    private InputStream compressPhoto(MultipartFile file) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream())
+                  .scale(1f)
+                  .outputQuality(0.5f)
+                  .toOutputStream(outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        return new ByteArrayInputStream(bytes);
+    }
+
+    private InputStream resizePhoto(MultipartFile file) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream())
+                                     .size(200, 300)
+                                     .outputQuality(1f)
+                                     .toOutputStream(outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        return new ByteArrayInputStream(bytes);
+
     }
 }
