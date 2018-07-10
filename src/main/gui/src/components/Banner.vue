@@ -20,7 +20,7 @@
           placement="bottom"
           :content="loveDaysDetail"
           trigger="hover"
-          :open-delay="delay">
+          :open-delay="500">
             <span class="loveDays" slot="reference">{{loveDays}}</span>
           </Popover>
           天啦！
@@ -43,8 +43,7 @@
           {id: 0, name: "", avatar: ""}
         ],
         loveDays: 0,
-        loveDaysDetail: "",
-        delay: 500
+        loveDaysDetail: ""
       }
     },
     mounted() {

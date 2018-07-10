@@ -13,17 +13,17 @@
           {{likes}}
         </div>
         <div class="operation" v-if="this.operatable">
-          <Tooltip content="编辑" effect="light" open-delay=500>
+          <Tooltip content="编辑" effect="light" :open-delay="500">
             <svg class="icon delete" aria-hidden="true" @click="toEdit">
               <use xlink:href="#icon-ai-edit"></use>
             </svg>
           </Tooltip>&nbsp;
-          <Tooltip :content="isOpen?'锁定文章':'解锁文章'" effect="light" open-delay=500>
+          <Tooltip :content="isOpen?'锁定文章':'解锁文章'" effect="light" :open-delay="500">
             <svg class="icon lock" aria-hidden="true" @click="changeLock">
               <use :xlink:href="isOpen?'#icon-jiesuo' : '#icon-suoding'"></use>
             </svg>
           </Tooltip>&nbsp;
-          <Tooltip content="删除文章" effect="light" open-delay=500>
+          <Tooltip content="删除文章" effect="light" :open-delay="500">
             <svg class="icon delete" aria-hidden="true" @click="readyToDelete">
               <use xlink:href="#icon-shanchu"></use>
             </svg>
@@ -97,7 +97,6 @@
         }
         this.liked = true;
         this.axios.put("/api/article/" + this.articleId + "/like").then((res) => {
-          console.log(res.data.data);
           this.likes = res.data.data;
         })
       },
