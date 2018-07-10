@@ -62,7 +62,7 @@
       </span>
     </Dialog>
     <Dialog title="上传照片" :visible.sync="showUploadDialog" @close="closeDialog">
-      <Upload :before-upload="beforeUpload" :action="apiUrl + '/api/album/' + $route.params.albumId + '/photo'" ref="upload"
+      <Upload :before-upload="beforeUpload" :action="'/api/album/' + $route.params.albumId + '/photo'" ref="upload"
               multiple with-credentials list-type="picture-card" accept="image/*" :on-success="uploadSuccess">
       </Upload>
       <div style="text-align: right">
