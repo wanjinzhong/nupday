@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface PhotoRepository extends JpaRepository<Photo, Integer> {
     Photo findByIdAndDeleteDatetimeIsNull(Integer id);
 
-    Page<Photo> findByAlbumId(Integer albumId, Pageable pageable);
+    Page<Photo> findByAlbumIdAndDeleteDatetimeIsNull(Integer albumId, Pageable pageable);
 }

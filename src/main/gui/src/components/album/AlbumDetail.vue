@@ -22,8 +22,21 @@
     </div>
     <div class="breaker"></div>
     <div v-loading="photosLoading">
-      <div v-if="photos.length > 0">
-        <img v-for="photo in photos" :key="photo.id" :src="photo.smallKey" class="photo"/>
+      <div v-if="photos.length > 0" style="position: relative;">
+        <div @mouseover="optBtnId = photo.id" @mouseout="optBtnId = 0" class="photoContainer" v-for="photo in photos"
+             style="display: inline-block;">
+          <div class="optHeader" v-if="optBtnId == photo.id">
+            <svg class="icon" aria-hidden="true" @click="setCover(photo.id)">
+              <use :xlink:href="photo.isCover?'#icon-msnui-home-block':'#icon-zhuye'"></use>
+            </svg>&nbsp;
+            <svg class="icon" aria-hidden="true" @click="readyToDelete(photo.id)">
+              <use xlink:href="#icon-shanchu"></use>
+            </svg>
+          </div>
+          <div>
+            <img :key="photo.id" :src="photo.smallKey" class="photo"/>
+          </div>
+        </div>
       </div>
       <div v-else style="text-align: center;margin-top: 20px">暂时还没有照片哦~</div>
       <div v-if="hasNext" style="cursor: pointer; text-align: center">
@@ -62,12 +75,20 @@
       </span>
     </Dialog>
     <Dialog title="上传照片" :visible.sync="showUploadDialog" @close="closeDialog">
-      <Upload :before-upload="beforeUpload" :action="'/api/album/' + $route.params.albumId + '/photo'" ref="upload"
+      <Upload :action="'/api/album/' + $route.params.albumId + '/photo'" ref="upload"
               multiple with-credentials list-type="picture-card" accept="image/*" :on-success="uploadSuccess">
       </Upload>
       <div style="text-align: right">
         <Button type="primary" style="margin-top: 20px;" @click="closeDialog">完成</Button>
       </div>
+    </Dialog>
+    <Dialog title="确认删除" :visible.sync="showDeletePhotoDialog" width="520px" v-loading="deleting">
+      <span>确认要删除这张照片吗？包括它的评论。删除之后不可恢复，但是你可以先移动到回收站。</span>
+      <span slot="footer" class="dialog-footer">
+        <Button @click="showDeletePhotoDialog = false">取消</Button>
+        <Button type="primary" @click="deletePhoto('true')">移到回收站</Button>
+        <Button type="danger" @click="deletePhoto('false')">删除</Button>
+      </span>
     </Dialog>
   </div>
 </template>
@@ -98,7 +119,10 @@
         showDeleteDialog: false,
         deleting: false,
         showUploadDialog: false,
-        uploaded: false
+        uploaded: false,
+        optBtnId: 0,
+        showDeletePhotoDialog: false,
+        deletePhotoId: 0
       }
     },
     methods: {
@@ -168,6 +192,7 @@
       },
       loadPic() {
         var that = this;
+        this.photosLoading = true;
         this.axios.get("/api/album/" + this.$route.params.albumId + "/photos", {
           params: {
             page: that.currentPage + 1,
@@ -198,8 +223,39 @@
       uploadSuccess() {
         this.uploaded = true;
       },
-      beforeUpload(file) {
-        console.log(this.apiUrl);
+      setCover(id) {
+        var that = this;
+        this.axios.put("/api/album/" + this.$route.params.albumId + "/cover/photo/" + id).then(res => {
+          for (var i in that.photos) {
+            that.photos[i].isCover = that.photos[i].id == id;
+          }
+        })
+      },
+      readyToDelete(id) {
+        this.showDeletePhotoDialog = true;
+        this.deletePhotoId = id;
+      },
+      deletePhoto(toDustbin) {
+        var data = {
+          id: this.deletePhotoId,
+          toDustbin: toDustbin
+        };
+        this.deleting = true;
+        var that = this;
+        this.axios.delete("/api/photo", {params: data}).then(res => {
+          that.$message({
+            type: "success",
+            message: "删除照片成功"
+          });
+          that.deleting = false;
+          this.currentPage = 0;
+          this.photos = [];
+          that.loadPic();
+          this.showDeletePhotoDialog = false;
+        }).catch(res => {
+          that.deleting = false;
+          this.showDeletePhotoDialog = false;
+        });
       }
     },
     created() {
@@ -224,13 +280,16 @@
   .photo {
     max-width: 180px;
     max-height: 280px;
+  }
+
+  .photoContainer {
     margin: 20px;
     box-shadow: 3px 3px 3px rgba(200, 200, 200, 0.6);
     transition: all 0.3s;
     cursor: pointer;
   }
 
-  .photo:hover {
+  .photoContainer:hover {
     transform: scale(1.05);
     box-shadow: 5px 5px 5px rgba(200, 200, 200, 0.4);
   }
@@ -244,5 +303,15 @@
 
   .editBtn {
     cursor: pointer;
+  }
+
+  .optHeader {
+    position: absolute;
+    background-color: rgba(170, 170, 170, 0.5);
+    height: 20px;
+    color: white;
+    padding: 5px;
+    font-size: 18px;
+    border-radius: 3px;
   }
 </style>

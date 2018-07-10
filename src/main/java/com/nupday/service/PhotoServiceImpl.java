@@ -100,7 +100,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new BizException("你没有权限查看这个相册");
         }
         PageRequest pageRequest = PageRequest.of(page - 1, size);
-        Page<Photo> photoPage = photoRepository.findByAlbumId(albumId, pageRequest);
+        Page<Photo> photoPage = photoRepository.findByAlbumIdAndDeleteDatetimeIsNull(albumId, pageRequest);
         PhotoPage photos = new PhotoPage();
         PageBo pageBo = new PageBo();
         pageBo.setCurrentPage(page);
@@ -127,6 +127,12 @@ public class PhotoServiceImpl implements PhotoService {
         photoBo.setId(photo.getId());
         photoBo.setSmallKey(cosService.generatePresignedUrl(photo.getAlbum().getKey() + "/" + photo.getSmallKey()));
         photoBo.setLikes(photo.getLikes());
+        Photo cover = photo.getAlbum().getCover();
+        if (cover != null && photo.getId().equals(cover.getId())) {
+            photoBo.setIsCover(true);
+        } else {
+            photoBo.setIsCover(false);
+        }
         return photoBo;
     }
 
@@ -186,9 +192,9 @@ public class PhotoServiceImpl implements PhotoService {
     private InputStream compressPhoto(MultipartFile file) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                  .scale(1f)
-                  .outputQuality(0.5f)
-                  .toOutputStream(outputStream);
+                .scale(1f)
+                .outputQuality(0.5f)
+                .toOutputStream(outputStream);
         byte[] bytes = outputStream.toByteArray();
         return new ByteArrayInputStream(bytes);
     }
@@ -196,9 +202,9 @@ public class PhotoServiceImpl implements PhotoService {
     private InputStream resizePhoto(MultipartFile file) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                                     .size(200, 300)
-                                     .outputQuality(1f)
-                                     .toOutputStream(outputStream);
+                .size(200, 300)
+                .outputQuality(1f)
+                .toOutputStream(outputStream);
         byte[] bytes = outputStream.toByteArray();
         return new ByteArrayInputStream(bytes);
 
@@ -213,9 +219,15 @@ public class PhotoServiceImpl implements PhotoService {
         if (photo == null) {
             throw new BizException("照片不存在");
         }
+        if (photo.getAlbum().getCover() != null && photo.getAlbum().getCover().getId().equals(photo.getId())) {
+            Album album = photo.getAlbum();
+            album.setCover(null);
+            albumRepository.save(album);
+        }
         if (deleteObjectBo.getToDustbin()) {
+
             photo.setDeleteUser(webService.getCurrentUser());
-            photo.setEntryDatetime(LocalDateTime.now());
+            photo.setDeleteDatetime(LocalDateTime.now());
             photoRepository.save(photo);
         } else {
             commentService.deleteComment(CommentTargetType.PHOTO, deleteObjectBo.getId());

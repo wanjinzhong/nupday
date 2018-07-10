@@ -8,6 +8,8 @@ public class PhotoBo {
 
     private Integer likes;
 
+    private Boolean isCover = false;
+
     public Integer getId() {
         return id;
     }
@@ -32,4 +34,11 @@ public class PhotoBo {
         this.likes = likes;
     }
 
+    public Boolean getIsCover() {
+        return isCover;
+    }
+
+    public void setIsCover(Boolean cover) {
+        isCover = cover;
+    }
 }
