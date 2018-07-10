@@ -4,6 +4,14 @@ public class DeleteObjectBo {
     private Integer id;
     private Boolean toDustbin;
 
+    public DeleteObjectBo() {
+    }
+
+    public DeleteObjectBo(Integer id, Boolean toDustbin) {
+        this.id = id;
+        this.toDustbin = toDustbin;
+    }
+
     public Integer getId() {
         return id;
     }

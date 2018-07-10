@@ -53,4 +53,11 @@ public class AlbumApi {
         albumService.deleteAlbum(deleteObjectBo);
         return ResponseHelper.ofNothing();
     }
+
+    @PutMapping("album/{albumId}/cover/photo/{photoId}")
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity setCover(@PathVariable("albumId") Integer albumId, @PathVariable("photoId") Integer photoId) {
+        albumService.setCover(albumId, photoId);
+        return ResponseHelper.ofNothing();
+    }
 }

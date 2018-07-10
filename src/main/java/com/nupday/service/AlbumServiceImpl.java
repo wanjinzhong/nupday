@@ -3,10 +3,13 @@ package com.nupday.service;
 import com.nupday.bo.AlbumBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditAlbumBo;
+import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.Constants;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
+import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
+import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,13 @@ public class AlbumServiceImpl implements AlbumService {
     private PhotoService photoService;
 
     @Autowired
+    private PhotoRepository photoRepository;
+
+    @Autowired
     private COSService cosService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public Boolean isVisible(Album album) {
@@ -79,7 +88,7 @@ public class AlbumServiceImpl implements AlbumService {
         albumBo.setCommentable(album.getCommentable());
         albumBo.setCount(CollectionUtils.isEmpty(album.getPhotos()) ? 0 : album.getPhotos().size());
         if (album.getCover() != null && StringUtils.isNotBlank(album.getCover().getKey())) {
-            albumBo.setCoverPic(cosService.generatePresignedUrl(photoService.getFullKey(album.getCover())));
+            albumBo.setCoverPic(cosService.generatePresignedUrl(photoService.getFullKey(album.getCover(), true)));
         }
         albumBo.setDeletable(album.getIsDeletable());
         albumBo.setDescription(album.getDescription());
@@ -169,10 +178,28 @@ public class AlbumServiceImpl implements AlbumService {
             album.setDeleteUser(webService.getCurrentUser());
             albumRepository.save(album);
         } else {
-            List<String> keys = album.getPhotos().stream().map(photo -> photo.getAlbum().getKey() + "/" + photo.getKey()).collect(Collectors.toList());
-            keys.addAll(album.getPhotos().stream().map(photo -> photo.getAlbum().getKey() + "/" + photo.getSmallKey()).collect(Collectors.toList()));
+            album.getPhotos().stream().forEach(photo -> photoService.deletePhoto(new DeleteObjectBo(photo.getId(), false)));
+            commentService.deleteComment(CommentTargetType.ALBUM, album.getId());
             albumRepository.delete(album);
-            keys.stream().forEach(key -> cosService.deleteObject(key));
         }
+    }
+
+    @Override
+    public void setCover(Integer albumId, Integer coverId) {
+        Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
+        if (album == null) {
+            throw new BizException("相册不存在");
+        }
+        Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(coverId);
+        if (photo == null) {
+            throw new BizException("照片不存在");
+        }
+        if (!photo.getAlbum().getId().equals(albumId)) {
+            throw new BizException("这张照片不属于这个相册");
+        }
+        album.setCover(photo);
+        album.setUpdateUser(webService.getCurrentUser());
+        album.setUpdateDatetime(LocalDateTime.now());
+        albumRepository.save(album);
     }
 }

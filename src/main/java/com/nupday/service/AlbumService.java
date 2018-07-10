@@ -21,4 +21,6 @@ public interface AlbumService {
     Integer updateAlbum(EditAlbumBo editAlbumBo);
 
     void deleteAlbum(DeleteObjectBo deleteObjectBo);
+
+    void setCover(Integer albumId, Integer coverId);
 }

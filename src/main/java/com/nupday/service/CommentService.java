@@ -15,4 +15,6 @@ public interface CommentService {
     List<CommentBo> getComments(CommentTargetType targetType, Integer targetId);
 
     void deleteComment(Integer commentId);
+
+    void deleteComment(CommentTargetType targetType, Integer targetId);
 }
