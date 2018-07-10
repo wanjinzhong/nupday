@@ -11,15 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.PhotoBo;
 import com.nupday.bo.PhotoPage;
 import com.nupday.constant.ArticleType;
+import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
+import com.nupday.dao.entity.Comment;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.ArticlePhotoRepository;
@@ -55,6 +58,9 @@ public class PhotoServiceImpl implements PhotoService {
     @Autowired
     private COSService cosService;
 
+    @Autowired
+    private CommentService commentService;
+
     @Override
     public Boolean isVisible(Integer photoId) {
         Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(photoId);
@@ -73,11 +79,15 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public String getFullKey(Photo photo) {
+    public String getFullKey(Photo photo, boolean small) {
         if (photo == null) {
             return null;
         }
-        return photo.getAlbum().getKey() + "/" + photo.getKey();
+        if (small) {
+            return photo.getAlbum().getKey() + "/" + photo.getSmallKey();
+        } else {
+            return photo.getAlbum().getKey() + "/" + photo.getKey();
+        }
     }
 
     @Override
@@ -192,5 +202,28 @@ public class PhotoServiceImpl implements PhotoService {
         byte[] bytes = outputStream.toByteArray();
         return new ByteArrayInputStream(bytes);
 
+    }
+
+    @Override
+    public void deletePhoto(DeleteObjectBo deleteObjectBo) {
+        if (deleteObjectBo == null) {
+            throw new BizException("删除对象不能为空");
+        }
+        Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(deleteObjectBo.getId());
+        if (photo == null) {
+            throw new BizException("照片不存在");
+        }
+        if (deleteObjectBo.getToDustbin()) {
+            photo.setDeleteUser(webService.getCurrentUser());
+            photo.setEntryDatetime(LocalDateTime.now());
+            photoRepository.save(photo);
+        } else {
+            commentService.deleteComment(CommentTargetType.PHOTO, deleteObjectBo.getId());
+            String smallKey = photo.getSmallKey();
+            String key = photo.getKey();
+            cosService.deleteObject(smallKey);
+            cosService.deleteObject(key);
+            photoRepository.delete(photo);
+        }
     }
 }

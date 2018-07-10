@@ -2,6 +2,7 @@ package com.nupday.controller;
 
 import java.io.IOException;
 
+import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.PhotoPage;
 import com.nupday.constant.Constants;
 import com.nupday.service.PhotoService;
@@ -33,6 +34,13 @@ public class PhotoApi {
     @RequiresRoles(value = {Constants.OWNER})
     public JsonEntity uploadPhoto(@PathVariable("albumId") Integer albumId, @RequestBody MultipartFile file) throws IOException {
         photoService.uploadPhoto(albumId, file);
+        return ResponseHelper.ofNothing();
+    }
+
+    @DeleteMapping("/photo")
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity deletePhoto(DeleteObjectBo deleteObjectBo) {
+        photoService.deletePhoto(deleteObjectBo);
         return ResponseHelper.ofNothing();
     }
 }

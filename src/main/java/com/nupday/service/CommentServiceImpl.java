@@ -1,25 +1,36 @@
 package com.nupday.service;
 
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import com.nupday.bo.CommentBo;
 import com.nupday.bo.CommentObject;
 import com.nupday.bo.CreateCommentBo;
 import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.ListBoxCateogry;
 import com.nupday.constant.Role;
-import com.nupday.dao.entity.*;
-import com.nupday.dao.repository.*;
+import com.nupday.dao.entity.Album;
+import com.nupday.dao.entity.Article;
+import com.nupday.dao.entity.Comment;
+import com.nupday.dao.entity.ListBox;
+import com.nupday.dao.entity.Photo;
+import com.nupday.dao.repository.AlbumRepository;
+import com.nupday.dao.repository.ArticleRepository;
+import com.nupday.dao.repository.CommentRepository;
+import com.nupday.dao.repository.ListBoxRepository;
+import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hibernate.validator.internal.util.CollectionHelper.newHashSet;
 
 @Service
 @Transactional
@@ -237,5 +248,19 @@ public class CommentServiceImpl implements CommentService {
             }
         }
         return ids;
+    }
+
+    @Override
+    public void deleteComment(CommentTargetType targetType, Integer targetId) {
+        List<Comment> comments = commentRepository.findByTargetTypeCodeAndTargetId(targetType.name(), targetId);
+        Set<Integer> ids = new HashSet<>();
+        if (!CollectionUtils.isEmpty(comments)) {
+            for (Comment comment : comments) {
+                ids.add(comment.getId());
+                List<CommentBo> commentBos = getComments(CommentTargetType.COMMENT, comment.getId(), newArrayList());
+                ids.addAll(getIds(commentBos));
+            }
+            commentRepository.deleteByIdIn(ids);
+        }
     }
 }
