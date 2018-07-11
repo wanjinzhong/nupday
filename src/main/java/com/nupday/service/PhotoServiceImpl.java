@@ -105,7 +105,7 @@ public class PhotoServiceImpl implements PhotoService {
         pageBo.setCurrentPage(page);
         pageBo.setPageSize(size);
         pageBo.setTotalPages(photoPage.getTotalPages());
-        pageBo.setTotleItem(Long.valueOf(photoPage.getTotalElements()).intValue());
+        pageBo.setTotalItem(Long.valueOf(photoPage.getTotalElements()).intValue());
         photos.setPage(pageBo);
         photos.setPhotos(photoToBo(photoPage.getContent()));
         return photos;
@@ -230,10 +230,23 @@ public class PhotoServiceImpl implements PhotoService {
             photoRepository.save(photo);
         } else {
             commentService.deleteComment(CommentTargetType.PHOTO, deleteObjectBo.getId());
+
             String smallKey = photo.getSmallKey();
             String key = photo.getKey();
             cosService.deleteObject(smallKey);
             cosService.deleteObject(key);
+
+            List<Article> articles = articlePhotoRepository.findArticleByPhotoId(photo.getId());
+
+            articlePhotoRepository.deleteByPhotoId(photo.getId());
+            articlePhotoRepository.flush();
+
+            for (Article article : articles) {
+                List<ArticlePhoto> articlePhotos = articlePhotoRepository.findByArticleId(article.getId());
+                if (CollectionUtils.isEmpty(articlePhotos)) {
+                    articleService.deleteArticle(new DeleteObjectBo(article.getId(), false));
+                }
+            }
             photoRepository.delete(photo);
         }
     }

@@ -1,17 +1,17 @@
 package com.nupday.bo;
 
 public class PageBo {
-    private Integer totleItem;
+    private Integer totalItem;
     private Integer pageSize;
     private Integer totalPages;
     private Integer currentPage;
 
-    public Integer getTotleItem() {
-        return totleItem;
+    public Integer getTotalItem() {
+        return totalItem;
     }
 
-    public void setTotleItem(Integer totleItem) {
-        this.totleItem = totleItem;
+    public void setTotalItem(Integer totalItem) {
+        this.totalItem = totalItem;
     }
 
     public Integer getPageSize() {
