@@ -1,6 +1,23 @@
 package com.nupday.service;
 
-import com.nupday.bo.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import com.nupday.bo.ArticleBo;
+import com.nupday.bo.ArticlePermissionBo;
+import com.nupday.bo.DeleteObjectBo;
+import com.nupday.bo.EditArticleBo;
+import com.nupday.bo.NewsBo;
+import com.nupday.bo.NewsItemBo;
+import com.nupday.bo.OpenStatus;
+import com.nupday.bo.PageBo;
+import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
 import com.nupday.constant.ListBoxCateogry;
 import com.nupday.constant.Role;
@@ -10,14 +27,14 @@ import com.nupday.dao.entity.ListBox;
 import com.nupday.dao.repository.ArticleRepository;
 import com.nupday.dao.repository.ListBoxRepository;
 import com.nupday.exception.BizException;
+import com.nupday.util.Html2Plain;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @Transactional
@@ -94,20 +111,20 @@ public class ArticleServiceImpl implements ArticleService {
             StringBuilder content = new StringBuilder();
             content.append("<div style='margin: 0 auto; text-align: center;'>");
             content.append("<div style='margin: 10px auto;'><a href='/album/")
-                    .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                    .append("'style='margin:10px auto'>去相册查看</a></div>");
+                   .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                   .append("'style='margin:10px auto'>去相册查看</a></div>");
             for (int i = 0; i < articlePhotos.size(); i++) {
                 if (i >= 5) {
                     content.append("<a href='/album/")
-                            .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                            .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                           .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                           .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
                     break;
                 }
                 ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
-                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
-                        .append("'/>")
-                        .append("<br/>");
+                       .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
+                       .append("'/>")
+                       .append("<br/>");
             }
             content.append("</div>");
             articleBo.setContent(content.toString());
@@ -243,5 +260,78 @@ public class ArticleServiceImpl implements ArticleService {
 
     private Boolean isArticleOperatable(Article article) {
         return Role.OWNER.equals(webService.getUserType()) && article.getEntryUser().getId().equals(webService.getCurrentUser().getId());
+    }
+
+    @Override
+    public QueryNewsBo getNews(Integer page, Integer size) throws IOException {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        Page<Article> articlePage;
+        if (Role.OWNER.equals(webService.getUserType())) {
+            articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsDraftIsFalseOrderByUpdateDatetimeDesc(pageRequest);
+        } else {
+            articlePage = articleRepository.findByIsOpenIsTrueAndIsDraftIsFalseAndDeleteDatetimeIsNullOrderByUpdateDatetimeDesc(pageRequest);
+        }
+
+        QueryNewsBo queryNewsBo = new QueryNewsBo();
+
+        PageBo pageBo = new PageBo();
+        pageBo.setCurrentPage(page);
+        pageBo.setPageSize(size);
+        pageBo.setTotalPages(articlePage.getTotalPages());
+        pageBo.setTotleItem(Long.valueOf(articlePage.getTotalElements()).intValue());
+        queryNewsBo.setPage(pageBo);
+        queryNewsBo.setNews(toQueryNewsBo(articlePage.getContent()));
+        return queryNewsBo;
+    }
+
+    public List<NewsBo> toQueryNewsBo(List<Article> articles) throws IOException {
+        if (CollectionUtils.isEmpty(articles)) {
+            return new ArrayList<>();
+        }
+        LocalDate localDate = articles.get(0).getUpdateDatetime().toLocalDate();
+        List<NewsBo> newsBos = new ArrayList<>();
+        NewsBo newsBo = new NewsBo();
+        newsBo.setDate(localDate);
+        newsBos.add(newsBo);
+        for (Article article : articles) {
+            LocalDateTime dateTime = article.getUpdateDatetime();
+            if (!dateTime.toLocalDate().equals(localDate)) {
+                newsBo = new NewsBo();
+                newsBo.setDate(dateTime.toLocalDate());
+                newsBos.add(newsBo);
+                localDate = dateTime.toLocalDate();
+            }
+            NewsItemBo newsItemBo = new NewsItemBo();
+            newsBo.getNewsItems().add(newsItemBo);
+            newsItemBo.setDateTime(dateTime);
+            newsItemBo.setId(article.getId());
+            ArticleType type = ArticleType.valueOf(article.getType().getCode());
+            newsItemBo.setType(type);
+            newsItemBo.setLikes(article.getLikes());
+            if (ArticleType.ARTICLE.equals(type)) {
+                newsItemBo.setTitle(article.getTitle());
+                Reader in = new StringReader(article.getContent());
+                Html2Plain parser = new Html2Plain();
+                parser.parse(in);
+                in.close();
+                newsItemBo.setContent(parser.getText().substring(0, 300));
+            } else {
+                List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
+                if (CollectionUtils.isEmpty(articlePhotos)) {
+                    continue;
+                }
+                newsItemBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
+                List<String> photos = new ArrayList<>();
+                for (int i = 0; i < articlePhotos.size(); i++) {
+                    if (i >= 5) {
+                        break;
+                    }
+                    photos.add(cosService.generatePresignedUrl(articlePhotos.get(i).getPhoto().getAlbum().getKey() + "/" + articlePhotos.get(i).getPhoto()
+                                                                                                                                        .getSmallKey()));
+                }
+                newsItemBo.setPhotos(photos);
+            }
+        }
+        return newsBos;
     }
 }

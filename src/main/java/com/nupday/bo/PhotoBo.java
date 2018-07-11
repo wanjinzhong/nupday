@@ -1,14 +1,20 @@
 package com.nupday.bo;
 
+import java.time.LocalDateTime;
+
 public class PhotoBo {
 
     private Integer id;
 
     private String smallKey;
 
+    private String key;
+
     private Integer likes;
 
     private Boolean isCover = false;
+
+    private LocalDateTime keyDate;
 
     public Integer getId() {
         return id;
@@ -40,5 +46,21 @@ public class PhotoBo {
 
     public void setIsCover(Boolean cover) {
         isCover = cover;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public LocalDateTime getKeyDate() {
+        return keyDate;
+    }
+
+    public void setKeyDate(LocalDateTime keyDate) {
+        this.keyDate = keyDate;
     }
 }

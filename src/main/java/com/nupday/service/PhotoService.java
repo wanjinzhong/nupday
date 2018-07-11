@@ -3,6 +3,7 @@ package com.nupday.service;
 import java.io.IOException;
 
 import com.nupday.bo.DeleteObjectBo;
+import com.nupday.bo.PhotoBo;
 import com.nupday.bo.PhotoPage;
 import com.nupday.dao.entity.Photo;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,4 +20,6 @@ public interface PhotoService {
     void uploadPhoto(Integer albumId, MultipartFile file) throws IOException;
 
     void deletePhoto(DeleteObjectBo deleteObjectBo);
+
+    PhotoBo getPhoto(Integer photoId);
 }

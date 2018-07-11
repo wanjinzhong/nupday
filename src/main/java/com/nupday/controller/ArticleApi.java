@@ -1,9 +1,14 @@
 package com.nupday.controller;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
+import com.nupday.bo.NewsBo;
 import com.nupday.bo.OpenStatus;
+import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
 import com.nupday.constant.Constants;
 import com.nupday.service.ArticleService;
@@ -61,5 +66,10 @@ public class ArticleApi {
     public JsonEntity changeOpenStatus(@PathVariable("articleId") Integer articleId, @PathVariable("status") OpenStatus openStatus) {
         articleService.changeOpenStatus(articleId, openStatus);
         return ResponseHelper.ofNothing();
+    }
+
+    @GetMapping("/news")
+    public JsonEntity<QueryNewsBo> getNews(Integer page, Integer size) throws IOException {
+        return ResponseHelper.createInstance(articleService.getNews(page, size));
     }
 }

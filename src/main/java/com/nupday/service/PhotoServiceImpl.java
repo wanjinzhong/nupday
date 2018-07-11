@@ -22,7 +22,6 @@ import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
-import com.nupday.dao.entity.Comment;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.ArticlePhotoRepository;
@@ -192,9 +191,9 @@ public class PhotoServiceImpl implements PhotoService {
     private InputStream compressPhoto(MultipartFile file) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                .scale(1f)
-                .outputQuality(0.5f)
-                .toOutputStream(outputStream);
+                  .scale(1f)
+                  .outputQuality(0.5f)
+                  .toOutputStream(outputStream);
         byte[] bytes = outputStream.toByteArray();
         return new ByteArrayInputStream(bytes);
     }
@@ -202,9 +201,9 @@ public class PhotoServiceImpl implements PhotoService {
     private InputStream resizePhoto(MultipartFile file) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                .size(200, 300)
-                .outputQuality(1f)
-                .toOutputStream(outputStream);
+                  .size(200, 300)
+                  .outputQuality(1f)
+                  .toOutputStream(outputStream);
         byte[] bytes = outputStream.toByteArray();
         return new ByteArrayInputStream(bytes);
 
@@ -237,5 +236,19 @@ public class PhotoServiceImpl implements PhotoService {
             cosService.deleteObject(key);
             photoRepository.delete(photo);
         }
+    }
+
+    @Override
+    public PhotoBo getPhoto(Integer photoId) {
+        Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(photoId);
+        if (photo == null) {
+            throw new BizException("照片不存在");
+        }
+        PhotoBo photoBo = new PhotoBo();
+        photoBo.setKey(cosService.generatePresignedUrl(photo.getAlbum().getKey() + "/" + photo.getKey()));
+        photoBo.setKeyDate(LocalDateTime.now());
+        photoBo.setId(photo.getId());
+        photoBo.setLikes(photo.getLikes());
+        return photoBo;
     }
 }
