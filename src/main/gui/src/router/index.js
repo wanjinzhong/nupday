@@ -8,6 +8,9 @@ import ArticleDetail from "../components/article/ArticleDetail"
 import Album from "../components/album/Album"
 import AlbumDetail from '../components/album/AlbumDetail'
 import News from "../components/article/News"
+import Article from "../components/article/Article"
+import Setting from "../components/setting/Setting"
+import Visitor from "../components/setting/visitor/Visitor"
 
 Vue.use(Router);
 
@@ -18,11 +21,15 @@ export default new Router({
     {
       path: "/", name: "home", redirect: "/news", component: Home, children: [
         {path: "/news", name: "news", component: News},
+        {path: "/articles", name: "articles", component: Article},
         {path: "/newArticle", name: "newArticle", component: NewArticle},
         {path: "/editArticle/:articleId", name: "editArticle", component: EditArticle},
-        {path: "/article/:articleId", name:"articleDetail", component: ArticleDetail, props:true},
+        {path: "/article/:articleId", name: "articleDetail", component: ArticleDetail, props: true},
         {path: "/albums", name: "album", component: Album},
-        {path:"/album/:albumId", name:"albumDetail", component: AlbumDetail, props:true}
+        {path: "/album/:albumId", name: "albumDetail", component: AlbumDetail, props: true},
+        {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
+            {path: "/settings/accessCode", name: "visitor", component:Visitor}
+          ]}
       ]
     },
   ]

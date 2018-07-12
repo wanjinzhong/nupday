@@ -38,6 +38,11 @@ public class VisitorApi {
         return ResponseHelper.createInstance(visitorService.getAllVisitor());
     }
 
+    @GetMapping("visitor/{visitorId}")
+    public JsonEntity<VisitorBo> getVisitor(@PathVariable("visitorId") Integer visitorId) {
+        return ResponseHelper.createInstance(visitorService.getVisitor(visitorId));
+    }
+
     @PostMapping("visitor")
     public JsonEntity<Integer> createVisitor(@RequestBody EditVisitorBo editVisitorBo) {
         return ResponseHelper.createInstance(visitorService.createVisitor(editVisitorBo));

@@ -6,7 +6,7 @@
       <Menu mode="horizontal" :default-active="defaultActive" background-color="transparent" active-text-color="#de2070"
             class="mainMenu" router text-color="#333">
         <MenuItem index="home" :route="{name:'home'}" class="menuItems"><span>主页</span></MenuItem>
-        <MenuItem index="article" class="menuItems"><span>文章</span></MenuItem>
+        <MenuItem index="article" :route="{name: 'articles'}" class="menuItems"><span>文章</span></MenuItem>
         <MenuItem index="album" class="menuItems" :route="{name:'album'}"><span>相册</span></MenuItem>
         <MenuItem index="guestBook" class="menuItems"><span>留言</span></MenuItem>
         <MenuItem index="memorialDay" class="menuItems"><span>纪念日</span></MenuItem>
@@ -23,7 +23,7 @@
             </svg>
             个人中心
           </div>
-          <div>
+          <div @click="$router.push('/settings')">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-shezhi"></use>
             </svg>
@@ -37,34 +37,6 @@
           </div>
         </div>
       </Tooltip>
-      <!--<Menu mode="horizontal" background-color="transparent" active-text-color="#de2070"-->
-      <!--class="mainMenu" text-color="#333" style="position: absolute; top: 0; right: 10px"-->
-      <!--v-if="$store.getters.getType == 'OWNER'">-->
-      <!--<Submenu index="owner" style="position: absolute; top: 0px; right:10px">-->
-      <!--<template slot="title"><span class="menuItems">{{$store.getters.getName}}</span></template>-->
-      <!--<MenuItem index="personal" class="secondLevelMenuItem">-->
-      <!--<svg class="icon" aria-hidden="true">-->
-      <!--<use xlink:href="#icon-geren2"></use>-->
-      <!--</svg>-->
-      <!--个人中心-->
-      <!--</MenuItem>-->
-      <!--<MenuItem index="setting" class="secondLevelMenuItem">-->
-      <!--<svg class="icon" aria-hidden="true">-->
-      <!--<use xlink:href="#icon-shezhi"></use>-->
-      <!--</svg>-->
-      <!--设置-->
-      <!--</MenuItem>-->
-      <!--<MenuItem index="logout" class="secondLevelMenuItem">-->
-      <!--<div @click="logout">-->
-      <!--<svg class="icon" aria-hidden="true">-->
-      <!--<use xlink:href="#icon-084tuichu"></use>-->
-      <!--</svg>-->
-      <!--退出登陆-->
-      <!--</div>-->
-      <!--</MenuItem>-->
-      <!--</Submenu>-->
-      <!--</Menu>-->
-
     </div>
   </div>
 </template>

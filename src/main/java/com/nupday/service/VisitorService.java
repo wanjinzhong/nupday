@@ -14,4 +14,6 @@ public interface VisitorService {
     Integer updateVisitor(EditVisitorBo visitorBo);
 
     void deleteVisitor(Integer id);
+
+    VisitorBo getVisitor(Integer visitorId);
 }

@@ -147,4 +147,13 @@ public class VisitorServiceImpl implements VisitorService {
         }
         visitorRepository.delete(visitor.get());
     }
+
+    @Override
+    public VisitorBo getVisitor(Integer visitorId) {
+        Optional<Visitor> visitor = visitorRepository.findById(visitorId);
+        if (!visitor.isPresent()) {
+            throw new BizException("访问码不存在");
+        }
+        return visitorToBo(visitor.get());
+    }
 }

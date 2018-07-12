@@ -1,18 +1,16 @@
 <template>
   <div>
-    <div class="content" v-for="(item, index) in newsItems">
-      <div class="title" @click="$router.push('/article/' + item.id)">{{item.title}}</div>
-      <div class="info">{{item.owner}}&nbsp;&nbsp;&nbsp;{{new Date(item.dateTime) | formatDate('DATETIME')}}
-        &nbsp;&nbsp;
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-zan2"></use>
-        </svg>&nbsp;{{item.likes}}
-      </div>
-      <div class="content" v-if="item.type=='ARTICLE'">{{item.content}}...</div>
-      <div v-if="item.type=='PHOTO'">
-        <img v-for="img in item.photos" :src="img" class="photo"/>
-      </div>
-      <div v-if="index != newsItems.length -1" class="breaker"></div>
+
+    <div class="title" @click="$router.push('/article/' + item.id)">{{item.title}}</div>
+    <div class="info">{{item.owner}}&nbsp;&nbsp;&nbsp;{{new Date(item.dateTime) | formatDate('DATETIME')}}
+      &nbsp;&nbsp;
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-zan2"></use>
+      </svg>&nbsp;{{item.likes}}
+    </div>
+    <div class="content" v-if="item.type=='ARTICLE'">{{item.content}}...</div>
+    <div v-if="item.type=='PHOTO'">
+      <img v-for="img in item.photos" :src="img" class="photo"/>
     </div>
   </div>
 </template>
@@ -20,7 +18,7 @@
 <script>
   export default {
     name: "NewsItem",
-    props: ["newsItems"]
+    props: ["item"]
   }
 </script>
 
@@ -54,8 +52,4 @@
     margin-left: 30px;
   }
 
-  .breaker {
-    height: 1px;
-    background-color: #eee;
-  }
 </style>

@@ -6,7 +6,7 @@
         <svg class="icon" aria-hidden="true" slot="icon">
           <use xlink:href="#icon-yuandianda"></use>
         </svg>
-        <NewsItem slot="description" :newsItems="newsItem.newsItems"></NewsItem>
+        <NewsList slot="description" :newsList="newsItem.newsItems"></NewsList>
       </Step>
     </Steps>
     <div v-if="hasNext" style="cursor: pointer; text-align: center">
@@ -17,11 +17,11 @@
 
 <script>
   import {Steps, Step, Button} from "element-ui"
-  import NewsItem from "./NewsItem"
+  import NewsList from "./NewsList"
 
   export default {
     name: "News",
-    components: {Steps, Step, Button, NewsItem},
+    components: {Steps, Step, Button, NewsList},
     data() {
       return {
         loading: false,
