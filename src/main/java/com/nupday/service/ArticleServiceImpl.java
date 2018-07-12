@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.nupday.bo.ArticleBo;
+import com.nupday.bo.ArticleListBo;
 import com.nupday.bo.ArticlePermissionBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
@@ -301,37 +303,80 @@ public class ArticleServiceImpl implements ArticleService {
                 newsBos.add(newsBo);
                 localDate = dateTime.toLocalDate();
             }
-            NewsItemBo newsItemBo = new NewsItemBo();
-            newsBo.getNewsItems().add(newsItemBo);
-            newsItemBo.setDateTime(dateTime);
-            newsItemBo.setId(article.getId());
-            ArticleType type = ArticleType.valueOf(article.getType().getCode());
-            newsItemBo.setType(type);
-            newsItemBo.setLikes(article.getLikes());
-            if (ArticleType.ARTICLE.equals(type)) {
-                newsItemBo.setTitle(article.getTitle());
-                Reader in = new StringReader(article.getContent());
-                Html2Plain parser = new Html2Plain();
-                parser.parse(in);
-                in.close();
-                newsItemBo.setContent(parser.getText().substring(0, 300));
-            } else {
-                List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
-                if (CollectionUtils.isEmpty(articlePhotos)) {
-                    continue;
-                }
-                newsItemBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
-                List<String> photos = new ArrayList<>();
-                for (int i = 0; i < articlePhotos.size(); i++) {
-                    if (i >= 5) {
-                        break;
-                    }
-                    photos.add(cosService.generatePresignedUrl(articlePhotos.get(i).getPhoto().getAlbum().getKey() + "/" + articlePhotos.get(i).getPhoto()
-                                                                                                                                        .getSmallKey()));
-                }
-                newsItemBo.setPhotos(photos);
+            NewsItemBo newsItemBo = toNewsItemBo(article);
+            if (newsItemBo == null) {
+                continue;
             }
+            newsBo.getNewsItems().add(newsItemBo);
         }
         return newsBos;
     }
+
+    private NewsItemBo toNewsItemBo(Article article) throws IOException {
+        LocalDateTime dateTime = article.getUpdateDatetime();
+        NewsItemBo newsItemBo = new NewsItemBo();
+        newsItemBo.setDateTime(dateTime);
+        newsItemBo.setId(article.getId());
+        ArticleType type = ArticleType.valueOf(article.getType().getCode());
+        newsItemBo.setType(type);
+        newsItemBo.setLikes(article.getLikes());
+        if (ArticleType.ARTICLE.equals(type)) {
+            newsItemBo.setTitle(article.getTitle());
+            Reader in = new StringReader(article.getContent());
+            Html2Plain parser = new Html2Plain();
+            parser.parse(in);
+            in.close();
+            newsItemBo.setContent(parser.getText().substring(0, 300));
+        } else {
+            List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
+            if (CollectionUtils.isEmpty(articlePhotos)) {
+                return null;
+            }
+            newsItemBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
+            List<String> photos = new ArrayList<>();
+            for (int i = 0; i < articlePhotos.size(); i++) {
+                if (i >= 5) {
+                    break;
+                }
+                photos.add(cosService.generatePresignedUrl(articlePhotos.get(i).getPhoto().getAlbum().getKey() + "/" + articlePhotos.get(i).getPhoto()
+                                                                                                                                    .getSmallKey()));
+            }
+            newsItemBo.setPhotos(photos);
+        }
+        return newsItemBo;
+    }
+
+    @Override
+    public ArticleListBo getArticles(Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        Page<Article> articlePage;
+        if (Role.OWNER.equals(webService.getUserType())) {
+            articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
+                                                                                                                            pageRequest);
+        } else {
+            articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsOpenIsTrueAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(
+                ArticleType.ARTICLE.name(),
+                pageRequest);
+        }
+        ArticleListBo articleListBo = new ArticleListBo();
+        PageBo pageBo = new PageBo();
+        pageBo.setCurrentPage(page);
+        pageBo.setPageSize(size);
+        pageBo.setTotalPages(articlePage.getTotalPages());
+        pageBo.setTotleItem(Long.valueOf(articlePage.getTotalElements()).intValue());
+        articleListBo.setPage(pageBo);
+        if (!CollectionUtils.isEmpty(articlePage.getContent())) {
+            articleListBo.setArticles(articlePage.getContent().stream().map(article -> {
+                try {
+                    return toNewsItemBo(article);
+                } catch (IOException e) {
+                    throw new BizException("无法解析文章内容");
+                }
+            }).collect(Collectors.toList()));
+        }
+        return articleListBo;
+    }
+
+
+
 }

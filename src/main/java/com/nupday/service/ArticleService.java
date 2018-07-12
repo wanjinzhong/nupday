@@ -1,11 +1,10 @@
 package com.nupday.service;
 import java.io.IOException;
-import java.util.List;
 
 import com.nupday.bo.ArticleBo;
+import com.nupday.bo.ArticleListBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
-import com.nupday.bo.NewsItemBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.bo.QueryNewsBo;
 import com.nupday.dao.entity.Article;
@@ -29,4 +28,6 @@ public interface ArticleService {
     void changeOpenStatus(Integer articleId, OpenStatus openStatus);
 
     QueryNewsBo getNews(Integer page, Integer size) throws IOException;
+
+    ArticleListBo getArticles(Integer page, Integer size);
 }

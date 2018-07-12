@@ -20,4 +20,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     Page<Article> findByDeleteDatetimeIsNullAndIsDraftIsFalseOrderByUpdateDatetimeDesc(Pageable pageable);
 
     Page<Article> findByIsOpenIsTrueAndIsDraftIsFalseAndDeleteDatetimeIsNullOrderByUpdateDatetimeDesc(Pageable pageable);
+
+    Page<Article> findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(String type, Pageable pageable);
+
+    Page<Article> findByDeleteDatetimeIsNullAndIsOpenIsTrueAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(String type, Pageable pageable);
 }
