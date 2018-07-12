@@ -108,25 +108,25 @@ public class ArticleServiceImpl implements ArticleService {
             articleBo.setContent(article.getContent());
             articleBo.setTitle(article.getTitle());
         } else {
-            List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
+            List<ArticlePhoto> articlePhotos = article.getArticlePhotos().stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null).collect(Collectors.toList());
             articleBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             StringBuilder content = new StringBuilder();
             content.append("<div style='margin: 0 auto; text-align: center;'>");
             content.append("<div style='margin: 10px auto;'><a href='/album/")
-                   .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                   .append("'style='margin:10px auto'>去相册查看</a></div>");
+                    .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                    .append("'style='margin:10px auto'>去相册查看</a></div>");
             for (int i = 0; i < articlePhotos.size(); i++) {
                 if (i >= 5) {
                     content.append("<a href='/album/")
-                           .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                           .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                            .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                            .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
                     break;
                 }
                 ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
-                       .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
-                       .append("'/>")
-                       .append("<br/>");
+                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
+                        .append("'/>")
+                        .append("<br/>");
             }
             content.append("</div>");
             articleBo.setContent(content.toString());
@@ -280,7 +280,7 @@ public class ArticleServiceImpl implements ArticleService {
         pageBo.setCurrentPage(page);
         pageBo.setPageSize(size);
         pageBo.setTotalPages(articlePage.getTotalPages());
-        pageBo.setTotleItem(Long.valueOf(articlePage.getTotalElements()).intValue());
+        pageBo.setTotalItem(Long.valueOf(articlePage.getTotalElements()).intValue());
         queryNewsBo.setPage(pageBo);
         queryNewsBo.setNews(toQueryNewsBo(articlePage.getContent()));
         return queryNewsBo;
@@ -363,7 +363,7 @@ public class ArticleServiceImpl implements ArticleService {
         pageBo.setCurrentPage(page);
         pageBo.setPageSize(size);
         pageBo.setTotalPages(articlePage.getTotalPages());
-        pageBo.setTotleItem(Long.valueOf(articlePage.getTotalElements()).intValue());
+        pageBo.setTotalItem(Long.valueOf(articlePage.getTotalElements()).intValue());
         articleListBo.setPage(pageBo);
         if (!CollectionUtils.isEmpty(articlePage.getContent())) {
             articleListBo.setArticles(articlePage.getContent().stream().map(article -> {

@@ -19,6 +19,8 @@ public class NewsItemBo {
 
     private LocalDateTime dateTime;
 
+    private String owner;
+
     public Integer getId() {
         return id;
     }
@@ -73,5 +75,13 @@ public class NewsItemBo {
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }
