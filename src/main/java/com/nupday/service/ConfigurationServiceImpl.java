@@ -69,7 +69,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public String getLoginBackGroundUrl() {
-        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.CONFIGURATION_ITEM.name(), ConfigurationItem.HOME_BACKGROUND.name());
+        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.CONFIGURATION_ITEM.name(), ConfigurationItem.LOGIN_BACKGROUND.name());
         List<Configuration> configurationList = configurationRepository.findByItemId(item.getId());
         if (CollectionUtils.isEmpty(configurationList)) {
             return null;
