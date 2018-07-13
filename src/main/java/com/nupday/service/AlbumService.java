@@ -12,7 +12,7 @@ public interface AlbumService {
 
     Boolean isVisible(Integer albumId);
 
-    List<AlbumBo> getAlbums();
+    List<AlbumBo> getAlbums(Boolean inDustBin);
 
     Integer createAlbum(EditAlbumBo albumBo);
 

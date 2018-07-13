@@ -1,5 +1,12 @@
 package com.nupday.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.nupday.bo.AlbumBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditAlbumBo;
@@ -7,6 +14,7 @@ import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.Constants;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
+import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.PhotoRepository;
@@ -16,13 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -63,10 +64,10 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public List<AlbumBo> getAlbums() {
+    public List<AlbumBo> getAlbums(Boolean inDustBin) {
         List<Album> albums;
         if (Role.OWNER.equals(webService.getUserType())) {
-            albums = albumRepository.findByDeleteDatetimeIsNull();
+            albums = inDustBin ? albumRepository.findByDeleteDatetimeIsNotNull() : albumRepository.findByDeleteDatetimeIsNull();
         } else {
             albums = albumRepository.findByDeleteDatetimeIsNullAndIsOpen(true);
         }
@@ -77,10 +78,11 @@ public class AlbumServiceImpl implements AlbumService {
         if (CollectionUtils.isEmpty(albums)) {
             return new ArrayList<>();
         }
-        return albums.stream().map(album -> albumToBo(album)).collect(Collectors.toList());
+        Owner owner = webService.getCurrentUser();
+        return albums.stream().map(album -> albumToBo(album, owner)).collect(Collectors.toList());
     }
 
-    private AlbumBo albumToBo(Album album) {
+    private AlbumBo albumToBo(Album album, Owner owner) {
         if (album == null) {
             return null;
         }
@@ -96,6 +98,7 @@ public class AlbumServiceImpl implements AlbumService {
         albumBo.setName(album.getName());
         albumBo.setIsOpen(album.getIsOpen());
         albumBo.setEntryUser(album.getEntryUser().getName());
+        albumBo.setConfirmDeletable(album.getDeleteDatetime() != null && !owner.getId().equals(album.getDeleteUser().getId()));
         if (album.getUpdateDatetime() != null) {
             album.setEntryDatetime(album.getUpdateDatetime());
         } else {
@@ -136,7 +139,7 @@ public class AlbumServiceImpl implements AlbumService {
         if (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen()) {
             throw new BizException("你没有权限查看这个相册");
         }
-        return albumToBo(album);
+        return albumToBo(album, webService.getCurrentUser());
     }
 
     @Override

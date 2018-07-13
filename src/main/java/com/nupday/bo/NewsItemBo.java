@@ -21,6 +21,8 @@ public class NewsItemBo {
 
     private String owner;
 
+    private Boolean confirmDeletable;
+
     public Integer getId() {
         return id;
     }
@@ -83,5 +85,13 @@ public class NewsItemBo {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public Boolean getConfirmDeletable() {
+        return confirmDeletable;
+    }
+
+    public void setConfirmDeletable(Boolean confirmDeletable) {
+        this.confirmDeletable = confirmDeletable;
     }
 }

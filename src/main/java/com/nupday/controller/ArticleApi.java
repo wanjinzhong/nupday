@@ -1,14 +1,11 @@
 package com.nupday.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.ArticleListBo;
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
-import com.nupday.bo.NewsBo;
-import com.nupday.bo.NewsItemBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
@@ -20,7 +17,15 @@ import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Api
@@ -76,7 +81,12 @@ public class ArticleApi {
     }
 
     @GetMapping("/articles")
-    public JsonEntity<ArticleListBo> getArticles(Integer page, Integer size) throws IOException{
-        return ResponseHelper.createInstance(articleService.getArticles(page, size));
+    public JsonEntity<ArticleListBo> getArticles(Integer page, Integer size) {
+        return ResponseHelper.createInstance(articleService.getArticles(false, page, size));
+    }
+
+    @GetMapping("/articles/dustbin")
+    public JsonEntity<ArticleListBo> getArticlesInDustbin(Integer page, Integer size) {
+        return ResponseHelper.createInstance(articleService.getArticles(true, page, size));
     }
 }

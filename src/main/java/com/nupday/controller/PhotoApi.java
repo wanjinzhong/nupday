@@ -1,6 +1,7 @@
 package com.nupday.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.PhotoBo;
@@ -48,5 +49,10 @@ public class PhotoApi {
     @GetMapping("photo/{photoId}")
     public JsonEntity<PhotoBo> getPhoto(@PathVariable("photoId") Integer photoId) {
         return ResponseHelper.createInstance(photoService.getPhoto(photoId));
+    }
+
+    @GetMapping("/photos/dustbin")
+    public JsonEntity<List<PhotoBo>> getPhotosInDustbin() {
+        return ResponseHelper.createInstance(photoService.getPhotosInDustbin());
     }
 }

@@ -11,11 +11,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     Article findByIdAndIsDraftAndDeleteDatetimeIsNull(Integer id, Boolean isDraft);
 
-    Article findByIdAndIsOpenAndDeleteDatetimeIsNull(Integer id, Boolean isOpen);
-
     Article findByIdAndIsDraftAndIsOpenAndDeleteDatetimeIsNull(Integer id, Boolean isDraft, Boolean isOpen);
-
-    Article findByIdAndDeleteDatetimeIsNotNull(Integer id);
 
     Page<Article> findByDeleteDatetimeIsNullAndIsDraftIsFalseOrderByUpdateDatetimeDesc(Pageable pageable);
 
@@ -24,4 +20,6 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     Page<Article> findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(String type, Pageable pageable);
 
     Page<Article> findByDeleteDatetimeIsNullAndIsOpenIsTrueAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(String type, Pageable pageable);
+
+    Page<Article> findByDeleteDatetimeIsNotNullAndTypeCodeOrderByUpdateDatetimeDesc(String type, Pageable pageable);
 }

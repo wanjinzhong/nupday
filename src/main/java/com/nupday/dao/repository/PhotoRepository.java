@@ -1,4 +1,6 @@
 package com.nupday.dao.repository;
+import java.util.List;
+
 import com.nupday.dao.entity.Photo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,4 +12,6 @@ public interface PhotoRepository extends JpaRepository<Photo, Integer> {
     Photo findByIdAndDeleteDatetimeIsNull(Integer id);
 
     Page<Photo> findByAlbumIdAndDeleteDatetimeIsNull(Integer albumId, Pageable pageable);
+
+    List<Photo> findByDeleteDatetimeIsNotNull();
 }

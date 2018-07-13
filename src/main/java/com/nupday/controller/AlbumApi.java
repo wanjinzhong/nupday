@@ -27,7 +27,7 @@ public class AlbumApi {
 
     @GetMapping("albums")
     public JsonEntity<List<AlbumBo>> getAlbums() {
-        return ResponseHelper.createInstance(albumService.getAlbums());
+        return ResponseHelper.createInstance(albumService.getAlbums(false));
     }
 
     @PostMapping("album")
@@ -59,5 +59,10 @@ public class AlbumApi {
     public JsonEntity setCover(@PathVariable("albumId") Integer albumId, @PathVariable("photoId") Integer photoId) {
         albumService.setCover(albumId, photoId);
         return ResponseHelper.ofNothing();
+    }
+
+    @GetMapping("albums/dustbin")
+    public JsonEntity<List<AlbumBo>> getAlbumInDustbin() {
+        return ResponseHelper.createInstance(albumService.getAlbums(true));
     }
 }

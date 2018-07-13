@@ -13,6 +13,8 @@ public interface AlbumRepository extends JpaRepository<Album, Integer> {
 
     List<Album> findByDeleteDatetimeIsNull();
 
+    List<Album> findByDeleteDatetimeIsNotNull();
+
     List<Album> findByDeleteDatetimeIsNullAndIsOpen(Boolean isOpen);
 
     List<Album> findByName(String name);

@@ -23,6 +23,8 @@ public class AlbumBo {
 
     private LocalDateTime entryDatetime;
 
+    private Boolean confirmDeletable;
+
     public Integer getId() {
         return id;
     }
@@ -101,5 +103,13 @@ public class AlbumBo {
 
     public void setEntryUser(String entryUser) {
         this.entryUser = entryUser;
+    }
+
+    public Boolean getConfirmDeletable() {
+        return confirmDeletable;
+    }
+
+    public void setConfirmDeletable(Boolean confirmDeletable) {
+        this.confirmDeletable = confirmDeletable;
     }
 }

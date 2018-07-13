@@ -26,6 +26,7 @@ import com.nupday.constant.Role;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
 import com.nupday.dao.entity.ListBox;
+import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.ArticleRepository;
 import com.nupday.dao.repository.ListBoxRepository;
 import com.nupday.exception.BizException;
@@ -108,25 +109,26 @@ public class ArticleServiceImpl implements ArticleService {
             articleBo.setContent(article.getContent());
             articleBo.setTitle(article.getTitle());
         } else {
-            List<ArticlePhoto> articlePhotos = article.getArticlePhotos().stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null).collect(Collectors.toList());
+            List<ArticlePhoto> articlePhotos = article.getArticlePhotos().stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null)
+                                                      .collect(Collectors.toList());
             articleBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             StringBuilder content = new StringBuilder();
             content.append("<div style='margin: 0 auto; text-align: center;'>");
             content.append("<div style='margin: 10px auto;'><a href='/album/")
-                    .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                    .append("'style='margin:10px auto'>去相册查看</a></div>");
+                   .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                   .append("'style='margin:10px auto'>去相册查看</a></div>");
             for (int i = 0; i < articlePhotos.size(); i++) {
                 if (i >= 5) {
                     content.append("<a href='/album/")
-                            .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                            .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                           .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                           .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
                     break;
                 }
                 ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
-                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
-                        .append("'/>")
-                        .append("<br/>");
+                       .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
+                       .append("'/>")
+                       .append("<br/>");
             }
             content.append("</div>");
             articleBo.setContent(content.toString());
@@ -303,7 +305,7 @@ public class ArticleServiceImpl implements ArticleService {
                 newsBos.add(newsBo);
                 localDate = dateTime.toLocalDate();
             }
-            NewsItemBo newsItemBo = toNewsItemBo(article);
+            NewsItemBo newsItemBo = toNewsItemBo(article, webService.getCurrentUser());
             if (newsItemBo == null) {
                 continue;
             }
@@ -312,7 +314,7 @@ public class ArticleServiceImpl implements ArticleService {
         return newsBos;
     }
 
-    private NewsItemBo toNewsItemBo(Article article) throws IOException {
+    private NewsItemBo toNewsItemBo(Article article, Owner owner) throws IOException {
         LocalDateTime dateTime = article.getUpdateDatetime();
         NewsItemBo newsItemBo = new NewsItemBo();
         newsItemBo.setDateTime(dateTime);
@@ -320,6 +322,7 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleType type = ArticleType.valueOf(article.getType().getCode());
         newsItemBo.setType(type);
         newsItemBo.setLikes(article.getLikes());
+        newsItemBo.setConfirmDeletable(article.getDeleteDatetime() != null && !owner.getId().equals(article.getDeleteUser().getId()));
         if (ArticleType.ARTICLE.equals(type)) {
             newsItemBo.setTitle(article.getTitle());
             Reader in = new StringReader(article.getContent());
@@ -347,12 +350,17 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleListBo getArticles(Integer page, Integer size) {
+    public ArticleListBo getArticles(Boolean inDustBin, Integer page, Integer size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<Article> articlePage;
         if (Role.OWNER.equals(webService.getUserType())) {
-            articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
-                                                                                                                            pageRequest);
+            if (inDustBin) {
+                articlePage = articleRepository.findByDeleteDatetimeIsNotNullAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
+                                                                                                                                pageRequest);
+            } else {
+                articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
+                                                                                                                                pageRequest);
+            }
         } else {
             articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsOpenIsTrueAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(
                 ArticleType.ARTICLE.name(),
@@ -365,10 +373,11 @@ public class ArticleServiceImpl implements ArticleService {
         pageBo.setTotalPages(articlePage.getTotalPages());
         pageBo.setTotalItem(Long.valueOf(articlePage.getTotalElements()).intValue());
         articleListBo.setPage(pageBo);
+        Owner owner = webService.getCurrentUser();
         if (!CollectionUtils.isEmpty(articlePage.getContent())) {
             articleListBo.setArticles(articlePage.getContent().stream().map(article -> {
                 try {
-                    return toNewsItemBo(article);
+                    return toNewsItemBo(article, owner);
                 } catch (IOException e) {
                     throw new BizException("无法解析文章内容");
                 }
@@ -376,7 +385,6 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return articleListBo;
     }
-
 
 
 }

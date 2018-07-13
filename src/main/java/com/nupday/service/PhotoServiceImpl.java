@@ -22,6 +22,7 @@ import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
+import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.ArticlePhotoRepository;
@@ -115,10 +116,11 @@ public class PhotoServiceImpl implements PhotoService {
         if (CollectionUtils.isEmpty(photos)) {
             return new ArrayList<>();
         }
-        return photos.stream().map(photo -> photoToBo(photo)).collect(Collectors.toList());
+        Owner owner = webService.getCurrentUser();
+        return photos.stream().map(photo -> photoToBo(photo, owner)).collect(Collectors.toList());
     }
 
-    private PhotoBo photoToBo(Photo photo) {
+    private PhotoBo photoToBo(Photo photo, Owner owner) {
         if (photo == null) {
             return null;
         }
@@ -132,6 +134,7 @@ public class PhotoServiceImpl implements PhotoService {
         } else {
             photoBo.setIsCover(false);
         }
+        photoBo.setConfirmDeletable(photo.getDeleteDatetime() != null  && !owner.getId().equals(photo.getDeleteUser().getId()));
         return photoBo;
     }
 
@@ -263,5 +266,11 @@ public class PhotoServiceImpl implements PhotoService {
         photoBo.setId(photo.getId());
         photoBo.setLikes(photo.getLikes());
         return photoBo;
+    }
+
+    @Override
+    public List<PhotoBo> getPhotosInDustbin() {
+        List<Photo> photos = photoRepository.findByDeleteDatetimeIsNotNull();
+        return photoToBo(photos);
     }
 }

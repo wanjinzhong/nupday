@@ -16,6 +16,8 @@ public class PhotoBo {
 
     private LocalDateTime keyDate;
 
+    private Boolean confirmDeletable;
+
     public Integer getId() {
         return id;
     }
@@ -62,5 +64,13 @@ public class PhotoBo {
 
     public void setKeyDate(LocalDateTime keyDate) {
         this.keyDate = keyDate;
+    }
+
+    public Boolean getConfirmDeletable() {
+        return confirmDeletable;
+    }
+
+    public void setConfirmDeletable(Boolean confirmDeletable) {
+        this.confirmDeletable = confirmDeletable;
     }
 }

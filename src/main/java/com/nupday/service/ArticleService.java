@@ -29,5 +29,5 @@ public interface ArticleService {
 
     QueryNewsBo getNews(Integer page, Integer size) throws IOException;
 
-    ArticleListBo getArticles(Integer page, Integer size);
+    ArticleListBo getArticles(Boolean inDustBin, Integer page, Integer size);
 }

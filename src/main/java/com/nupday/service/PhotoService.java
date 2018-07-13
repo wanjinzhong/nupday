@@ -1,6 +1,7 @@
 package com.nupday.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.PhotoBo;
@@ -22,4 +23,6 @@ public interface PhotoService {
     void deletePhoto(DeleteObjectBo deleteObjectBo);
 
     PhotoBo getPhoto(Integer photoId);
+
+    List<PhotoBo> getPhotosInDustbin();
 }
