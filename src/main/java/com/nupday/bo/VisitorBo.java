@@ -1,6 +1,5 @@
 package com.nupday.bo;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class VisitorBo {
     private Integer id;

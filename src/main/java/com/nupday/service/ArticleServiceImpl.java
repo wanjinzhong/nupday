@@ -21,7 +21,7 @@ import com.nupday.bo.OpenStatus;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
-import com.nupday.constant.ListBoxCateogry;
+import com.nupday.constant.ListBoxCategory;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
@@ -66,7 +66,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private void boToArticle(Article article, EditArticleBo articleBo) {
-        ListBox type = listBoxRepository.findByNameAndCode(ListBoxCateogry.ARTICLE_TYPE.name(), articleBo.getType().name());
+        ListBox type = listBoxRepository.findByNameAndCode(ListBoxCategory.ARTICLE_TYPE.name(), articleBo.getType().name());
         if (ArticleType.ARTICLE.equals(articleBo.getType())) {
             article.setTitle(articleBo.getTitle());
             article.setContent(articleBo.getContent());

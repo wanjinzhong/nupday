@@ -2,6 +2,7 @@ package com.nupday.service;
 import java.io.IOException;
 import java.util.List;
 
+import com.nupday.bo.FullOwnerBo;
 import com.nupday.bo.OwnerBo;
 import com.nupday.bo.SimpleOwnerBo;
 import com.nupday.dao.entity.Owner;
@@ -16,9 +17,13 @@ public interface OwnerService {
 
     List<OwnerBo> ownerToBo(List<Owner> owner);
 
-    abstract SimpleOwnerBo ownerToSimpleBo(Owner user);
+    SimpleOwnerBo ownerToSimpleBo(Owner user);
 
     List<SimpleOwnerBo> ownerToSimpleBo(List<Owner> owner);
 
     String updateAvatar(MultipartFile file) throws IOException;
+
+    FullOwnerBo getMyInfo();
+
+    void updateMyInfo(FullOwnerBo ownerBo);
 }

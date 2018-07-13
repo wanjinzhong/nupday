@@ -1,13 +1,17 @@
 package com.nupday.service;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nupday.bo.FullOwnerBo;
 import com.nupday.bo.OwnerBo;
 import com.nupday.bo.SimpleOwnerBo;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.OwnerRepository;
+import com.nupday.exception.BizException;
 import com.nupday.util.FileUtil;
+import com.nupday.util.ValidatorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +36,6 @@ public class OwnerServiceImpl implements OwnerService {
     public List<OwnerBo> getAllOwner() {
         return ownerToBo(ownerRepository.findAll());
     }
-
 
     @Override
     public List<SimpleOwnerBo> getAllSimpleOwner() {
@@ -107,5 +110,57 @@ public class OwnerServiceImpl implements OwnerService {
         me.setAvatar(key);
         ownerRepository.save(me);
         return key;
+    }
+
+    @Override
+    public FullOwnerBo getMyInfo() {
+        Owner owner = webService.getCurrentUser();
+        FullOwnerBo ownerBo = new FullOwnerBo();
+        ownerBo.setId(owner.getId());
+        ownerBo.setName(owner.getName());
+        ownerBo.setAvatar(cosService.generatePresignedUrl(owner.getAvatar()));
+        ownerBo.setPhone(owner.getPhone());
+        ownerBo.setMale(owner.getMale());
+        ownerBo.setEmail(owner.getEmail());
+        ownerBo.setBirthday(owner.getBirthday());
+        return ownerBo;
+    }
+
+    @Override
+    public void updateMyInfo(FullOwnerBo ownerBo) {
+        Owner owner = webService.getCurrentUser();
+        validateUpdateInfo(ownerBo);
+        owner.setBirthday(ownerBo.getBirthday());
+        owner.setEmail(ownerBo.getEmail());
+        owner.setMale(ownerBo.getMale());
+        owner.setName(ownerBo.getName());
+        owner.setPhone(ownerBo.getPhone());
+        ownerRepository.save(owner);
+    }
+
+    private void validateUpdateInfo(FullOwnerBo ownerBo) {
+        Owner owner = webService.getCurrentUser();
+        if (StringUtils.isBlank(ownerBo.getName())) {
+            throw new BizException("名字不能为空");
+        }
+        if (ownerBo.getName().length() > 4) {
+            throw new BizException("名字不能大于4位");
+        }
+        if (StringUtils.isBlank(ownerBo.getEmail())) {
+            throw new BizException("邮箱不能为空");
+        }
+        if (!ValidatorUtil.isEmail(ownerBo.getEmail())) {
+            throw new BizException("邮箱格式不正确");
+        }
+        if (StringUtils.isNotBlank(ownerBo.getEmail())  && !ValidatorUtil.isMobile(ownerBo.getPhone())){
+            throw new BizException("电话号码不正确");
+        }
+        if (ownerBo.getBirthday() != null && ownerBo.getBirthday().isAfter(LocalDate.now())) {
+            throw new BizException("生日不正确");
+        }
+        Owner ownerByName = ownerRepository.findByName(ownerBo.getName());
+        if (ownerByName != null && !owner.getId().equals(ownerByName.getId())) {
+            throw new BizException("名字已存在");
+        }
     }
 }

@@ -13,7 +13,7 @@ import com.nupday.bo.CommentBo;
 import com.nupday.bo.CommentObject;
 import com.nupday.bo.CreateCommentBo;
 import com.nupday.constant.CommentTargetType;
-import com.nupday.constant.ListBoxCateogry;
+import com.nupday.constant.ListBoxCategory;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Album;
 import com.nupday.dao.entity.Article;
@@ -124,7 +124,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = new Comment();
         comment.setContent(createCommentBo.getContent());
         comment.setIp(createCommentBo.getIp());
-        ListBox targetType = listBoxRepository.findByNameAndCode(ListBoxCateogry.COMMENT_TARGET.name(), createCommentBo.getTargetType().name());
+        ListBox targetType = listBoxRepository.findByNameAndCode(ListBoxCategory.COMMENT_TARGET.name(), createCommentBo.getTargetType().name());
         comment.setTargetType(targetType);
         comment.setTargetId(createCommentBo.getTargetId());
         comment.setEntryDatetime(LocalDateTime.now());

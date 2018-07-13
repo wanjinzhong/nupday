@@ -55,4 +55,12 @@ public class ConfigurationApi {
         String url = cosService.generatePresignedUrl(key);
         return ResponseHelper.createInstance(url);
     }
+
+    @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
+    @PutMapping("emailNotification/{status}")
+    public JsonEntity updateNotification(@PathVariable("status") Boolean status) {
+        configurationService.updateNotification(status);
+        return ResponseHelper.ofNothing();
+    }
 }

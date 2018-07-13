@@ -25,8 +25,9 @@ public class Configuration extends BaseUpdateEntity {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    @Column(name = "item_name")
-    private ConfigurationItem item;
+    @ManyToOne
+    @JoinColumn(name = "item_name_id")
+    private ListBox item;
 
     @Column(name = "item_code")
     private String code;
@@ -47,11 +48,11 @@ public class Configuration extends BaseUpdateEntity {
         this.owner = owner;
     }
 
-    public ConfigurationItem getItem() {
+    public ListBox getItem() {
         return item;
     }
 
-    public void setItem(ConfigurationItem item) {
+    public void setItem(ListBox item) {
         this.item = item;
     }
 

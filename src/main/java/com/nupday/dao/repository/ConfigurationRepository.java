@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConfigurationRepository extends JpaRepository<Configuration, Integer> {
-    List<Configuration> findByItem(ConfigurationItem item);
+    List<Configuration> findByItemId(Integer nameId);
+
+    List<Configuration> findByItemIdAndOwnerId(Integer nameId, Integer ownerId);
 }

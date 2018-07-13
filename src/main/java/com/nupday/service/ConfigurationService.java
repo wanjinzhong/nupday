@@ -11,4 +11,6 @@ public interface ConfigurationService {
     String uploadHomeBackGround(MultipartFile file) throws IOException;
 
     String getHomeBackGroundUrl();
+
+    void updateNotification(Boolean on);
 }
