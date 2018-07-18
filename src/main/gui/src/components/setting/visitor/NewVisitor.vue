@@ -57,8 +57,8 @@
         }
         var data = {
           code: this.code,
-          from: formatDate(this.time[0], 'DATETIME'),
-          to: formatDate(this.time[1], 'DATETIME'),
+          from: formatDate(new Date(this.time[0]), 'DATETIME'),
+          to: formatDate(new Date(this.time[1]), 'DATETIME'),
           maxCount: this.count
         };
         this.loading = true;
