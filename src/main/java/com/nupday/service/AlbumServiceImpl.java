@@ -88,7 +88,11 @@ public class AlbumServiceImpl implements AlbumService {
         }
         AlbumBo albumBo = new AlbumBo();
         albumBo.setCommentable(album.getCommentable());
-        albumBo.setCount(CollectionUtils.isEmpty(album.getPhotos()) ? 0 : album.getPhotos().size());
+        Integer count = 0;
+        if (!CollectionUtils.isEmpty(album.getPhotos())) {
+            count = album.getPhotos().stream().filter(photo -> photo.getDeleteDatetime() == null).collect(Collectors.toList()).size();
+        }
+        albumBo.setCount(count);
         if (album.getCover() != null && StringUtils.isNotBlank(album.getCover().getKey())) {
             albumBo.setCoverPic(cosService.generatePresignedUrl(photoService.getFullKey(album.getCover(), true)));
         }
