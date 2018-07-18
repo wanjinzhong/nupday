@@ -1,5 +1,7 @@
 package com.nupday.service;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,9 @@ public class VisitorServiceImpl implements VisitorService {
 
     @Autowired
     private WebService webService;
+
+
+    private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public List<VisitorBo> getAllVisitor() {
@@ -79,11 +84,10 @@ public class VisitorServiceImpl implements VisitorService {
         if (visitorRepository.findByCode(visitorBo.getCode()) != null) {
             throw new BizException("访问码已存在");
         }
-
         Visitor visitor = new Visitor();
         visitor.setCode(visitorBo.getCode());
-        visitor.setFrom(visitorBo.getFrom());
-        visitor.setTo(visitorBo.getTo());
+        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), df));
+        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), df));
         visitor.setMaxCount(visitorBo.getMaxCount());
         visitor.setLoginCount(0);
         Owner me = webService.getCurrentUser();
@@ -106,7 +110,8 @@ public class VisitorServiceImpl implements VisitorService {
         if (visitorBo.getCode().length() < 6) {
             throw new BizException("访问码至少6位");
         }
-        if(visitorBo.getFrom() != null && visitorBo.getTo() != null && visitorBo.getTo().isBefore(visitorBo.getFrom())) {
+        if (visitorBo.getFrom() != null && visitorBo.getTo() != null &&
+                LocalDateTime.parse(visitorBo.getTo(), df).isBefore(LocalDateTime.parse(visitorBo.getFrom(), df))) {
             throw new BizException("开始时间不能大于结束时间");
         }
 
@@ -128,8 +133,8 @@ public class VisitorServiceImpl implements VisitorService {
             throw new BizException("访问码已存在");
         }
         visitor.setCode(visitorBo.getCode());
-        visitor.setFrom(visitorBo.getFrom());
-        visitor.setTo(visitorBo.getTo());
+        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), df));
+        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), df));
         visitor.setMaxCount(visitorBo.getMaxCount());
         Owner me = webService.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();

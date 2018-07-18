@@ -25,7 +25,7 @@
 
 <script>
   import {Button, DatePicker, Form, FormItem, Input, InputNumber} from "element-ui"
-
+  import {formatDate} from "../../../utils/TimeFormater"
   export default {
     name: "NewVisitor",
     components: {Button, Form, FormItem, Input, InputNumber, DatePicker},
@@ -57,8 +57,8 @@
         }
         var data = {
           code: this.code,
-          from: this.time[0],
-          to: this.time[1],
+          from: formatDate(this.time[0], 'DATETIME'),
+          to: formatDate(this.time[1], 'DATETIME'),
           maxCount: this.count
         };
         this.loading = true;

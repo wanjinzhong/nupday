@@ -1,14 +1,13 @@
 package com.nupday.bo;
-import java.time.LocalDateTime;
 
 public class EditVisitorBo {
     private Integer id;
 
     private String code;
 
-    private LocalDateTime from;
+    private String from;
 
-    private LocalDateTime to;
+    private String to;
 
     private Integer maxCount;
 
@@ -28,19 +27,19 @@ public class EditVisitorBo {
         this.code = code;
     }
 
-    public LocalDateTime getFrom() {
+    public String getFrom() {
         return from;
     }
 
-    public void setFrom(LocalDateTime from) {
+    public void setFrom(String from) {
         this.from = from;
     }
 
-    public LocalDateTime getTo() {
+    public String getTo() {
         return to;
     }
 
-    public void setTo(LocalDateTime to) {
+    public void setTo(String to) {
         this.to = to;
     }
 
