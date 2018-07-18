@@ -56,7 +56,7 @@
     },
     methods: {
       loadVisitors() {
-        this.loading = false;
+        this.loading = true;
         var that = this;
         this.axios.get("/api/visitors").then(res => {
           that.visitors = res.data.data;

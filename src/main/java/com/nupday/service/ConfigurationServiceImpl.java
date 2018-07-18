@@ -61,7 +61,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 cosService.deleteObject(configuration.getCode());
             }
         }
-        configuration.setCode(key);
+        configuration.setCode("config/" + key);
         configuration.setUpdateUser(owner);
         configuration.setUpdateDatetime(now);
         configurationRepository.save(configuration);
