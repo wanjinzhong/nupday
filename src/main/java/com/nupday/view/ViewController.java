@@ -18,7 +18,7 @@ public class ViewController {
             "/article/*",
             "/album/*",
             "/news",
-            "/setting/*"
+            "/settings/*"
     })
     public ModelAndView openIndexPage() {
         return new ModelAndView("/");
