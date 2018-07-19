@@ -1,10 +1,10 @@
 <template>
-  <div style="margin-top: 20px;margin-bottom: 20px">
+  <div style="margin-top: 20px;margin-bottom: 20px" v-loading="loading">
     <Form>
       <FormItem label-width="0px">
         <Input v-model="accessCode" style="width: 300px;" placeholder="访问码"/>
       </FormItem>
-      <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="btnLoading" :loading="btnLoading">登陆
+      <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="loading" :loading="loading">登陆
       </Button>
     </Form>
   </div>
@@ -18,7 +18,7 @@
     components: {Form, FormItem, Input, Button, Tooltip},
     data() {
       return {
-        btnLoading: false,
+        loading: false,
         accessCode: "",
       }
     },
@@ -32,7 +32,7 @@
           return;
         }
         var self = this;
-        this.btnLoading = true;
+        this.loading = true;
         const data = {
           type: "VISITOR",
           accessCode: this.accessCode
@@ -42,9 +42,11 @@
             type: "success",
             message: "欢迎光临！"
           });
+          self.loading = false;
           self.$router.push("/");
+        }).catch(res=>{
+          self.loading = false;
         });
-        this.btnLoading = false;
       }
     }
   }

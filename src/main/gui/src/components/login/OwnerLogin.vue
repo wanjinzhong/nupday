@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <Form>
       <FormItem label-width="0px">
         <Select v-model="selectedOwner" style="width: 300px">
@@ -13,7 +13,7 @@
         <Input type="password" v-model="password" placeholder="密码" class="password" @focus="onFocus" @blur="onBlur"
                style="width: 300px;"/>
       </FormItem>
-      <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="btnLoading" :loading="btnLoading">登陆
+      <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="loading" :loading="loading">登陆
       </Button>
     </Form>
   </div>
@@ -30,7 +30,7 @@
       return {
         selectedOwner: 1,
         password: "",
-        btnLoading: false
+        loading: false
       }
     },
     computed: {
@@ -48,7 +48,7 @@
           return;
         }
         var self = this;
-        this.btnLoading = true;
+        this.loading = true;
         const data = {
           type: "OWNER",
           userId: this.selectedOwner,
@@ -61,13 +61,15 @@
               name = self.allOwners[i].name;
             }
           }
+          self.loading = false;
           self.$message({
             type: "success",
             message: name + "，欢迎回家！"
           });
           self.$router.push("/");
+        }).catch(res => {
+          self.loading = false;
         });
-        this.btnLoading = false;
       },
       onFocus() {
         $("#left_hand").animate({
