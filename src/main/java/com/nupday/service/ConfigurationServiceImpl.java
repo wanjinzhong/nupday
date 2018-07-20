@@ -6,6 +6,7 @@ import java.util.List;
 import ch.qos.logback.core.joran.spi.ConfigurationWatchList;
 import com.nupday.constant.ConfigurationItem;
 import com.nupday.constant.ListBoxCategory;
+import com.nupday.constant.NotificationType;
 import com.nupday.dao.entity.Configuration;
 import com.nupday.dao.entity.ListBox;
 import com.nupday.dao.entity.Owner;
@@ -98,11 +99,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void updateNotification(Boolean on) {
-        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.CONFIGURATION_ITEM.name(), ConfigurationItem.EMAIL_NOTIFY.name());
-        List<Configuration> configurationList = configurationRepository.findByItemIdAndOwnerId(item.getId(), webService.getCurrentUser().getId());
-        Configuration configuration;
+    public void updateNotification(NotificationType type, Boolean on) {
+        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.EMAIL_NOTIFICATION.name(), type.name());
         Owner owner = webService.getCurrentUser();
+        List<Configuration> configurationList = configurationRepository.findByItemIdAndOwnerId(item.getId(), owner.getId());
+        Configuration configuration;
         LocalDateTime now = LocalDateTime.now();
         if (CollectionUtils.isEmpty(configurationList)) {
             configuration = new Configuration();
@@ -117,6 +118,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         configuration.setEntryDatetime(now);
         configuration.setCode(on.toString());
         configurationRepository.save(configuration);
+    }
+
+    @Override
+    public Boolean getNotification(NotificationType type) {
+        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.EMAIL_NOTIFICATION.name(), type.name());
+        List<Configuration> configurationList = configurationRepository.findByItemIdAndOwnerId(item.getId(), webService.getCurrentUser().getId());
+        if (CollectionUtils.isEmpty(configurationList)) {
+            return false;
+        } else {
+            return Boolean.valueOf(configurationList.get(0).getCode());
+        }
     }
 
 }

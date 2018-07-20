@@ -1,6 +1,7 @@
 package com.nupday.controller;
 
 import com.nupday.constant.Constants;
+import com.nupday.constant.NotificationType;
 import com.nupday.constant.Role;
 import com.nupday.service.COSService;
 import com.nupday.service.ConfigurationService;
@@ -58,9 +59,16 @@ public class ConfigurationApi {
 
     @RequiresAuthentication
     @RequiresRoles(value = {Constants.OWNER})
-    @PutMapping("emailNotification/{status}")
-    public JsonEntity updateNotification(@PathVariable("status") Boolean status) {
-        configurationService.updateNotification(status);
+    @PutMapping("emailNotification/{type}/{status}")
+    public JsonEntity updateNotification(@PathVariable("type")NotificationType type, @PathVariable("status") Boolean status) {
+        configurationService.updateNotification(type, status);
         return ResponseHelper.ofNothing();
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
+    @GetMapping("emailNotification/{type}")
+    public JsonEntity<Boolean> getNotification(@PathVariable("type")NotificationType type) {
+        return ResponseHelper.createInstance(configurationService.getNotification(type));
     }
 }

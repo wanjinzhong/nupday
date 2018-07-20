@@ -4,6 +4,7 @@
       <Menu mode="vertical" default-active="1" router>
         <MenuItem index="1" :route="{name: 'visitor'}">访问码</MenuItem>
         <MenuItem index="2" :route="{name: 'background'}">背景图</MenuItem>
+        <MenuItem index="3" :route="{name: 'notification'}">通知</MenuItem>
       </Menu>
     </div>
     <div style="display: inline-block; vertical-align: top; margin-left: 30px">

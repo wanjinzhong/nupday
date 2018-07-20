@@ -1,6 +1,7 @@
 package com.nupday.service;
 import java.io.IOException;
 
+import com.nupday.constant.NotificationType;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ConfigurationService {
@@ -12,5 +13,7 @@ public interface ConfigurationService {
 
     String getHomeBackGroundUrl();
 
-    void updateNotification(Boolean on);
+    void updateNotification(NotificationType type, Boolean on);
+
+    Boolean getNotification(NotificationType type);
 }

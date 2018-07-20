@@ -12,6 +12,7 @@ import Article from "../components/article/Article"
 import Setting from "../components/setting/Setting"
 import Visitor from "../components/setting/visitor/Visitor"
 import Background from "../components/setting/Background"
+import Notification from "../components/setting/Notification"
 
 Vue.use(Router);
 
@@ -31,6 +32,7 @@ export default new Router({
         {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
             {path: "/settings/accessCode", name: "visitor", component:Visitor},
             {path: "/settings/background", name: "background", component:Background},
+            {path: "/settings/notification", name: "notification", component:Notification},
           ]}
       ]
     },

@@ -36,6 +36,7 @@
         isNotDraft: true,
         commentable: true,
         loadingText: '正在发布文章',
+        pushing: false,
         setting: {
           ...TinymceSetting,
           height: 200,
