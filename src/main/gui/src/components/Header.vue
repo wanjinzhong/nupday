@@ -17,7 +17,7 @@
       <Tooltip effect="light" placement="bottom">
         <div class="user">{{$store.getters.getName}}</div>
         <div slot="content" class="userMenu">
-          <div>
+          <div @click="$router.push('/myInfo')">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-geren2"></use>
             </svg>

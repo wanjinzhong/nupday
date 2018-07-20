@@ -38,17 +38,18 @@
     components: {Menu, MenuItem, Button, Submenu, Popover},
     data() {
       return {
-        owners: [
-          {id: 0, name: "", avatar: ""},
-          {id: 0, name: "", avatar: ""}
-        ],
         loveDays: 0,
         loveDaysDetail: ""
       }
     },
-    mounted() {
+    computed: {
+      owners() {
+        return this.$store.getters.getOwners;
+      }
+    },
+    created() {
       this.axios.get("/api/allOwners").then(res => {
-        this.owners = res.data.data;
+        this.$store.commit("setOwners", res.data.data);
       });
       this.axios.get("/api/loveMemorialDay").then(res => {
         var data = res.data.data;

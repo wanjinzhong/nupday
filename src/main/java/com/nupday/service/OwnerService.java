@@ -26,4 +26,6 @@ public interface OwnerService {
     FullOwnerBo getMyInfo();
 
     void updateMyInfo(FullOwnerBo ownerBo);
+
+    String getMyAvatar();
 }

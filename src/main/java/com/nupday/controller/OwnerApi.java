@@ -1,6 +1,4 @@
 package com.nupday.controller;
-import java.io.IOException;
-import java.util.List;
 
 import com.nupday.bo.FullOwnerBo;
 import com.nupday.bo.OwnerBo;
@@ -13,12 +11,11 @@ import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RequestMapping("api")
 @Api
@@ -37,7 +34,7 @@ public class OwnerApi {
         return ResponseHelper.createInstance(ownerService.getAllOwner());
     }
 
-    @PutMapping("avatar")
+    @PostMapping("avatar")
     @RequiresRoles(value = {Constants.OWNER})
     public JsonEntity<String> updateAvatar(MultipartFile file) throws IOException {
         String key = ownerService.updateAvatar(file);
@@ -55,5 +52,11 @@ public class OwnerApi {
     public JsonEntity updateMyInfo(@RequestBody FullOwnerBo ownerBo) {
         ownerService.updateMyInfo(ownerBo);
         return ResponseHelper.ofNothing();
+    }
+
+    @GetMapping("myAvatar")
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity<String> getMyAvatar() {
+        return ResponseHelper.createInstance(ownerService.getMyAvatar());
     }
 }

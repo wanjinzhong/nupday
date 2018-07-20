@@ -163,4 +163,10 @@ public class OwnerServiceImpl implements OwnerService {
             throw new BizException("名字已存在");
         }
     }
+
+    @Override
+    public String getMyAvatar() {
+        Owner owner = webService.getCurrentUser();
+        return cosService.generatePresignedUrl(owner.getAvatar());
+    }
 }

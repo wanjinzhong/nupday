@@ -13,6 +13,7 @@ import Setting from "../components/setting/Setting"
 import Visitor from "../components/setting/visitor/Visitor"
 import Background from "../components/setting/Background"
 import Notification from "../components/setting/Notification"
+import MyInfo from "../components/setting/MyInfo"
 
 Vue.use(Router);
 
@@ -29,11 +30,13 @@ export default new Router({
         {path: "/article/:articleId", name: "articleDetail", component: ArticleDetail, props: true},
         {path: "/albums", name: "album", component: Album},
         {path: "/album/:albumId", name: "albumDetail", component: AlbumDetail, props: true},
+        {path: "/myInfo", name: "myInfo", component:MyInfo},
         {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
             {path: "/settings/accessCode", name: "visitor", component:Visitor},
             {path: "/settings/background", name: "background", component:Background},
             {path: "/settings/notification", name: "notification", component:Notification},
-          ]}
+
+          ]},
       ]
     },
   ]
