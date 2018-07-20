@@ -107,7 +107,7 @@ public class OwnerServiceImpl implements OwnerService {
         if (StringUtils.isNotBlank(me.getAvatar())) {
             cosService.deleteObject(me.getAvatar());
         }
-        me.setAvatar(key);
+        me.setAvatar("avatar/" + key);
         ownerRepository.save(me);
         return key;
     }

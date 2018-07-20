@@ -9,7 +9,8 @@
           action="/api/avatar"
           :show-file-list="false"
           :on-success="reloadAvatar"
-          :disabled="!edit">
+          with-credentials
+          :disabled="!edit" v-loading="avatarLoading">
           <img v-if="avatar" :src="avatar" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </Upload>
@@ -52,7 +53,8 @@
         email: '',
         male: true,
         edit: false,
-        loading: false
+        loading: false,
+        avatarLoading: false
       }
     },
     created() {
@@ -77,9 +79,13 @@
       },
       reloadAvatar() {
         var that = this;
+        this.avatarLoading = true;
         this.axios.get("/api/myAvatar").then(res => {
           that.avatar = res.data.data;
+          this.avatarLoading = false;
           this.reloadOwners();
+        }).catch(res => {
+          this.avatarLoading = false;
         })
       },
       reloadOwners() {
