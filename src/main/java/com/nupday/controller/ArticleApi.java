@@ -11,8 +11,10 @@ import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
 import com.nupday.constant.Constants;
 import com.nupday.service.ArticleService;
+import com.nupday.service.EmailNotificationService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
+import com.nupday.util.UrlUtil;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @Api
 @RequiresAuthentication
@@ -37,11 +41,17 @@ public class ArticleApi {
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
     @PostMapping("article")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity<Integer> newArticle(@RequestBody EditArticleBo articleBo) {
+    public JsonEntity<Integer> newArticle(@RequestBody EditArticleBo articleBo, HttpServletRequest request) {
         articleBo.setType(ArticleType.ARTICLE);
-        return ResponseHelper.createInstance(articleService.newArticle(articleBo));
+        Integer articleId = articleService.newArticle(articleBo);
+        String url = UrlUtil.getServerPath(request);
+        emailNotificationService.newArticleNotify(articleId, url);
+        return ResponseHelper.createInstance(articleId);
     }
 
     @GetMapping("article/{articleId}")
@@ -56,9 +66,12 @@ public class ArticleApi {
 
     @PutMapping("article")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity<Integer> updateArticle(@RequestBody EditArticleBo articleBo) {
+    public JsonEntity<Integer> updateArticle(@RequestBody EditArticleBo articleBo, HttpServletRequest request) {
         articleBo.setType(ArticleType.ARTICLE);
-        return ResponseHelper.createInstance(articleService.updateArticle(articleBo));
+        Integer articleId = articleService.updateArticle(articleBo);
+        String url = UrlUtil.getServerPath(request);
+        emailNotificationService.updateArticleNotify(articleId, url);
+        return ResponseHelper.createInstance(articleId);
     }
 
     @DeleteMapping("article")

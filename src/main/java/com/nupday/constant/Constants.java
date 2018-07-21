@@ -17,4 +17,10 @@ public class Constants {
     public static final Integer LOVE_MEMORIAL_DAY_ID = 1;
 
     public static final String ALBUM_KEY = "album/";
+
+    public static final String ARTICLE_NOTIFICATION_TYPE_NEW = "发布";
+
+    public static final String ARTICLE_NOTIFICATION_TYPE_UPDATE = "更新";
+
+    public static final String ARTICLE_NOTIFICATION_TEMPLATE = "他（她）{0}了一篇文章《{1}》。快去看看吧：{2}";
 }

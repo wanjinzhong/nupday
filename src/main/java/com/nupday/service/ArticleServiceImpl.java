@@ -110,25 +110,25 @@ public class ArticleServiceImpl implements ArticleService {
             articleBo.setTitle(article.getTitle());
         } else {
             List<ArticlePhoto> articlePhotos = article.getArticlePhotos().stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null)
-                                                      .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             articleBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             StringBuilder content = new StringBuilder();
             content.append("<div style='margin: 0 auto; text-align: center;'>");
             content.append("<div style='margin: 10px auto;'><a href='/album/")
-                   .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                   .append("'style='margin:10px auto'>去相册查看</a></div>");
+                    .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                    .append("'style='margin:10px auto'>去相册查看</a></div>");
             for (int i = 0; i < articlePhotos.size(); i++) {
                 if (i >= 5) {
                     content.append("<a href='/album/")
-                           .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
-                           .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
+                            .append(articlePhotos.get(0).getPhoto().getAlbum().getId())
+                            .append("'style='margin:10px auto'>更多照片请到相册查看</a></div>");
                     break;
                 }
                 ArticlePhoto articlePhoto = articlePhotos.get(i);
                 content.append("<img style='max-width: 1000px; margin: 10px auto' src='")
-                       .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
-                       .append("'/>")
-                       .append("<br/>");
+                        .append(cosService.generatePresignedUrl(articlePhoto.getPhoto().getAlbum().getKey() + "/" + articlePhoto.getPhoto().getSmallKey()))
+                        .append("'/>")
+                        .append("<br/>");
             }
             content.append("</div>");
             articleBo.setContent(content.toString());
@@ -329,7 +329,12 @@ public class ArticleServiceImpl implements ArticleService {
             Html2Plain parser = new Html2Plain();
             parser.parse(in);
             in.close();
-            newsItemBo.setContent(parser.getText().substring(0, 300));
+            String plain = parser.getText();
+            if (plain.length() > 300) {
+                plain = plain.substring(0, 300);
+            } else {
+            }
+            newsItemBo.setContent(plain);
         } else {
             List<ArticlePhoto> articlePhotos = article.getArticlePhotos();
             if (CollectionUtils.isEmpty(articlePhotos)) {
@@ -343,7 +348,7 @@ public class ArticleServiceImpl implements ArticleService {
                     break;
                 }
                 photos.add(cosService.generatePresignedUrl(articlePhotos.get(i).getPhoto().getAlbum().getKey() + "/" + articlePhotos.get(i).getPhoto()
-                                                                                                                                    .getSmallKey()));
+                        .getSmallKey()));
             }
             newsItemBo.setPhotos(photos);
         }
@@ -357,15 +362,15 @@ public class ArticleServiceImpl implements ArticleService {
         if (Role.OWNER.equals(webService.getUserType())) {
             if (inDustBin) {
                 articlePage = articleRepository.findByDeleteDatetimeIsNotNullAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
-                                                                                                                                pageRequest);
+                        pageRequest);
             } else {
                 articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(ArticleType.ARTICLE.name(),
-                                                                                                                                pageRequest);
+                        pageRequest);
             }
         } else {
             articlePage = articleRepository.findByDeleteDatetimeIsNullAndIsOpenIsTrueAndIsDraftIsFalseAndTypeCodeOrderByUpdateDatetimeDesc(
-                ArticleType.ARTICLE.name(),
-                pageRequest);
+                    ArticleType.ARTICLE.name(),
+                    pageRequest);
         }
         ArticleListBo articleListBo = new ArticleListBo();
         PageBo pageBo = new PageBo();
