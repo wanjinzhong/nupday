@@ -335,6 +335,7 @@ public class ArticleServiceImpl implements ArticleService {
             if (CollectionUtils.isEmpty(articlePhotos)) {
                 return null;
             }
+            articlePhotos = articlePhotos.stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null).collect(Collectors.toList());
             newsItemBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             List<String> photos = new ArrayList<>();
             for (int i = 0; i < articlePhotos.size(); i++) {
