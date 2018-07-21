@@ -26,6 +26,7 @@
   export default {
     name: "OwnerLogin",
     components: {Form, FormItem, Select, Option, Input, Button},
+    props: ["to"],
     data() {
       return {
         selectedOwner: 1,
@@ -66,7 +67,11 @@
             type: "success",
             message: name + "，欢迎回家！"
           });
-          self.$router.push("/");
+          if (self.to != undefined && self.to.length > 0) {
+            self.$router.push(self.to);
+          } else {
+            self.$router.push("/");
+          }
         }).catch(res => {
           self.loading = false;
         });

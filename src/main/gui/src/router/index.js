@@ -20,7 +20,7 @@ Vue.use(Router);
 export default new Router({
   mode: "history",
   routes: [
-    {path: "/login", name: "login", component: Login},
+    {path: "/login", name: "login", component: Login, props: true},
     {
       path: "/", name: "home", redirect: "/news", component: Home, children: [
         {path: "/news", name: "news", component: News},

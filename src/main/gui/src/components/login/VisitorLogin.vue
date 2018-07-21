@@ -16,6 +16,7 @@
   export default {
     name: "VisitorLogin",
     components: {Form, FormItem, Input, Button, Tooltip},
+    props: ["to"],
     data() {
       return {
         loading: false,
@@ -43,7 +44,11 @@
             message: "欢迎光临！"
           });
           self.loading = false;
-          self.$router.push("/");
+          if (self.to != undefined && self.to.length > 0) {
+            self.$router.push(self.to);
+          } else {
+            self.$router.push("/");
+          }
         }).catch(res=>{
           self.loading = false;
         });

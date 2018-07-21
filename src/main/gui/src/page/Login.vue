@@ -15,8 +15,8 @@
           <MenuItem index="1">主人</MenuItem>
           <MenuItem index="2">访客</MenuItem>
         </Menu>
-        <OwnerLogin v-if="isOwnerLogin"></OwnerLogin>
-        <VisitorLogin v-else></VisitorLogin>
+        <OwnerLogin v-if="isOwnerLogin" :to="originUrl"></OwnerLogin>
+        <VisitorLogin v-else :to="originUrl"></VisitorLogin>
       </section><!-- content -->
     </div>
   </div>
@@ -32,10 +32,13 @@
     components: {Menu, MenuItem, OwnerLogin, VisitorLogin},
     data() {
       return {
-        isOwnerLogin: true
+        isOwnerLogin: true,
+        originUrl: ''
       }
     },
     created() {
+      this.originUrl = this.$route.query.origin;
+      console.log(this.originUrl);
       this.axios.get("/api/loginBackground").then((res) => {
         this.$store.commit("setLoginBackground", res.data.data);
       });

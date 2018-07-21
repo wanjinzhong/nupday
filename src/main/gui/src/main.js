@@ -21,8 +21,8 @@ let HOST = process.env.HOST;
 HOST = HOST === 'prod' ? '' :  HOST + '-';
 apiUrl = 'http://' + HOST +'love.potafish.com';
 
-axios.defaults.baseURL=apiUrl;
-axios.defaults.withCredentials=true;
+axios.defaults.baseURL = apiUrl;
+axios.defaults.withCredentials = true;
 Vue.prototype.axios = axios;
 axios.interceptors.response.use(function (response) {
   return response;
@@ -33,14 +33,16 @@ axios.interceptors.response.use(function (response) {
       type: "error",
       message: error.response.data.message,
     })
-  } else if (error.response.data.status == 500){
+  } else if (error.response.data.status == 500) {
     Vue.prototype.$notify({
       title: "错误",
       message: error.response.data.message,
       type: "error"
     });
   } else {
-        router.push("/login");
+    var path = router.currentRoute.fullPath;
+    path = path.replace("/login?origin=", "");
+    router.push("/login?origin=" + path);
   }
   return Promise.reject(error);
 });
@@ -50,6 +52,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
+  components: {App},
   template: '<App/>'
 })
