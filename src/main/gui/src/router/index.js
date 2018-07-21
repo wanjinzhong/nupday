@@ -14,6 +14,7 @@ import Visitor from "../components/setting/visitor/Visitor"
 import Background from "../components/setting/Background"
 import Notification from "../components/setting/Notification"
 import MyInfo from "../components/setting/MyInfo"
+import GuestBook from "../components/guest_book/GuestBook"
 
 Vue.use(Router);
 
@@ -31,6 +32,7 @@ export default new Router({
         {path: "/albums", name: "album", component: Album},
         {path: "/album/:albumId", name: "albumDetail", component: AlbumDetail, props: true},
         {path: "/myInfo", name: "myInfo", component:MyInfo},
+        {path: "/guestBook", name: "guestBook", component:GuestBook},
         {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
             {path: "/settings/accessCode", name: "visitor", component:Visitor},
             {path: "/settings/background", name: "background", component:Background},

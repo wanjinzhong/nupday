@@ -8,22 +8,23 @@
         <MenuItem index="home" :route="{name:'home'}" class="menuItems"><span>主页</span></MenuItem>
         <MenuItem index="article" :route="{name: 'articles'}" class="menuItems"><span>文章</span></MenuItem>
         <MenuItem index="album" class="menuItems" :route="{name:'album'}"><span>相册</span></MenuItem>
-        <MenuItem index="guestBook" class="menuItems"><span>留言</span></MenuItem>
+        <MenuItem index="guestBook" class="menuItems" :route="{name: 'guestBook'}"><span>留言</span></MenuItem>
         <MenuItem index="memorialDay" class="menuItems"><span>纪念日</span></MenuItem>
         <Button plain v-if="$store.getters.getType == 'OWNER'" type="danger" size="small" round
                 style="margin-left: 10px" @click="$router.push({name: 'newArticle'})">发文章
         </Button>
       </Menu>
       <Tooltip effect="light" placement="bottom">
-        <div class="user">{{$store.getters.getName}}</div>
+        <div class="user" v-if="$store.getters.getType == 'OWNER'">{{$store.getters.getName}}</div>
+        <div class="user" v-else>游客</div>
         <div slot="content" class="userMenu">
-          <div @click="$router.push('/myInfo')">
+          <div @click="$router.push('/myInfo')" v-if="$store.getters.getType == 'OWNER'">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-geren2"></use>
             </svg>
             个人中心
           </div>
-          <div @click="$router.push('/settings')">
+          <div @click="$router.push('/settings')" v-if="$store.getters.getType == 'OWNER'">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-shezhi"></use>
             </svg>
@@ -60,9 +61,16 @@
     methods: {
       logout() {
         var that = this;
-        this.axios.get("/api/logout").then(res => {
-          that.$router.push("/login");
-        })
+        this.$confirm(
+          '确定要退出登陆吗?', '退出登录', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+          this.axios.get("/api/logout").then(res => {
+            that.$router.push("/login");
+          })
+        });
       }
     }
   }

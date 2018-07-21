@@ -8,10 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.nupday.bo.CommentBo;
-import com.nupday.bo.CommentObject;
-import com.nupday.bo.CreateCommentBo;
+import com.nupday.bo.*;
 import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.ListBoxCategory;
 import com.nupday.constant.Role;
@@ -75,6 +74,40 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void validateComment(CreateCommentBo createCommentBo) {
+        baseValidateComment(createCommentBo);
+
+        CommentObject root = getCommentRootTarget(createCommentBo.getTargetType(), createCommentBo.getTargetId(), new ArrayList<>());
+        if (root == null) {
+            throw new BizException("评论目标不存在");
+        }
+        if (CommentTargetType.ARTICLE.equals(root.getTargetType())) {
+            Article article = (Article) root.getTarget();
+            if (!articleService.isVisible(article)) {
+                throw new BizException("文章不存在");
+            }
+            if (!article.getCommentable()) {
+                throw new BizException("这篇文章不可评论");
+            }
+        } else if (CommentTargetType.ALBUM.equals(root.getTargetType())) {
+            Album album = (Album) root.getTarget();
+            if (!albumService.isVisible(album)) {
+                throw new BizException("相册不存在");
+            }
+            if (!album.getCommentable()) {
+                throw new BizException("这个相册不可评论");
+            }
+        } else if (CommentTargetType.PHOTO.equals(root.getTargetType())) {
+            Photo photo = (Photo) root.getTarget();
+            if (!photoService.isVisible(photo)) {
+                throw new BizException("照片不存在");
+            }
+            if (!photo.getAlbum().getCommentable()) {
+                throw new BizException("这张照片不可评论");
+            }
+        }
+    }
+
+    private void baseValidateComment(CreateCommentBo createCommentBo) {
         if (StringUtils.isBlank(createCommentBo.getContent())) {
             throw new BizException("评论不能为空");
         }
@@ -84,36 +117,6 @@ public class CommentServiceImpl implements CommentService {
 
         if (!newArrayList(CommentTargetType.values()).contains(createCommentBo.getTargetType())) {
             throw new BizException("评论目标类型不正确");
-        }
-
-        CommentObject root = getCommentRootTarget(createCommentBo.getTargetType(), createCommentBo.getTargetId(), new ArrayList<>());
-        if (root == null) {
-            throw new BizException("评论目标不存在");
-        }
-        if (CommentTargetType.ARTICLE.equals(root.getTargetType())) {
-            Article article = (Article) root.getTarget();
-            if (!articleService.isVisible(article)) {
-                throw new BizException("你没有权限查看这篇文章");
-            }
-            if (!article.getCommentable()) {
-                throw new BizException("这篇文章不可评论");
-            }
-        } else if (CommentTargetType.ALBUM.equals(root.getTargetType())) {
-            Album album = (Album) root.getTarget();
-            if (!albumService.isVisible(album)) {
-                throw new BizException("你没有权限查看这个相册");
-            }
-            if (!album.getCommentable()) {
-                throw new BizException("这个相册不可评论");
-            }
-        } else if (CommentTargetType.PHOTO.equals(root.getTargetType())) {
-            Photo photo = (Photo) root.getTarget();
-            if (!photoService.isVisible(photo)) {
-                throw new BizException("你没有权限查看这张照片");
-            }
-            if (!photo.getAlbum().getCommentable()) {
-                throw new BizException("这张照片不可评论");
-            }
         }
     }
 
@@ -159,9 +162,11 @@ public class CommentServiceImpl implements CommentService {
         } else if (CommentTargetType.ALBUM.equals(targetType)) {
             Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(targetId);
             return new CommentObject(CommentTargetType.ALBUM, album);
-        } else {
+        } else if (CommentTargetType.PHOTO.equals(targetType)){
             Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(targetId);
             return new CommentObject(CommentTargetType.PHOTO, photo);
+        } else {
+            return new CommentObject(CommentTargetType.GUEST_BOOK, null);
         }
     }
 
@@ -169,22 +174,22 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentBo> getComments(CommentTargetType targetType, Integer targetId) {
         CommentObject root = getCommentRootTarget(targetType, targetId, new ArrayList<>());
         if (root == null || root.getTarget() == null) {
-            throw new BizException("评论目标不存在");
+            return new ArrayList<>();
         }
         if (CommentTargetType.ARTICLE.equals(root.getTargetType())) {
             Article article = (Article) root.getTarget();
             if (!articleService.isVisible(article)) {
-                throw new BizException("你没有权限查看这篇文章");
+                return new ArrayList<>();
             }
         } else if (CommentTargetType.ALBUM.equals(root.getTargetType())) {
             Album album = (Album) root.getTarget();
             if (!albumService.isVisible(album)) {
-                throw new BizException("你没有权限查看这个相册");
+                return new ArrayList<>();
             }
         } else if (CommentTargetType.PHOTO.equals(root.getTargetType())) {
             Photo photo = (Photo) root.getTarget();
             if (!photoService.isVisible(photo)) {
-                throw new BizException("你没有权限查看这张照片");
+                return new ArrayList<>();
             }
         }
         return getComments(targetType, targetId, new ArrayList());
@@ -202,28 +207,33 @@ public class CommentServiceImpl implements CommentService {
         route.add(targetId);
         List<CommentBo> commentBos = new ArrayList<>();
         for (Comment comment : comments) {
-            CommentBo commentBo = new CommentBo();
-            commentBo.setId(comment.getId());
-            commentBo.setContent(comment.getContent());
-            commentBo.setName(comment.getEntryUser() == null ? comment.getName() : comment.getEntryUser().getName());
-            commentBo.setTargetType(CommentTargetType.valueOf(comment.getTargetType().getCode()));
-            commentBo.setTargetId(comment.getTargetId());
-            commentBo.setIp(comment.getIp());
-            commentBo.setDateTime(comment.getEntryDatetime());
-            if (comment.getEntryUser() != null) {
-                commentBo.setAvatar(cosService.generatePresignedUrl(comment.getEntryUser().getAvatar()));
-            } else {
-                commentBo.setAvatar("/static/avatar/" + comment.getAvatar() + ".png");
-            }
-            List<CommentBo> replies = getComments(CommentTargetType.COMMENT, comment.getId(), newArrayList(route));
-            if (replies == null) {
-                commentBo.setReplies(new ArrayList<>());
-            } else {
-                commentBo.setReplies(replies);
-            }
+            CommentBo commentBo = toCommentBo(route, comment);
             commentBos.add(commentBo);
         }
         return commentBos;
+    }
+
+    private CommentBo toCommentBo(List<Integer> route, Comment comment) {
+        CommentBo commentBo = new CommentBo();
+        commentBo.setId(comment.getId());
+        commentBo.setContent(comment.getContent());
+        commentBo.setName(comment.getEntryUser() == null ? comment.getName() : comment.getEntryUser().getName());
+        commentBo.setTargetType(CommentTargetType.valueOf(comment.getTargetType().getCode()));
+        commentBo.setTargetId(comment.getTargetId());
+        commentBo.setIp(comment.getIp());
+        commentBo.setDateTime(comment.getEntryDatetime());
+        if (comment.getEntryUser() != null) {
+            commentBo.setAvatar(cosService.generatePresignedUrl(comment.getEntryUser().getAvatar()));
+        } else {
+            commentBo.setAvatar("/static/avatar/" + comment.getAvatar() + ".png");
+        }
+        List<CommentBo> replies = getComments(CommentTargetType.COMMENT, comment.getId(), newArrayList(route));
+        if (replies == null) {
+            commentBo.setReplies(new ArrayList<>());
+        } else {
+            commentBo.setReplies(replies);
+        }
+        return commentBo;
     }
 
     @Override
@@ -262,5 +272,31 @@ public class CommentServiceImpl implements CommentService {
             }
             commentRepository.deleteByIdIn(ids);
         }
+    }
+
+    @Override
+    public QueryGuestBookBo getGuestBook(Integer page, Integer size) {
+        QueryGuestBookBo guestBookBo = new QueryGuestBookBo();
+        Integer count = commentRepository.countByTargetTypeCode(CommentTargetType.GUEST_BOOK.name());
+        PageBo pageBo = new PageBo();
+        pageBo.setTotalItem(count);
+        pageBo.setPageSize(size);
+        pageBo.setCurrentPage(page);
+        pageBo.setTotalPages(Double.valueOf(Math.ceil((double)count / size)).intValue());
+        guestBookBo.setPage(pageBo);
+        List<Comment> comments = commentRepository.findGuestBook((page - 1) * size, size);
+        if (!CollectionUtils.isEmpty(comments)) {
+            guestBookBo.setData(comments.stream().map(comment -> toCommentBo(new ArrayList<>(), comment)).collect(Collectors.toList()));
+        }
+        return guestBookBo;
+    }
+
+    @Override
+    public Integer newGuestBook(CreateCommentBo guestBo) {
+        baseValidateComment(guestBo);
+        Comment comment = boToComment(guestBo);
+        comment.setTargetId(0);
+        commentRepository.save(comment);
+        return comment.getId();
     }
 }

@@ -88,6 +88,9 @@
         this.deletable = data.permission.deletable;
         this.operatable = data.operatable;
         this.commentable = data.permission.commentable;
+      }).catch(res=>{
+        this.loading = false;
+        this.$router.push("/")
       });
     },
     methods: {

@@ -38,7 +38,6 @@
     },
     created() {
       this.originUrl = this.$route.query.origin;
-      console.log(this.originUrl);
       this.axios.get("/api/loginBackground").then((res) => {
         this.$store.commit("setLoginBackground", res.data.data);
       });

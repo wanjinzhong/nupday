@@ -59,20 +59,35 @@
           targetId: this.targetId,
           avatar: this.avatar
         };
-        var successMsg = this.targetType == "ARTICLE" ? "祝福":"回复";
-        successMsg += "成功";
-        this.axios.post("/api/comment", data).then(res => {
-          this.loading = false;
-          this.name = '';
-          this.content = '';
-          this.$message({
-            type: "success",
-            message: successMsg
+        if (this.targetType == "COMMENT") {
+          var successMsg = "回复成功";
+          this.axios.post("/api/comment", data).then(res => {
+            this.loading = false;
+            this.name = '';
+            this.content = '';
+            this.$message({
+              type: "success",
+              message: successMsg
+            });
+            this.$emit("refresh");
+          }).catch(res => {
+            this.loading = false;
           });
-          this.$emit("refresh");
-        }).catch(res => {
-          this.loading = false;
-        });
+        } else {
+          var successMsg = "留言成功";
+          this.axios.post("/api/guestBook", data).then(res => {
+            this.loading = false;
+            this.name = '';
+            this.content = '';
+            this.$message({
+              type: "success",
+              message: successMsg
+            });
+            this.$emit("refresh");
+          }).catch(res => {
+            this.loading = false;
+          });
+        }
       }
     }
   }

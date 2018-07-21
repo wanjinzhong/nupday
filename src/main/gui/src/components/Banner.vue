@@ -39,16 +39,16 @@
     data() {
       return {
         loveDays: 0,
-        loveDaysDetail: ""
-      }
-    },
-    computed: {
-      owners() {
-        return this.$store.getters.getOwners;
+        loveDaysDetail: "",
+        owners: [
+          {id: 0, name: "", avatar: ""},
+          {id: 0, name: "", avatar: ""}
+        ],
       }
     },
     created() {
       this.axios.get("/api/allOwners").then(res => {
+        this.owners = res.data.data;
         this.$store.commit("setOwners", res.data.data);
       });
       this.axios.get("/api/loveMemorialDay").then(res => {

@@ -137,11 +137,8 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public AlbumBo getAlbum(Integer albumId) {
         Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
-        if (album == null) {
+        if (album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen())) {
             throw new BizException("相册不存在");
-        }
-        if (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen()) {
-            throw new BizException("你没有权限查看这个相册");
         }
         return albumToBo(album, webService.getCurrentUser());
     }

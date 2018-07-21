@@ -3,6 +3,7 @@ package com.nupday.service;
 import com.nupday.bo.CommentBo;
 import com.nupday.bo.CreateCommentBo;
 import com.nupday.bo.CommentObject;
+import com.nupday.bo.QueryGuestBookBo;
 import com.nupday.constant.CommentTargetType;
 
 import java.util.List;
@@ -17,4 +18,8 @@ public interface CommentService {
     void deleteComment(Integer commentId);
 
     void deleteComment(CommentTargetType targetType, Integer targetId);
+
+    QueryGuestBookBo getGuestBook(Integer page, Integer size);
+
+    Integer newGuestBook(CreateCommentBo guestBo);
 }

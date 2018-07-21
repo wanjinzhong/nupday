@@ -2,15 +2,17 @@
   <div v-loading="loading">
     <div @mouseover="hover=true" @mouseleave="hover = false" style="position: relative">
       <div class="title-content">{{album.name}}</div>&nbsp;&nbsp;
-      <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showEditDialog">
-        <use xlink:href="#icon-ai-edit"></use>
-      </svg>
-      <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showDeleteDialog = true">
-        <use xlink:href="#icon-shanchu"></use>
-      </svg>
+      <template v-if="$store.getters.getType == 'OWNER'">
+        <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showEditDialog">
+          <use xlink:href="#icon-ai-edit"></use>
+        </svg>
+        <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showDeleteDialog = true">
+          <use xlink:href="#icon-shanchu"></use>
+        </svg>
+      </template>
       <div style="margin-left: 20px; margin-top: 10px; ">{{album.description}}</div>
       <div style="position: absolute; right: 10px; top: 10px; cursor: pointer">
-        <Button type="primary" @click="showUploadDialog = true" size="small">
+        <Button type="primary" @click="showUploadDialog = true" size="small" v-if="$store.getters.getType == 'OWNER'">
           <i class="el-icon-upload el-icon--right"></i>
           上传照片
         </Button>
@@ -25,7 +27,7 @@
       <div v-if="photos.length > 0" style="position: relative;">
         <div @mouseover="optBtnId = photo.id" @mouseout="optBtnId = 0" class="photoContainer" v-for="photo in photos"
              style="display: inline-block;">
-          <div class="optHeader" v-if="optBtnId == photo.id">
+          <div class="optHeader" v-if="optBtnId == photo.id && $store.getters.getType == 'OWNER'">
             <svg class="icon" aria-hidden="true" @click="setCover(photo.id)">
               <use :xlink:href="photo.isCover?'#icon-msnui-home-block':'#icon-zhuye'"></use>
             </svg>&nbsp;

@@ -93,11 +93,8 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public PhotoPage getPhotos(Integer albumId, Integer page, Integer size) {
         Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
-        if (album == null) {
+        if (album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen())) {
             throw new BizException("相册不存在");
-        }
-        if (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen()) {
-            throw new BizException("你没有权限查看这个相册");
         }
         PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<Photo> photoPage = photoRepository.findByAlbumIdAndDeleteDatetimeIsNull(albumId, pageRequest);
