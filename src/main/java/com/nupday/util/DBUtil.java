@@ -41,7 +41,6 @@ public class DBUtil {
               .append(dbConfig.getPort())
               .append(" ").append(dbConfig.getDatabase());
 
-        logger.info(cmdStr.toString());
         Runtime rt = Runtime.getRuntime();
         // 调用mysqldump的cmd命令  
         final Process p;
@@ -56,14 +55,17 @@ public class DBUtil {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line1 = null;
+        Integer count = 0;
         while ((line1 = reader.readLine()) != null) {
             if (line1 != null) {
+                count ++;
                 stringBuilder.append(line1).append("\r\n");
             } else {
                 break;
             }
         }
         logger.info(stringBuilder.toString());
+        logger.info(count + "");
         return new ByteArrayInputStream(stringBuilder.toString().getBytes());
     }
 
