@@ -16,7 +16,7 @@ import org.springframework.util.ResourceUtils;
 @Service
 public class DBUtil {
 
-    private final Logger logger = LoggerFactory.getLogger(DBUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(DBUtil.class);
     /**
      * 备份数据库操作
      *
