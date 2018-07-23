@@ -5,6 +5,7 @@ import com.nupday.constant.NotificationType;
 import com.nupday.constant.Role;
 import com.nupday.service.COSService;
 import com.nupday.service.ConfigurationService;
+import com.nupday.service.DBService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
@@ -27,6 +28,9 @@ public class ConfigurationApi {
 
     @Autowired
     private COSService cosService;
+
+    @Autowired
+    private DBService dbService;
 
     @GetMapping("loginBackground")
     public JsonEntity<String> getLoginBackground() {
@@ -70,5 +74,13 @@ public class ConfigurationApi {
     @GetMapping("emailNotification/{type}")
     public JsonEntity<Boolean> getNotification(@PathVariable("type")NotificationType type) {
         return ResponseHelper.createInstance(configurationService.getNotification(type));
+    }
+
+    @GetMapping("DBBackup")
+    @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity DBBackUp() throws IOException, InterruptedException {
+        dbService.backUpDB();
+        return ResponseHelper.ofNothing();
     }
 }
