@@ -8,12 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.nupday.config.DBInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 @Service
 public class DBUtil {
 
+    private final Logger logger = LoggerFactory.getLogger(DBUtil.class);
     /**
      * 备份数据库操作
      *
@@ -61,6 +64,7 @@ public class DBUtil {
                 break;
             }
         }
+        logger.info(stringBuilder.toString());
         return new ByteArrayInputStream(stringBuilder.toString().getBytes());
     }
 
