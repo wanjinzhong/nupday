@@ -39,10 +39,9 @@ public class DBUtil {
               .append(dbConfig.getHost())
               .append(" -P")
               .append(dbConfig.getPort())
-              .append("  --ignore-table=")
-              .append(dbConfig.getDatabase()).append(".t_backup_database ")
               .append(" ").append(dbConfig.getDatabase());
 
+        logger.info(cmdStr.toString());
         Runtime rt = Runtime.getRuntime();
         // 调用mysqldump的cmd命令  
         final Process p;
