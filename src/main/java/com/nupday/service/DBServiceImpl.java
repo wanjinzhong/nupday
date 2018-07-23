@@ -17,8 +17,8 @@ public class DBServiceImpl implements DBService{
     private COSService cosService;
 
     public void backUpDB() throws IOException, InterruptedException {
-        InputStream in = DBUtil.backup(dbInfo);
-        String fileName = "backup." + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        cosService.putObject(in, fileName, "db-backup");
+        DBUtil.backup(dbInfo);
+//        String fileName = "backup." + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//        cosService.putObject(in, fileName, "db-backup");
     }
 }
