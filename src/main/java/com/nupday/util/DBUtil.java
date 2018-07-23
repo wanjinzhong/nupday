@@ -1,17 +1,11 @@
 package com.nupday.util;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.util.Date;
 
 import com.nupday.config.DBInfo;
 import org.springframework.stereotype.Service;
@@ -81,7 +75,7 @@ public class DBUtil {
             if (isWindows()) {
                 f = new File(ResourceUtils.getURL("classpath:mysql/mysqldump.exe").getPath());
             } else {
-                f = new File(ResourceUtils.getURL("classpath:mysql/mysqldump.exe").getPath());
+                f = new File(ResourceUtils.getURL("classpath:mysql/mysqldump").getPath());
             }
 
         } catch (NullPointerException e) {
