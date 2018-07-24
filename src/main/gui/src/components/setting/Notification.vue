@@ -11,6 +11,9 @@
     <div class="switcherContainer">评论或回复
       <el-switch v-model="comment" v-loading="commentLoading" @change="update('COMMENT')">c</el-switch>
     </div>
+    <div class="switcherContainer">数据库备份
+      <el-switch v-model="dbBackup" v-loading="dbBackupLoading" @change="update('DB_BACKUP')">c</el-switch>
+    </div>
   </div>
 </template>
 
@@ -27,7 +30,9 @@
         photo: false,
         photoLoading: false,
         comment: false,
-        commentLoading: false
+        commentLoading: false,
+        dbBackup: false,
+        dbBackupLoading: false
       }
     },
     methods: {
@@ -44,6 +49,9 @@
             break;
           case "COMMENT":
             data = this.comment;
+            break;
+          case "DB_BACKUP":
+            data = this.dbBackup;
             break;
         }
         this.axios.put("/api/emailNotification/" + type + "/" + data).then(res => {
@@ -71,6 +79,7 @@
       that.setLoading(that, "ARTICLE", true);
       that.setLoading(that, "PHOTO", true);
       that.setLoading(that, "COMMENT", true);
+      that.setLoading(that, "DB_BACKUP", true);
       this.axios.get("/api/emailNotification/ARTICLE").then(res => {
         that.article = res.data.data;
         that.setLoading(that, "ARTICLE", false);
@@ -88,6 +97,12 @@
         that.setLoading(that, "COMMENT", false);
       }).catch(res => {
         that.setLoading(that, "COMMENT", false);
+      });
+      this.axios.get("/api/emailNotification/DB_BACKUP").then(res => {
+        that.dbBackup = res.data.data;
+        that.setLoading(that, "DB_BACKUP", false);
+      }).catch(res => {
+        that.setLoading(that, "DB_BACKUP", false);
       });
     }
   }
