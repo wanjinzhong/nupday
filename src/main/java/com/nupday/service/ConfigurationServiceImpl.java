@@ -131,4 +131,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
+    @Override
+    public Boolean needSendNotification(Owner owner, NotificationType type) {
+        ListBox item = listBoxRepository.findByNameAndCode(ListBoxCategory.EMAIL_NOTIFICATION.name(), type.name());
+        List<Configuration> configurations = configurationRepository.findByItemIdAndOwnerId(item.getId(), owner.getId());
+        if (CollectionUtils.isEmpty(configurations)) {
+            return false;
+        }
+        return Boolean.valueOf(configurations.get(0).getCode());
+    }
 }

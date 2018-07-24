@@ -54,3 +54,6 @@ spring:
 
 mail:
       from: wan_neil@163.com
+
+application:
+      env: DEV
