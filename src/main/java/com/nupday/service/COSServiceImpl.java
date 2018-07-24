@@ -98,21 +98,21 @@ public class COSServiceImpl implements COSService {
         if (StringUtils.isBlank(prefix)) {
             throw new BizException("文件目录不能为空");
         }
-        String photoKey;
+        String key;
         String uuid = UUID.randomUUID().toString().toLowerCase().replace("-", "");
         StringBuilder fillKey = new StringBuilder()
             .append(prefix.trim())
             .append("/")
             .append(uuid);
-        photoKey = uuid;
+        key = uuid;
         if (filename != null && filename.indexOf(".") > -1) {
             String suffix = filename.substring(filename.lastIndexOf("."));
             fillKey.append(suffix);
-            photoKey += suffix;
+            key += suffix;
         }
         try {
             cosClient.putObject(bucketName, fillKey.toString(), inputStream, metadata);
-            return photoKey;
+            return key;
         } catch (CosClientException e) {
             throw new BizException("文件上传失败", e);
         }
