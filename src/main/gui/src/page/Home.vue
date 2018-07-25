@@ -19,6 +19,10 @@
         this.axios.get("/api/homeBackground").then((response) => {
           this.$store.commit("setHomeBackground", response.data.data);
         });
+        var that = this;
+        setInterval(() => {
+          that.axios.get("/api/heartbeat?" + new Date().getTime());
+        }, 60000)
       }
     }
 </script>
