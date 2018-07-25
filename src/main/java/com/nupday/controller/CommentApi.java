@@ -6,9 +6,11 @@ import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.Constants;
 import com.nupday.exception.BizException;
 import com.nupday.service.CommentService;
+import com.nupday.service.EmailNotificationService;
 import com.nupday.util.HttpUtil;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
+import com.nupday.util.UrlUtil;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -26,6 +28,9 @@ public class CommentApi {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
     @PostMapping("comment")
     public JsonEntity<Integer> newComment(@RequestBody CreateCommentBo createCommentBo, HttpServletRequest request) {
         if (createCommentBo == null) {
@@ -33,7 +38,13 @@ public class CommentApi {
         }
         String ip = HttpUtil.getIPAddress(request);
         createCommentBo.setIp(ip);
-        return ResponseHelper.createInstance(commentService.newComment(createCommentBo));
+        Integer commentId = commentService.newComment(createCommentBo);
+        if (CommentTargetType.COMMENT.equals(createCommentBo.getTargetType())) {
+            emailNotificationService.replyCommentNotify(commentId, UrlUtil.getServerPath(request));
+        } else {
+            emailNotificationService.newCommentNotify(commentId, UrlUtil.getServerPath(request));
+        }
+        return ResponseHelper.createInstance(commentId);
     }
 
     @GetMapping("comment")
