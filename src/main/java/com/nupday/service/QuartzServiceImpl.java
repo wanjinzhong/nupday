@@ -28,7 +28,7 @@ public class QuartzServiceImpl implements QuartzService{
     public void startBackUpDB() {
         try {
             JobDetail jobDetail = JobBuilder.newJob(DBBackUpJob.class).withIdentity(backUpDBJobName, backUpDBJobGroup).build();
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0 1 * * ?");
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0 9 * * ?");
             CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(backUpDBJobName, backUpDBJobGroup).withSchedule(scheduleBuilder).build();
             scheduler.scheduleJob(jobDetail, cronTrigger);
 
