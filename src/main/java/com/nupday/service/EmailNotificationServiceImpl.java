@@ -102,28 +102,37 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             return;
         }
         CommentObject commentObject = commentService.getCommentRootTarget(CommentTargetType.valueOf(replyTarget.getTargetType().getCode()), replyTarget.getTargetId(), newArrayList());
-        StringBuilder subject = new StringBuilder("你的评论有了新回复");
-        StringBuilder content = new StringBuilder("你在");
+        String type;
+        if (CommentTargetType.GUEST_BOOK.equals(commentObject.getTargetType())) {
+            type = "留言";
+        } else {
+            type = "评论";
+        }
+        StringBuilder subject = new StringBuilder("你的" + type + "有了新回复");
+        StringBuilder content = new StringBuilder();
         if (CommentTargetType.ARTICLE.equals(commentObject.getTargetType())) {
             Article article = (Article) commentObject.getTarget();
-            content.append("文章");
+            content.append("你在文章");
             content.append("《")
                     .append(article.getTitle())
-                    .append("》");
+                    .append("》的评论");
             url = url + "/article/" + replyTarget.getTargetId();
         } else if (CommentTargetType.ALBUM.equals(commentObject.getTargetType())) {
             Album album = (Album) commentObject.getTarget();
-            content.append("相册");
+            content.append("你在相册");
             content.append("《")
                     .append(album.getName())
-                    .append("》");
+                    .append("》的评论");
             url = url + "/album/" + replyTarget.getTargetId();
         } else if (CommentTargetType.PHOTO.equals(commentObject.getTargetType())) {
-            content.append("照片");
+            content.append("你在照片的评论");
+        } else if (CommentTargetType.GUEST_BOOK.equals(commentObject.getTargetType())) {
+            content.append("你的留言");
+            url = url + "/guestBook";
         } else {
             return;
         }
-        content.append("的评论有新的回复：\r\n");
+        content.append("有新的回复：\r\n");
         if (comment.getEntryUser() == null) {
             content.append(comment.getName());
         } else {
@@ -191,6 +200,34 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             if (!(comment.getEntryUser() != null && owner.getId().equals(comment.getEntryUser().getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
                     configurationService.needSendNotification(owner, NotificationType.COMMENT)) {
                 mailService.sendSimpleEmail(owner.getEmail(), subject.toString(), content.toString());
+            }
+        }
+    }
+
+    @Override
+    public void newGuestBookNotify(Integer commentId, String url) {
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        if (!commentOptional.isPresent()) {
+            return;
+        }
+        Comment comment = commentOptional.get();
+        String subject = "你有新的留言";
+        StringBuilder content = new StringBuilder();
+        Owner commenter = comment.getEntryUser();
+        if (commenter != null) {
+            content.append(commenter.getName());
+        } else {
+            content.append(comment.getName());
+        }
+        content.append("给你留言了：")
+                .append(comment.getContent())
+                .append("\r\n")
+                .append(url + "/guestBook");
+        List<Owner> owners = ownerRepository.findAll();
+        for (Owner owner : owners) {
+            if (!(commenter != null && owner.getId().equals(commenter.getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
+                    configurationService.needSendNotification(owner, NotificationType.COMMENT)) {
+                mailService.sendSimpleEmail(owner.getEmail(), subject, content.toString());
             }
         }
     }

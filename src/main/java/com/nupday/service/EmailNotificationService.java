@@ -8,4 +8,6 @@ public interface EmailNotificationService {
     void replyCommentNotify(Integer commentId, String url);
 
     void newCommentNotify(Integer commentId, String url);
+
+    void newGuestBookNotify(Integer commentId, String url);
 }
