@@ -13,4 +13,6 @@ public interface DBBackupRepository extends JpaRepository<DBBackup, Integer> {
     @Query(nativeQuery = true, value =
         "select * from db_backup where id < (select id from db_backup order by id desc limit :keepCount, 1)")
     List<DBBackup> findToBeDeleteDBBackup(@Param("keepCount") Integer keepCount);
+
+    List<DBBackup> findAllByOrderByEntryDatetimeDesc();
 }

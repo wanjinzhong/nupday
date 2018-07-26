@@ -1,4 +1,5 @@
 package com.nupday.service;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -9,6 +10,7 @@ import com.nupday.exception.BizException;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.http.HttpMethodName;
+import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.GeneratePresignedUrlRequest;
 import com.qcloud.cos.model.ObjectMetadata;
 import org.apache.commons.lang3.StringUtils;
@@ -65,9 +67,9 @@ public class COSServiceImpl implements COSService {
         String photoKey;
         String uuid = UUID.randomUUID().toString().toLowerCase().replace("-", "");
         StringBuilder fillKey = new StringBuilder()
-            .append(prefix.trim())
-            .append("/")
-            .append(uuid);
+                .append(prefix.trim())
+                .append("/")
+                .append(uuid);
         photoKey = uuid;
         if (filename != null && filename.indexOf(".") > -1) {
             String suffix = filename.substring(filename.lastIndexOf("."));
@@ -101,9 +103,9 @@ public class COSServiceImpl implements COSService {
         String key;
         String uuid = UUID.randomUUID().toString().toLowerCase().replace("-", "");
         StringBuilder fillKey = new StringBuilder()
-            .append(prefix.trim())
-            .append("/")
-            .append(uuid);
+                .append(prefix.trim())
+                .append("/")
+                .append(uuid);
         key = uuid;
         if (filename != null && filename.indexOf(".") > -1) {
             String suffix = filename.substring(filename.lastIndexOf("."));
@@ -122,5 +124,11 @@ public class COSServiceImpl implements COSService {
     @Override
     public void deleteObject(String key) {
         cosClient.deleteObject(bucketName, key);
+    }
+
+    @Override
+    public InputStream getObject(String key) {
+        COSObject cosObject = cosClient.getObject(bucketName, key);
+        return cosObject.getObjectContent();
     }
 }

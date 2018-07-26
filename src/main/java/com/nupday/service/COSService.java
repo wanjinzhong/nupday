@@ -12,4 +12,6 @@ public interface COSService {
     String putObject(InputStream inputStream, String filename, String prefix);
 
     void deleteObject(String key);
+
+    InputStream getObject(String key);
 }

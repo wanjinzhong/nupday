@@ -1,10 +1,13 @@
 package com.nupday.service;
 
+import com.nupday.bo.DBBackupBo;
 import com.nupday.constant.NotificationType;
 import com.nupday.dao.entity.DBBackup;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.DBBackupRepository;
 import com.nupday.dao.repository.OwnerRepository;
+import com.nupday.exception.BizException;
+import com.qcloud.cos.model.COSObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,19 +19,24 @@ import org.springframework.util.CollectionUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class DBServiceImpl implements DBService{
-    @Autowired
-    private COSService cosService;
+public class DBServiceImpl implements DBService {
 
     @Autowired
     private DBBackupRepository dbBackupRepository;
+
+    @Autowired
+    private COSService cosService;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -90,5 +98,52 @@ public class DBServiceImpl implements DBService{
             }
         }
     }
+    @Override
+    public List<DBBackupBo> getBackupList() {
+        List<DBBackup> dbBackups = dbBackupRepository.findAllByOrderByEntryDatetimeDesc();
+        return toDBBackupBo(dbBackups);
+    }
 
+    private List<DBBackupBo> toDBBackupBo(List<DBBackup> dbBackups) {
+        if (CollectionUtils.isEmpty(dbBackups)) {
+            return new ArrayList<>();
+        }
+        return dbBackups.stream().map(dbBackup -> toDBBackupBo(dbBackup)).collect(Collectors.toList());
+    }
+
+    private DBBackupBo toDBBackupBo(DBBackup dbBackup) {
+        if (dbBackup == null) {
+            return null;
+        }
+        DBBackupBo dbBackupBo = new DBBackupBo();
+        dbBackupBo.setId(dbBackup.getId());
+        dbBackupBo.setTime(dbBackup.getEntryDatetime());
+        return dbBackupBo;
+    }
+
+    @Override
+    public InputStream getDBBackup(Integer id) {
+        Optional<DBBackup> dbBackup = dbBackupRepository.findById(id);
+        if (!dbBackup.isPresent()) {
+            throw new BizException("备份文件不存在");
+        }
+        String key = "db-backup/" + dbBackup.get().getFileName();
+        InputStream in = cosService.getObject(key);
+        if (in == null) {
+            throw new BizException("备份文件不存在");
+        }
+        return in;
+    }
+
+    @Override
+    public void deleteDBBackup(Integer id) {
+        Optional<DBBackup> dbBackupOptional = dbBackupRepository.findById(id);
+        if (!dbBackupOptional.isPresent()) {
+            throw new BizException("备份文件不存在");
+        }
+        DBBackup dbBackup = dbBackupOptional.get();
+        String key = "db-backup/" + dbBackup.getFileName();
+        cosService.deleteObject(key);
+        dbBackupRepository.delete(dbBackup);
+    }
 }

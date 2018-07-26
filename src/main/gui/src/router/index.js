@@ -15,6 +15,7 @@ import Background from "../components/setting/Background"
 import Notification from "../components/setting/Notification"
 import MyInfo from "../components/setting/MyInfo"
 import GuestBook from "../components/guest_book/GuestBook"
+import DBBackup from "../components/setting/DBBackup"
 
 Vue.use(Router);
 
@@ -37,7 +38,7 @@ export default new Router({
             {path: "/settings/accessCode", name: "visitor", component:Visitor},
             {path: "/settings/background", name: "background", component:Background},
             {path: "/settings/notification", name: "notification", component:Notification},
-
+            {path: "/settings/dbBackup", name: "dbBackup", component:DBBackup},
           ]},
       ]
     },
