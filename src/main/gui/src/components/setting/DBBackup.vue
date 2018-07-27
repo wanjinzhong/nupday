@@ -46,7 +46,7 @@
         })
       },
       download(id) {
-        window.location.href = this.apiUrl + "/api/dbBackup/" + id;
+        window.location.href =  "/api/dbBackup/" + id;
       },
       deleteDBBackup(id) {
         let that = this;
