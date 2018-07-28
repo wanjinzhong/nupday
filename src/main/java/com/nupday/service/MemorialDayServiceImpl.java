@@ -122,6 +122,20 @@ public class MemorialDayServiceImpl implements MemorialDayService {
         memorialDayRepository.save(memorialDay);
     }
 
+    @Override
+    public void changeOpenStatus(Integer id, Boolean status) {
+        if (status == null) {
+            throw new BizException("状态不能为空");
+        }
+        Optional<MemorialDay> memorialDayOptional = memorialDayRepository.findById(id);
+        if (!memorialDayOptional.isPresent()) {
+            throw new BizException("纪念日不存在");
+        }
+        MemorialDay memorialDay = memorialDayOptional.get();
+        memorialDay.setOpen(status);
+        memorialDayRepository.save(memorialDay);
+    }
+
     public MemorialDay toMemorialDay(EditMemorialDayBo memorialDayBo) {
         if (memorialDayBo == null) {
             return null;

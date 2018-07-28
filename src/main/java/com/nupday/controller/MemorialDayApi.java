@@ -60,4 +60,10 @@ public class MemorialDayApi {
         memorialDayService.deleteMemorialDay(id);
         return ResponseHelper.ofNothing();
     }
+
+    @PutMapping("/memorialDay/{id}/open/{status}")
+    public JsonEntity changeOpenStatus(@PathVariable("id") Integer id, @PathVariable("status") Boolean status) {
+        memorialDayService.changeOpenStatus(id, status);
+        return ResponseHelper.ofNothing();
+    }
 }

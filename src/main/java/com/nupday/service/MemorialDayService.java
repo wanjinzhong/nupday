@@ -16,4 +16,6 @@ public interface MemorialDayService {
     void deleteMemorialDay(Integer id);
 
     void setAsHome(Integer id);
+
+    void changeOpenStatus(Integer id, Boolean status);
 }
