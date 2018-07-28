@@ -79,9 +79,9 @@ public class ConfigurationApi {
     }
 
     @RequiresAuthentication
-    @PutMapping("maxDBBackupCount")
+    @PutMapping("maxDBBackupCount/{maxCount}")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity updateMaxDBBackupCount(@RequestBody Integer maxCount) {
+    public JsonEntity updateMaxDBBackupCount(@PathVariable("maxCount") Integer maxCount) {
         configurationService.updateMaxDBBackupCount(maxCount);
         return ResponseHelper.ofNothing();
     }
