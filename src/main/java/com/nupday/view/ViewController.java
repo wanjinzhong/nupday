@@ -20,7 +20,8 @@ public class ViewController {
             "/news",
             "/settings/*",
             "/myInfo",
-            "/guestBook"
+            "/guestBook",
+	    "/memorialDay"
     })
     public ModelAndView openIndexPage() {
         return new ModelAndView("/");
