@@ -16,6 +16,7 @@ import Notification from "../components/setting/Notification"
 import MyInfo from "../components/setting/MyInfo"
 import GuestBook from "../components/guest_book/GuestBook"
 import DBBackup from "../components/setting/DBBackup"
+import MemorialDay from "../components/memorial_day/MemorialDay"
 
 Vue.use(Router);
 
@@ -34,6 +35,7 @@ export default new Router({
         {path: "/album/:albumId", name: "albumDetail", component: AlbumDetail, props: true},
         {path: "/myInfo", name: "myInfo", component:MyInfo},
         {path: "/guestBook", name: "guestBook", component:GuestBook},
+        {path: "/memorialDay", name: "memorialDay", component:MemorialDay},
         {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
             {path: "/settings/accessCode", name: "visitor", component:Visitor},
             {path: "/settings/background", name: "background", component:Background},

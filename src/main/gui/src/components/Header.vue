@@ -9,7 +9,7 @@
         <MenuItem index="article" :route="{name: 'articles'}" class="menuItems"><span>文章</span></MenuItem>
         <MenuItem index="album" class="menuItems" :route="{name:'album'}"><span>相册</span></MenuItem>
         <MenuItem index="guestBook" class="menuItems" :route="{name: 'guestBook'}"><span>留言</span></MenuItem>
-        <MenuItem index="memorialDay" class="menuItems"><span>纪念日</span></MenuItem>
+        <MenuItem index="memorialDay" class="menuItems" :route="{name: 'memorialDay'}"><span>纪念日</span></MenuItem>
         <Button plain v-if="$store.getters.getType == 'OWNER'" type="danger" size="small" round
                 style="margin-left: 10px" @click="$router.push({name: 'newArticle'})">发文章
         </Button>

@@ -15,7 +15,7 @@
           <span class="name name-left">{{owners[1].name}}</span>
           <img :src="owners[1].avatar" class="avatar avatar-right"/>
         </div>
-        <div class="loveDaysContent">我们{{memorialDay.title}}
+        <div class="loveDaysContent" v-if="memorialDay != null">我们{{memorialDay.title}}
           <Popover
           placement="bottom"
           :content="memorialDay.detailDays"
