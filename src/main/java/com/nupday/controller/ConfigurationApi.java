@@ -4,7 +4,6 @@ import com.nupday.constant.Constants;
 import com.nupday.constant.NotificationType;
 import com.nupday.service.COSService;
 import com.nupday.service.ConfigurationService;
-import com.nupday.service.DBService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,9 +33,6 @@ public class ConfigurationApi {
 
     @Autowired
     private COSService cosService;
-
-    @Autowired
-    private DBService dbService;
 
     @GetMapping("loginBackground")
     public JsonEntity<String> getLoginBackground() {
@@ -81,11 +78,18 @@ public class ConfigurationApi {
         return ResponseHelper.createInstance(configurationService.getNotification(type));
     }
 
-    @GetMapping("DBBackup")
     @RequiresAuthentication
+    @PutMapping("maxDBBackupCount")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity DBBackUp() {
-        dbService.backUpDB();
+    public JsonEntity updateMaxDBBackupCount(@RequestBody Integer maxCount) {
+        configurationService.updateMaxDBBackupCount(maxCount);
         return ResponseHelper.ofNothing();
+    }
+
+    @RequiresAuthentication
+    @GetMapping("maxDBBackupCount")
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity<Integer> getMaxDBBackupCount() {
+        return ResponseHelper.createInstance(configurationService.getMaxDBBackupCount());
     }
 }

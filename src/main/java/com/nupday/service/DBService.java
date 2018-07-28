@@ -8,6 +8,8 @@ import java.util.List;
 public interface DBService {
     void backUpDB();
 
+    void cutDBBackupFiles();
+
     List<DBBackupBo> getBackupList();
 
     InputStream getDBBackup(Integer id);

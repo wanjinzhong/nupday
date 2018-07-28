@@ -77,12 +77,18 @@ public class DBServiceImpl implements DBService {
         dbBackup.setEntryDatetime(LocalDateTime.now());
         dbBackupRepository.save(dbBackup);
         dbBackupRepository.flush();
-        List<DBBackup> tbds = dbBackupRepository.findToBeDeleteDBBackup(5-1);
+        cutDBBackupFiles();
+        sendNotification(file);
+    }
+
+    @Override
+    public void cutDBBackupFiles() {
+        Integer maxCount = configurationService.getMaxDBBackupCount();
+        List<DBBackup> tbds = dbBackupRepository.findToBeDeleteDBBackup(maxCount-1);
         if (!CollectionUtils.isEmpty(tbds)) {
             tbds.forEach(tbd -> cosService.deleteObject("db-backup/" + tbd.getFileName()));
             dbBackupRepository.deleteAll(tbds);
         }
-        sendNotification(file);
     }
 
     private void sendNotification(File file) {

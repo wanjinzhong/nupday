@@ -1,14 +1,5 @@
 package com.nupday.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
 import com.nupday.bo.DBBackupBo;
 import com.nupday.constant.Constants;
 import com.nupday.service.COSService;
@@ -27,8 +18,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("api")
@@ -45,6 +45,15 @@ public class BackupApi {
 
     @Value("${application.env}")
     private String env;
+
+
+    @PostMapping("dbBackup")
+    @RequiresAuthentication
+    @RequiresRoles(value = {Constants.OWNER})
+    public JsonEntity DBBackUp() {
+        dbService.backUpDB();
+        return ResponseHelper.ofNothing();
+    }
 
     @GetMapping("dbBackups")
     public JsonEntity<List<DBBackupBo>> getDBBackups() {

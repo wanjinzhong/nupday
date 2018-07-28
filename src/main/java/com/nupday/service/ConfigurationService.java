@@ -19,4 +19,8 @@ public interface ConfigurationService {
     Boolean getNotification(NotificationType type);
 
     Boolean needSendNotification(Owner owner, NotificationType type);
+
+    void updateMaxDBBackupCount(Integer maxCount);
+
+    Integer getMaxDBBackupCount();
 }
