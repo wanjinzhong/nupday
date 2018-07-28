@@ -14,8 +14,6 @@ public class Constants {
 
     public static final String VISITOR = "VISITOR";
 
-    public static final Integer LOVE_MEMORIAL_DAY_ID = 1;
-
     public static final String ALBUM_KEY = "album/";
 
     public static final String ARTICLE_NOTIFICATION_TYPE_NEW = "发布";

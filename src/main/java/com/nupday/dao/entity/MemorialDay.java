@@ -19,16 +19,19 @@ public class MemorialDay extends BaseDeleteEntity {
     private Integer id;
 
     @Column
+    private String title;
+
+    @Column
     private String description;
 
     @Column
     private LocalDate time;
 
     @Column
-    private Boolean open;
+    private Boolean home;
 
     @Column
-    private Boolean deletable;
+    private Boolean open;
 
     public Integer getId() {
         return id;
@@ -62,11 +65,19 @@ public class MemorialDay extends BaseDeleteEntity {
         this.open = open;
     }
 
-    public Boolean getDeletable() {
-        return deletable;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDeletable(Boolean deletable) {
-        this.deletable = deletable;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean getHome() {
+        return home;
+    }
+
+    public void setHome(Boolean home) {
+        this.home = home;
     }
 }

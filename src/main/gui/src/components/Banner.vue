@@ -15,13 +15,13 @@
           <span class="name name-left">{{owners[1].name}}</span>
           <img :src="owners[1].avatar" class="avatar avatar-right"/>
         </div>
-        <div class="loveDaysContent">我们相爱
+        <div class="loveDaysContent">我们{{memorialDay.title}}
           <Popover
           placement="bottom"
-          :content="loveDaysDetail"
+          :content="memorialDay.detailDays"
           trigger="hover"
           :open-delay="500">
-            <span class="loveDays" slot="reference">{{loveDays}}</span>
+            <span class="loveDays" slot="reference">{{memorialDay.days}}</span>
           </Popover>
           天啦！
         </div>
@@ -38,8 +38,7 @@
     components: {Menu, MenuItem, Button, Submenu, Popover},
     data() {
       return {
-        loveDays: 0,
-        loveDaysDetail: "",
+        memorialDay: {},
         owners: [
           {id: 0, name: "", avatar: ""},
           {id: 0, name: "", avatar: ""}
@@ -51,10 +50,8 @@
         this.owners = res.data.data;
         this.$store.commit("setOwners", res.data.data);
       });
-      this.axios.get("/api/loveMemorialDay").then(res => {
-        var data = res.data.data;
-        this.loveDays = data.days;
-        this.loveDaysDetail = data.detailDays;
+      this.axios.get("/api/homeMemorialDay").then(res => {
+        this.memorialDay = res.data.data;
       });
     }
   }

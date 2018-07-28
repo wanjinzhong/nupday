@@ -7,13 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 public class MemorialDayBo {
     private Integer id;
 
+    private String title;
+
     private String description;
 
     private LocalDate time;
 
-    private Boolean open;
+    private Boolean home;
 
-    private Boolean deletable;
+    private Boolean open;
 
     public Integer getId() {
         return id;
@@ -47,20 +49,28 @@ public class MemorialDayBo {
         this.open = open;
     }
 
-    public Boolean getDeletable() {
-        return deletable;
-    }
-
-    public void setDeleteable(Boolean deletable) {
-        this.deletable = deletable;
-    }
-
     public Long getDays() {
         if (this.time == null) {
             return 0L;
         }
         LocalDate now = LocalDate.now();
         return now.toEpochDay() - time.toEpochDay();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean getHome() {
+        return home;
+    }
+
+    public void setHome(Boolean home) {
+        this.home = home;
     }
 
     public String getDetailDays() {
