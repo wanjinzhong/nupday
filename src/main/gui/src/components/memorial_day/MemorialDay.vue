@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  style="width: 600px">
     <Steps direction="vertical" :active="memorialDays.length" v-loading="memorialDaysLoading">
       <Step v-for="item in memorialDays" :key="item.id" :style="{backgroundColor: item.open? 'transparent': '#eee'}">
         <div slot="title" @mouseover="item.hover = true" @mouseleave="item.hover = false">{{item.time}} -
