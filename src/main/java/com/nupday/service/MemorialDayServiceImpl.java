@@ -41,6 +41,25 @@ public class MemorialDayServiceImpl implements MemorialDayService {
     }
 
     @Override
+    public MemorialDayBo getMemorialDay(Integer id) {
+        if (Role.OWNER.equals(webService.getUserType())) {
+            Optional<MemorialDay> memorialDay = memorialDayRepository.findById(id);
+            if (!memorialDay.isPresent()) {
+                throw new BizException("纪念日不存在");
+            } else {
+                return memorialDayToBo(memorialDay.get());
+            }
+        } else {
+            MemorialDay memorialDay = memorialDayRepository.findByIdAndOpenIsTrue(id);
+            if (memorialDay == null) {
+                throw new BizException("纪念日不存在");
+            } else {
+                return memorialDayToBo(memorialDay);
+            }
+        }
+    }
+
+    @Override
     public List<MemorialDayBo> getMemorialDay() {
         List<MemorialDay> memorialDays;
         if (Role.OWNER.equals(webService.getUserType())) {

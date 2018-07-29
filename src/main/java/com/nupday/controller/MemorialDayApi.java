@@ -66,4 +66,9 @@ public class MemorialDayApi {
         memorialDayService.changeOpenStatus(id, status);
         return ResponseHelper.ofNothing();
     }
+
+    @GetMapping("/memorialDay/{id}")
+    public JsonEntity<MemorialDayBo> getMemorialDay(@PathVariable("id") Integer id) {
+        return ResponseHelper.createInstance(memorialDayService.getMemorialDay(id));
+    }
 }

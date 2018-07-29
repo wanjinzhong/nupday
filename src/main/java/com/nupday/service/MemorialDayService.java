@@ -7,6 +7,8 @@ import java.util.List;
 public interface MemorialDayService {
     MemorialDayBo getHomeMemorialDay();
 
+    MemorialDayBo getMemorialDay(Integer id);
+
     List<MemorialDayBo> getMemorialDay();
 
     Integer newMemorialDay(EditMemorialDayBo editMemorialDayBo);

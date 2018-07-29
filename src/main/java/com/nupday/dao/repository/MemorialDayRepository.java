@@ -12,4 +12,6 @@ public interface MemorialDayRepository extends JpaRepository<MemorialDay, Intege
     MemorialDay findByHomeIsTrueAndOpenIsTrue();
 
     List<MemorialDay> findByOpenIsTrue();
+
+    MemorialDay findByIdAndOpenIsTrue(Integer id);
 }
