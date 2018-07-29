@@ -32,7 +32,7 @@
       <NewVisitor @addComplete="optComplete"></NewVisitor>
     </Dialog>
     <Dialog :visible.sync="editDialogShow" width="530px" title="修改访问码">
-      <EditVisitor ref="editComponent" :id="editId" @editComplete="optComplete"></EditVisitor>
+      <EditVisitor :id="editId" @editComplete="optComplete"></EditVisitor>
     </Dialog>
   </div>
 </template>

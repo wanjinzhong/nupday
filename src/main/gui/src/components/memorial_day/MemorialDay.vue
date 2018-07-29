@@ -1,5 +1,6 @@
 <template>
   <div  style="width: 600px">
+    <Button @click="addDialogShow = true" type="primary" size="mini" style="margin-bottom: 20px">添加纪念日</Button>
     <Steps direction="vertical" :active="memorialDays.length" v-loading="memorialDaysLoading">
       <Step v-for="item in memorialDays" :key="item.id" :style="{backgroundColor: item.open? 'transparent': '#eee'}">
         <div slot="title" @mouseover="item.hover = true" @mouseleave="item.hover = false">{{item.time}} -
@@ -30,19 +31,30 @@
         </div>
       </Step>
     </Steps>
+    <Dialog title="添加纪念日" :visible.sync="addDialogShow" width="500px">
+      <AddMemorialDay @closeMe="closeDialog"></AddMemorialDay>
+    </Dialog>
+    <Dialog title="编辑纪念日" :visible.sync="editDialogShow" width="500px">
+      <EditMemorialDay @closeMe="closeDialog" :id="editId"></EditMemorialDay>
+  </Dialog>
   </div>
 </template>
 
 <script>
-  import {Steps, Step, Tooltip} from 'element-ui';
+  import {Steps, Step, Tooltip, Dialog, Button} from 'element-ui';
+  import AddMemorialDay from "./AddMemorialDay"
+  import EditMemorialDay from "./EditMemorialDay"
 
   export default {
     name: "MemorialDay",
-    components: {Steps, Step, Tooltip},
+    components: {Steps, Step, Tooltip, Dialog, AddMemorialDay, EditMemorialDay, Button},
     data() {
       return {
         memorialDays: [],
-        memorialDaysLoading: false
+        memorialDaysLoading: false,
+        addDialogShow: false,
+        editDialogShow: false,
+        editId: -1
       }
     },
     methods: {
@@ -67,7 +79,9 @@
           this.load();
         });
       },
-      toEdit(item) {
+      toEdit(id) {
+        this.editDialogShow = true;
+        this.editId = id;
       },
       changeLock(item) {
         this.axios.put("/api/memorialDay/" + item.id + "/open/" + !item.open).then(res => {
@@ -92,6 +106,13 @@
             this.memorialDaysLoading = false;
           })
         })
+      },
+      closeDialog(reload) {
+        this.addDialogShow = false;
+        this.editDialogShow = false;
+        if (reload) {
+          this.load();
+        }
       }
     },
     created() {
