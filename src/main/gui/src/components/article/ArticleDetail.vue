@@ -24,7 +24,7 @@
             </svg>
           </Tooltip>&nbsp;
           <Tooltip content="删除文章" effect="light" :open-delay="500">
-            <svg class="icon delete" aria-hidden="true" @click="readyToDelete">
+            <svg class="icon delete" aria-hidden="true" @click="deleteArticle">
               <use xlink:href="#icon-shanchu"></use>
             </svg>
           </Tooltip>
@@ -34,14 +34,6 @@
       <div class="content">
         <div v-html="content"></div>
       </div>
-      <Dialog title="确认删除" :visible.sync="showDeleteDialog" width="520px">
-        <span>确认要删除这篇文章吗？删除之后不可恢复，但是你可以先移动到回收站。</span>
-        <span slot="footer" class="dialog-footer" v-loading="">
-        <Button @click="showDeleteDialog = false">取消</Button>
-        <Button type="primary" @click="deleteArticle('true')">移到回收站</Button>
-        <Button type="danger" @click="deleteArticle('false')">删除</Button>
-      </span>
-      </Dialog>
     </div>
     <Comment style="margin: 20px auto" :target-id="articleId" target-type="ARTICLE" :commentable="commentable"></Comment>
   </div>
@@ -141,18 +133,20 @@
       toEdit() {
         this.$router.push("/editArticle/" + this.articleId);
       },
-      deleteArticle(toDustbin) {
-        var that = this;
+      deleteArticle() {
+        let that = this;
         this.deleting = true;
-        var params = "?id=" + this.articleId + "&toDustbin=" + toDustbin;
-        this.axios.delete("/api/article" + params).then(res => {
-          that.showDeleteDialog = false;
-          that.$message({
-            type: "success",
-            message: "文章删除成功"
+        this.$confirm("系统将会暂时把这篇文章放到回收站，等对方确认后彻底删除。确定放入回收站吗？", "确认删除",{type: "warning"})
+          .then(() => {
+            this.axios.delete("/api/article/" + this.articleId).then(res => {
+              that.showDeleteDialog = false;
+              that.$message({
+                type: "success",
+                message: "文章删除成功"
+              });
+              that.$router.push("/");
+            });
           });
-          that.$router.push("/");
-        });
       }
     }
   }

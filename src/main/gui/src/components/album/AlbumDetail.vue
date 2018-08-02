@@ -6,7 +6,7 @@
         <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showEditDialog">
           <use xlink:href="#icon-ai-edit"></use>
         </svg>
-        <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="showDeleteDialog = true">
+        <svg class="icon editBtn" aria-hidden="true" v-if="hover" @click="deleteAlbum">
           <use xlink:href="#icon-shanchu"></use>
         </svg>
       </template>
@@ -31,7 +31,7 @@
             <svg class="icon" aria-hidden="true" @click="setCover(photo.id)">
               <use :xlink:href="photo.isCover?'#icon-msnui-home-block':'#icon-zhuye'"></use>
             </svg>&nbsp;
-            <svg class="icon" aria-hidden="true" @click="readyToDelete(photo.id)">
+            <svg class="icon" aria-hidden="true" @click="deletePhoto(photo.id)">
               <use xlink:href="#icon-shanchu"></use>
             </svg>
           </div>
@@ -68,14 +68,6 @@
         </div>
       </Form>
     </Dialog>
-    <Dialog title="确认删除" :visible.sync="showDeleteDialog" width="520px" v-loading="deleting">
-      <span>确认要删除这个相册吗，包括其中所有的照片？删除之后不可恢复，但是你可以先移动到回收站。</span>
-      <span slot="footer" class="dialog-footer" v-loading="deleting">
-        <Button @click="showDeleteDialog = false">取消</Button>
-        <Button type="primary" @click="deleteAlbum('true')">移到回收站</Button>
-        <Button type="danger" @click="deleteAlbum('false')">删除</Button>
-      </span>
-    </Dialog>
     <Dialog title="上传照片" :visible.sync="showUploadDialog" @close="closeDialog">
       <Upload :action="'/api/album/' + $route.params.albumId + '/photo'" ref="upload"
               multiple with-credentials list-type="picture-card" accept="image/*" :on-success="uploadSuccess">
@@ -83,14 +75,6 @@
       <div style="text-align: right">
         <Button type="primary" style="margin-top: 20px;" @click="closeDialog">完成</Button>
       </div>
-    </Dialog>
-    <Dialog title="确认删除" :visible.sync="showDeletePhotoDialog" width="520px" v-loading="deleting">
-      <span>确认要删除这张照片吗？包括它的评论。删除之后不可恢复，但是你可以先移动到回收站。</span>
-      <span slot="footer" class="dialog-footer">
-        <Button @click="showDeletePhotoDialog = false">取消</Button>
-        <Button type="primary" @click="deletePhoto('true')">移到回收站</Button>
-        <Button type="danger" @click="deletePhoto('false')">删除</Button>
-      </span>
     </Dialog>
   </div>
 </template>
@@ -123,8 +107,7 @@
         showUploadDialog: false,
         uploaded: false,
         optBtnId: 0,
-        showDeletePhotoDialog: false,
-        deletePhotoId: 0
+        showDeletePhotoDialog: false
       }
     },
     methods: {
@@ -174,23 +157,22 @@
         this.commentable = this.album.commentable;
         this.isShowEditDialog = true;
       },
-      deleteAlbum(toDustbin) {
-        this.deleting = true;
+      deleteAlbum() {
         var that = this;
-        var params = {
-          id: this.album.id,
-          toDustbin: toDustbin
-        };
-        this.axios.delete("/api/album", {params: params}).then(res => {
-          that.deleting = false;
-          that.$message({
-            type: "success",
-            message: "删除相册成功"
+        this.$confirm("系统将暂时把这个相册和其中的所有照片放入回收站，等对方确认后彻底删除。确定放入回收站吗？", "确认删除",{type: "warning"})
+          .then(() => {
+            this.deleting = true;
+            this.axios.delete("/api/album/" + this.album.id).then(res => {
+              that.deleting = false;
+              that.$message({
+                type: "success",
+                message: "删除相册成功"
+              });
+              that.$router.push("/albums");
+            }).catch(res => {
+              that.deleting = false;
+            })
           });
-          that.$router.push("/albums");
-        }).catch(res => {
-          that.deleting = false;
-        })
       },
       loadPic() {
         var that = this;
@@ -237,27 +219,26 @@
         this.showDeletePhotoDialog = true;
         this.deletePhotoId = id;
       },
-      deletePhoto(toDustbin) {
-        var data = {
-          id: this.deletePhotoId,
-          toDustbin: toDustbin
-        };
-        this.deleting = true;
-        var that = this;
-        this.axios.delete("/api/photo", {params: data}).then(res => {
-          that.$message({
-            type: "success",
-            message: "删除照片成功"
+      deletePhoto(id) {
+        let that = this;
+        this.$confirm("系统将会暂时把这张照片放到回收站，等对方确认后彻底删除。确定放入回收站吗？", "确认删除",{type: "warning"})
+          .then(() => {
+            this.deleting = true;
+            this.axios.delete("/api/photo/" + id).then(res => {
+              that.$message({
+                type: "success",
+                message: "删除照片成功"
+              });
+              that.deleting = false;
+              this.currentPage = 0;
+              this.photos = [];
+              that.loadPic();
+              this.showDeletePhotoDialog = false;
+            }).catch(res => {
+              that.deleting = false;
+              this.showDeletePhotoDialog = false;
+            });
           });
-          that.deleting = false;
-          this.currentPage = 0;
-          this.photos = [];
-          that.loadPic();
-          this.showDeletePhotoDialog = false;
-        }).catch(res => {
-          that.deleting = false;
-          this.showDeletePhotoDialog = false;
-        });
       }
     },
     created() {
