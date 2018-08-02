@@ -217,15 +217,16 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleOptional.get();
         ArticlePermissionBo permissionBo = getArticlePermissionBo(article);
 
+        Owner owner = webService.getCurrentUser();
         if (article.getDeleteUser() == null) {
             if (permissionBo.getDeletable()) {
-                article.setDeleteUser(webService.getCurrentUser());
+                article.setDeleteUser(owner);
                 article.setDeleteDatetime(LocalDateTime.now());
                 articleRepository.save(article);
             } else {
                 throw new BizException("你没有权限删除这篇文章");
             }
-        } else if (!article.getDeleteUser().getId().equals(webService.getCurrentUser().getId())) {
+        } else if (!article.getDeleteUser().getId().equals(owner.getId())) {
             physicDeleteArticle(article);
         } else {
             throw new BizException("请等待对方确认删除");

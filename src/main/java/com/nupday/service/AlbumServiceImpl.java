@@ -195,7 +195,7 @@ public class AlbumServiceImpl implements AlbumService {
             } else {
                 throw new BizException("你没有权限删除这个相册");
             }
-        } else if(album.getDeleteUser().getId().equals(owner.getId())){
+        } else if(!album.getDeleteUser().getId().equals(owner.getId())){
             if (CollectionUtils.isEmpty(album.getPhotos())) {
                 album.getPhotos().forEach(photo -> photoService.physicalDeletePhoto(photo));
             }

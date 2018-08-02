@@ -237,7 +237,7 @@ public class PhotoServiceImpl implements PhotoService {
             } else {
                 throw new BizException("你没有权限删除这张照片");
             }
-        } else if (photo.getDeleteUser().getId().equals(currentUser.getId())){
+        } else if (!photo.getDeleteUser().getId().equals(currentUser.getId())){
             physicalDeletePhoto(photo);
         } else {
             throw new BizException("请等待对方确认删除");
