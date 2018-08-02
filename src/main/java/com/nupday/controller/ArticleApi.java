@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.ArticleListBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.bo.QueryNewsBo;
@@ -74,10 +73,10 @@ public class ArticleApi {
         return ResponseHelper.createInstance(articleId);
     }
 
-    @DeleteMapping("article")
+    @DeleteMapping("article/{id}")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity deleteArticle(DeleteObjectBo deleteObjectBo) {
-        articleService.deleteArticle(deleteObjectBo);
+    public JsonEntity deleteArticle(@PathVariable("id") Integer id) {
+        articleService.deleteArticle(id);
         return ResponseHelper.ofNothing();
     }
 

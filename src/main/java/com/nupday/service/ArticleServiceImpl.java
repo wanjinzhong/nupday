@@ -1,19 +1,8 @@
 package com.nupday.service;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.ArticleListBo;
 import com.nupday.bo.ArticlePermissionBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.NewsBo;
 import com.nupday.bo.NewsItemBo;
@@ -21,6 +10,7 @@ import com.nupday.bo.OpenStatus;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.QueryNewsBo;
 import com.nupday.constant.ArticleType;
+import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.ListBoxCategory;
 import com.nupday.constant.Role;
 import com.nupday.dao.entity.Article;
@@ -39,6 +29,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class ArticleServiceImpl implements ArticleService {
@@ -54,6 +54,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private COSService cosService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public Integer newArticle(EditArticleBo articleBo) {
@@ -206,22 +209,33 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void deleteArticle(DeleteObjectBo deleteObjectBo) {
-        Article article = articleRepository.getOne(deleteObjectBo.getId());
-        if (article == null) {
+    public void deleteArticle(Integer id) {
+        Optional<Article> articleOptional = articleRepository.findById(id);
+        if (!articleOptional.isPresent()) {
             throw new BizException("文章不已存在");
         }
+        Article article = articleOptional.get();
         ArticlePermissionBo permissionBo = getArticlePermissionBo(article);
-        if (!permissionBo.getDeletable()) {
-            throw new BizException("你没有权限删除这篇文章");
-        }
-        if (deleteObjectBo.getToDustbin()) {
-            article.setDeleteUser(webService.getCurrentUser());
-            article.setDeleteDatetime(LocalDateTime.now());
-            articleRepository.save(article);
+
+        if (article.getDeleteUser() == null) {
+            if (permissionBo.getDeletable()) {
+                article.setDeleteUser(webService.getCurrentUser());
+                article.setDeleteDatetime(LocalDateTime.now());
+                articleRepository.save(article);
+            } else {
+                throw new BizException("你没有权限删除这篇文章");
+            }
+        } else if (!article.getDeleteUser().getId().equals(webService.getCurrentUser().getId())) {
+            physicDeleteArticle(article);
         } else {
-            articleRepository.delete(article);
+            throw new BizException("请等待对方确认删除");
         }
+    }
+
+    @Override
+    public void physicDeleteArticle(Article article) {
+        commentService.deleteComment(CommentTargetType.ARTICLE, article.getId());
+        articleRepository.delete(article);
     }
 
     @Override

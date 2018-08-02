@@ -3,7 +3,6 @@ import java.io.IOException;
 
 import com.nupday.bo.ArticleBo;
 import com.nupday.bo.ArticleListBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.bo.QueryNewsBo;
@@ -19,7 +18,9 @@ public interface ArticleService {
 
     Integer updateArticle(EditArticleBo articleBo);
 
-    void deleteArticle(DeleteObjectBo deleteObjectBo);
+    void deleteArticle(Integer id);
+
+    void physicDeleteArticle(Article article);
 
     Boolean isVisible(Integer articleId);
 

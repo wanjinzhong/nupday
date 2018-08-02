@@ -9,6 +9,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +32,7 @@ public class MailServiceImpl implements MailService {
     private Logger logger = LoggerFactory.getLogger(MailService.class);
 
     @Override
+    @Async
     public void sendSimpleEmail(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
@@ -45,6 +47,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    @Async
     public void sendEmailWithAttachment(String to, String subject, String content, Map<String, File> attachments) {
         MimeMessage message;
         try {

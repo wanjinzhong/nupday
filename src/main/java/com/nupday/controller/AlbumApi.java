@@ -1,7 +1,6 @@
 package com.nupday.controller;
 
 import com.nupday.bo.AlbumBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditAlbumBo;
 import com.nupday.constant.Constants;
 import com.nupday.service.AlbumService;
@@ -47,10 +46,10 @@ public class AlbumApi {
         return ResponseHelper.createInstance(albumService.updateAlbum(editAlbumBo));
     }
 
-    @DeleteMapping("album")
+    @DeleteMapping("album/{id}")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity deleteAlbum(DeleteObjectBo deleteObjectBo) {
-        albumService.deleteAlbum(deleteObjectBo);
+    public JsonEntity deleteAlbum(@PathVariable("id") Integer id) {
+        albumService.deleteAlbum(id);
         return ResponseHelper.ofNothing();
     }
 

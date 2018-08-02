@@ -3,7 +3,6 @@ package com.nupday.controller;
 import java.io.IOException;
 import java.util.List;
 
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.PhotoBo;
 import com.nupday.bo.PhotoPage;
 import com.nupday.constant.Constants;
@@ -39,10 +38,10 @@ public class PhotoApi {
         return ResponseHelper.ofNothing();
     }
 
-    @DeleteMapping("/photo")
+    @DeleteMapping("/photo/{id}")
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity deletePhoto(DeleteObjectBo deleteObjectBo) {
-        photoService.deletePhoto(deleteObjectBo);
+    public JsonEntity deletePhoto(@PathVariable("id") Integer id) {
+        photoService.deletePhoto(id);
         return ResponseHelper.ofNothing();
     }
 

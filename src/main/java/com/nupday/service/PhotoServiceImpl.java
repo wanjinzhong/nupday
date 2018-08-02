@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditArticleBo;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.PhotoBo;
@@ -26,6 +26,7 @@ import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.ArticlePhotoRepository;
+import com.nupday.dao.repository.ArticleRepository;
 import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
 import net.coobird.thumbnailator.Thumbnails;
@@ -60,6 +61,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private ArticleRepository articleRepository;
 
     @Override
     public Boolean isVisible(Integer photoId) {
@@ -210,45 +214,57 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void deletePhoto(DeleteObjectBo deleteObjectBo) {
-        if (deleteObjectBo == null) {
-            throw new BizException("删除对象不能为空");
+    public void deletePhoto(Integer id) {
+        if (!Role.OWNER.equals(webService.getUserType())) {
+            throw new BizException("你没有权限删除照片");
         }
-        Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(deleteObjectBo.getId());
-        if (photo == null) {
+        Optional<Photo> photoOptional = photoRepository.findById(id);
+        if (!photoOptional.isPresent()) {
             throw new BizException("照片不存在");
         }
+        Photo photo = photoOptional.get();
         if (photo.getAlbum().getCover() != null && photo.getAlbum().getCover().getId().equals(photo.getId())) {
             Album album = photo.getAlbum();
             album.setCover(null);
             albumRepository.save(album);
         }
-        if (deleteObjectBo.getToDustbin()) {
-
-            photo.setDeleteUser(webService.getCurrentUser());
-            photo.setDeleteDatetime(LocalDateTime.now());
-            photoRepository.save(photo);
-        } else {
-            commentService.deleteComment(CommentTargetType.PHOTO, deleteObjectBo.getId());
-
-            String smallKey = photo.getSmallKey();
-            String key = photo.getKey();
-            cosService.deleteObject(smallKey);
-            cosService.deleteObject(key);
-
-            List<Article> articles = articlePhotoRepository.findArticleByPhotoId(photo.getId());
-
-            articlePhotoRepository.deleteByPhotoId(photo.getId());
-            articlePhotoRepository.flush();
-
-            for (Article article : articles) {
-                List<ArticlePhoto> articlePhotos = articlePhotoRepository.findByArticleId(article.getId());
-                if (CollectionUtils.isEmpty(articlePhotos)) {
-                    articleService.deleteArticle(new DeleteObjectBo(article.getId(), false));
-                }
+        Owner currentUser = webService.getCurrentUser();
+        if (photo.getDeleteUser() == null) {
+            if (photo.getEntryUser().getId().equals(currentUser.getId())) {
+                photo.setDeleteUser(currentUser);
+                photo.setDeleteDatetime(LocalDateTime.now());
+                photoRepository.save(photo);
+            } else {
+                throw new BizException("你没有权限删除这张照片");
             }
-            photoRepository.delete(photo);
+        } else if (photo.getDeleteUser().getId().equals(currentUser.getId())){
+            physicalDeletePhoto(photo);
+        } else {
+            throw new BizException("请等待对方确认删除");
         }
+    }
+
+    @Override
+    public void physicalDeletePhoto(Photo photo) {
+        commentService.deleteComment(CommentTargetType.PHOTO, photo.getId());
+
+        String smallKey = photo.getSmallKey();
+        String key = photo.getKey();
+        cosService.deleteObject(smallKey);
+        cosService.deleteObject(key);
+
+        List<Article> articles = articlePhotoRepository.findArticleByPhotoId(photo.getId());
+
+        articlePhotoRepository.deleteByPhotoId(photo.getId());
+        articlePhotoRepository.flush();
+
+        for (Article article : articles) {
+            List<ArticlePhoto> articlePhotos = articlePhotoRepository.findByArticleId(article.getId());
+            if (CollectionUtils.isEmpty(articlePhotos)) {
+                articleService.physicDeleteArticle(article);
+            }
+        }
+        photoRepository.delete(photo);
     }
 
     @Override

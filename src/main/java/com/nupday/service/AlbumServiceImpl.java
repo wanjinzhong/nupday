@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.nupday.bo.AlbumBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditAlbumBo;
 import com.nupday.constant.CommentTargetType;
 import com.nupday.constant.Constants;
@@ -171,20 +170,39 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public void deleteAlbum(DeleteObjectBo deleteObjectBo) {
-        Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(deleteObjectBo.getId());
-        if (album == null) {
+    public void deleteAlbum(Integer id) {
+        if (!Role.OWNER.equals(webService.getUserType())) {
+            throw new BizException("你没有权限删除相册");
+        }
+        Optional<Album> albumOptional = albumRepository.findById(id);
+        if (!albumOptional.isPresent()) {
             throw new BizException("相册不存在");
         }
-
-        if (deleteObjectBo.getToDustbin()) {
-            album.setDeleteDatetime(LocalDateTime.now());
-            album.setDeleteUser(webService.getCurrentUser());
-            albumRepository.save(album);
-        } else {
-            album.getPhotos().stream().forEach(photo -> photoService.deletePhoto(new DeleteObjectBo(photo.getId(), false)));
+        Album album = albumOptional.get();
+        Owner owner = webService.getCurrentUser();
+        if (album.getDeleteUser() == null) {
+            if (album.getEntryUser().getId().equals(owner.getId())) {
+                album.setDeleteDatetime(LocalDateTime.now());
+                album.setDeleteUser(webService.getCurrentUser());
+                albumRepository.save(album);
+                if (!CollectionUtils.isEmpty(album.getPhotos())) {
+                    album.getPhotos().forEach(photo -> {
+                        if (photo.getDeleteUser() == null) {
+                            photoService.deletePhoto(photo.getId());
+                        }
+                    });
+                }
+            } else {
+                throw new BizException("你没有权限删除这个相册");
+            }
+        } else if(album.getDeleteUser().getId().equals(owner.getId())){
+            if (CollectionUtils.isEmpty(album.getPhotos())) {
+                album.getPhotos().forEach(photo -> photoService.physicalDeletePhoto(photo));
+            }
             commentService.deleteComment(CommentTargetType.ALBUM, album.getId());
             albumRepository.delete(album);
+        } else {
+            throw new BizException("请等待对方确认删除");
         }
     }
 

@@ -1,6 +1,5 @@
 package com.nupday.service;
 import com.nupday.bo.AlbumBo;
-import com.nupday.bo.DeleteObjectBo;
 import com.nupday.bo.EditAlbumBo;
 import com.nupday.dao.entity.Album;
 
@@ -20,7 +19,7 @@ public interface AlbumService {
 
     Integer updateAlbum(EditAlbumBo editAlbumBo);
 
-    void deleteAlbum(DeleteObjectBo deleteObjectBo);
+    void deleteAlbum(Integer id);
 
     void setCover(Integer albumId, Integer coverId);
 }
