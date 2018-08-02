@@ -311,20 +311,24 @@ public class ArticleServiceImpl implements ArticleService {
         List<NewsBo> newsBos = new ArrayList<>();
         NewsBo newsBo = new NewsBo();
         newsBo.setDate(localDate);
-        newsBos.add(newsBo);
         for (Article article : articles) {
-            LocalDateTime dateTime = article.getUpdateDatetime();
-            if (!dateTime.toLocalDate().equals(localDate)) {
-                newsBo = new NewsBo();
-                newsBo.setDate(dateTime.toLocalDate());
-                newsBos.add(newsBo);
-                localDate = dateTime.toLocalDate();
-            }
             NewsItemBo newsItemBo = toNewsItemBo(article, webService.getCurrentUser());
             if (newsItemBo == null) {
                 continue;
             }
+            LocalDateTime dateTime = article.getUpdateDatetime();
+            if (!dateTime.toLocalDate().equals(localDate)) {
+                if (!CollectionUtils.isEmpty(newsBo.getNewsItems())) {
+                    newsBos.add(newsBo);
+                }
+                newsBo = new NewsBo();
+                newsBo.setDate(dateTime.toLocalDate());
+                localDate = dateTime.toLocalDate();
+            }
             newsBo.getNewsItems().add(newsItemBo);
+        }
+        if (!CollectionUtils.isEmpty(newsBo.getNewsItems())) {
+            newsBos.add(newsBo);
         }
         return newsBos;
     }
@@ -356,6 +360,9 @@ public class ArticleServiceImpl implements ArticleService {
                 return null;
             }
             articlePhotos = articlePhotos.stream().filter(articlePhoto -> articlePhoto.getPhoto().getDeleteDatetime() == null).collect(Collectors.toList());
+            if(CollectionUtils.isEmpty(articlePhotos)) {
+                return null;
+            }
             newsItemBo.setTitle("上传了" + articlePhotos.size() + "张照片到《" + articlePhotos.get(0).getPhoto().getAlbum().getName() + "》");
             List<String> photos = new ArrayList<>();
             for (int i = 0; i < articlePhotos.size(); i++) {
