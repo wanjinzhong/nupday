@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * SimpleOwnerBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class SimpleOwnerBo {
     private Integer id;
 

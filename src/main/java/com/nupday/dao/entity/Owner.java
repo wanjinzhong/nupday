@@ -9,6 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Owner
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "owner")
 public class Owner {

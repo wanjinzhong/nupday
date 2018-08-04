@@ -1,5 +1,11 @@
 package com.nupday.config;
-public class DBInfo {
+
+/**
+ * DbInfo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
+public class DbInfo {
     private String userName;
     private String password;
     private String url;

@@ -21,12 +21,17 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * ConfigurationServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private ConfigurationRepository configurationRepository;
@@ -38,7 +43,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ListBoxRepository listBoxRepository;
 
     @Autowired
-    private DBService dbService;
+    private DbService dbService;
 
     @Override
     public String uploadLoginBackGround(MultipartFile file) throws IOException {

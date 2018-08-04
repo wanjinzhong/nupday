@@ -2,6 +2,11 @@ package com.nupday.bo;
 
 import java.time.LocalDateTime;
 
+/**
+ * PhotoBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class PhotoBo {
 
     private Integer id;

@@ -26,7 +26,6 @@ import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Photo;
 import com.nupday.dao.repository.AlbumRepository;
 import com.nupday.dao.repository.ArticlePhotoRepository;
-import com.nupday.dao.repository.ArticleRepository;
 import com.nupday.dao.repository.PhotoRepository;
 import com.nupday.exception.BizException;
 import net.coobird.thumbnailator.Thumbnails;
@@ -38,8 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * PhotoServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class PhotoServiceImpl implements PhotoService {
     @Autowired
     private PhotoRepository photoRepository;
@@ -57,19 +61,10 @@ public class PhotoServiceImpl implements PhotoService {
     private ArticleService articleService;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private CommentService commentService;
-
-    @Override
-    public Boolean isVisible(Integer photoId) {
-        Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(photoId);
-        if (photo == null) {
-            return false;
-        }
-        return isVisible(photo);
-    }
 
     @Override
     public Boolean isVisible(Photo photo) {
@@ -94,7 +89,8 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public PhotoPage getPhotos(Integer albumId, Integer page, Integer size) {
         Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
-        if (album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen())) {
+        Boolean isAlbumUnVisible = album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen());
+        if (isAlbumUnVisible) {
             throw new BizException("相册不存在");
         }
         PageRequest pageRequest = PageRequest.of(page - 1, size);

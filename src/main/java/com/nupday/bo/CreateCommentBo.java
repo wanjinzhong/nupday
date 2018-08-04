@@ -2,6 +2,11 @@ package com.nupday.bo;
 
 import com.nupday.constant.CommentTargetType;
 
+/**
+ * CreateCommentBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class CreateCommentBo {
     private String name;
 

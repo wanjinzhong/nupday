@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * AccountApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Api
 @RequestMapping("api")
 @RestController

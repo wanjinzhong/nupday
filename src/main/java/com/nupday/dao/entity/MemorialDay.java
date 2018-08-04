@@ -10,6 +10,11 @@ import javax.persistence.Table;
 
 import com.nupday.dao.entity.base.BaseDeleteEntity;
 
+/**
+ * MemorialDay
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "memorial_day")
 public class MemorialDay extends BaseDeleteEntity {

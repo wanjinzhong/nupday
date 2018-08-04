@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * EditVisitorBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class EditVisitorBo {
     private Integer id;
 

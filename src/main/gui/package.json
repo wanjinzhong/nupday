@@ -2,7 +2,7 @@
   "name": "nupday",
   "version": "1.0.0",
   "description": "Love of DJQ and WJZ",
-  "author": "neilw <neilw@synnex.org>",
+  "author": "Neil Wan <neilw@synnex.org>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

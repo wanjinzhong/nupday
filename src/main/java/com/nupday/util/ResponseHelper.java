@@ -5,14 +5,17 @@
 
 package com.nupday.util;
 
-
+/**
+ * ResponseHelper
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ResponseHelper {
     public ResponseHelper() {
     }
 
     public static <T> JsonEntity<T> createInstance(T object) {
         JsonEntity<T> response = new JsonEntity(object);
-        //        response.setRequestId(WebUtil.getRequestId());
         return response;
     }
 

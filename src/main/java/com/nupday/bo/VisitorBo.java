@@ -1,6 +1,11 @@
 package com.nupday.bo;
 import java.time.LocalDateTime;
 
+/**
+ * VisitorBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class VisitorBo {
     private Integer id;
 

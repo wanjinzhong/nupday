@@ -19,6 +19,11 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.util.Map;
 
+/**
+ * MailServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
 @Component
 public class MailServiceImpl implements MailService {

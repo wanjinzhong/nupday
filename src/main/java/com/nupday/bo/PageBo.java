@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * PageBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class PageBo {
     private Integer totalItem;
     private Integer pageSize;

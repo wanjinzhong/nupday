@@ -1,13 +1,13 @@
 package com.nupday.service;
 
-import com.nupday.bo.DBBackupBo;
+import com.nupday.bo.DbBackupBo;
+import com.nupday.constant.Constants;
 import com.nupday.constant.NotificationType;
-import com.nupday.dao.entity.DBBackup;
+import com.nupday.dao.entity.DbBackup;
 import com.nupday.dao.entity.Owner;
-import com.nupday.dao.repository.DBBackupRepository;
+import com.nupday.dao.repository.DbBackupRepository;
 import com.nupday.dao.repository.OwnerRepository;
 import com.nupday.exception.BizException;
-import com.qcloud.cos.model.COSObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +29,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * DBServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-public class DBServiceImpl implements DBService {
+public class DbServiceImpl implements DbService {
 
     @Autowired
-    private DBBackupRepository dbBackupRepository;
+    private DbBackupRepository dbBackupRepository;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -47,7 +52,7 @@ public class DBServiceImpl implements DBService {
     @Autowired
     private MailService mailService;
 
-    private final Logger logger = LoggerFactory.getLogger(DBService.class);
+    private final Logger logger = LoggerFactory.getLogger(DbService.class);
 
     @Value("${application.env}")
     private String env;
@@ -55,7 +60,7 @@ public class DBServiceImpl implements DBService {
     @Override
     public void backUpDB(){
         String path;
-        if (System.getProperty("os.name").indexOf("Windows") != -1) {
+        if (System.getProperty(Constants.OS_NAME).indexOf(Constants.WINDOWS) != -1) {
             path = "E:\\db_backup.sql";
         } else {
             path = "/var/backup/nupday/db/db_backup.sql";
@@ -72,7 +77,7 @@ public class DBServiceImpl implements DBService {
 
             logger.error("ERROR: " + e.getMessage(), e);
         }
-        DBBackup dbBackup = new DBBackup();
+        DbBackup dbBackup = new DbBackup();
         dbBackup.setFileName(key);
         dbBackup.setEntryDatetime(LocalDateTime.now());
         dbBackupRepository.save(dbBackup);
@@ -84,7 +89,7 @@ public class DBServiceImpl implements DBService {
     @Override
     public void cutDBBackupFiles() {
         Integer maxCount = configurationService.getMaxDBBackupCount();
-        List<DBBackup> tbds = dbBackupRepository.findToBeDeleteDBBackup(maxCount-1);
+        List<DbBackup> tbds = dbBackupRepository.findToBeDeleteDBBackup(maxCount-1);
         if (!CollectionUtils.isEmpty(tbds)) {
             tbds.forEach(tbd -> cosService.deleteObject("db-backup/" + tbd.getFileName()));
             dbBackupRepository.deleteAll(tbds);
@@ -95,7 +100,7 @@ public class DBServiceImpl implements DBService {
         String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String subject = "NupDay" + env + "备份";
         String content = subject + " - " + dateTime;
-        Map<String, File> fileMap = new HashMap<>();
+        Map<String, File> fileMap = new HashMap<>(2);
         fileMap.put("db_backup_" + dateTime + ".sql", file);
         List<Owner> owners = ownerRepository.findAll();
         for (Owner owner : owners) {
@@ -105,23 +110,23 @@ public class DBServiceImpl implements DBService {
         }
     }
     @Override
-    public List<DBBackupBo> getBackupList() {
-        List<DBBackup> dbBackups = dbBackupRepository.findAllByOrderByEntryDatetimeDesc();
+    public List<DbBackupBo> getBackupList() {
+        List<DbBackup> dbBackups = dbBackupRepository.findAllByOrderByEntryDatetimeDesc();
         return toDBBackupBo(dbBackups);
     }
 
-    private List<DBBackupBo> toDBBackupBo(List<DBBackup> dbBackups) {
+    private List<DbBackupBo> toDBBackupBo(List<DbBackup> dbBackups) {
         if (CollectionUtils.isEmpty(dbBackups)) {
             return new ArrayList<>();
         }
         return dbBackups.stream().map(dbBackup -> toDBBackupBo(dbBackup)).collect(Collectors.toList());
     }
 
-    private DBBackupBo toDBBackupBo(DBBackup dbBackup) {
+    private DbBackupBo toDBBackupBo(DbBackup dbBackup) {
         if (dbBackup == null) {
             return null;
         }
-        DBBackupBo dbBackupBo = new DBBackupBo();
+        DbBackupBo dbBackupBo = new DbBackupBo();
         dbBackupBo.setId(dbBackup.getId());
         dbBackupBo.setTime(dbBackup.getEntryDatetime());
         return dbBackupBo;
@@ -129,7 +134,7 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public InputStream getDBBackup(Integer id) {
-        Optional<DBBackup> dbBackup = dbBackupRepository.findById(id);
+        Optional<DbBackup> dbBackup = dbBackupRepository.findById(id);
         if (!dbBackup.isPresent()) {
             throw new BizException("备份文件不存在");
         }
@@ -143,11 +148,11 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public void deleteDBBackup(Integer id) {
-        Optional<DBBackup> dbBackupOptional = dbBackupRepository.findById(id);
+        Optional<DbBackup> dbBackupOptional = dbBackupRepository.findById(id);
         if (!dbBackupOptional.isPresent()) {
             throw new BizException("备份文件不存在");
         }
-        DBBackup dbBackup = dbBackupOptional.get();
+        DbBackup dbBackup = dbBackupOptional.get();
         String key = "db-backup/" + dbBackup.getFileName();
         cosService.deleteObject(key);
         dbBackupRepository.delete(dbBackup);

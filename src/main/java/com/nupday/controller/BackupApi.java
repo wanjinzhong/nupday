@@ -1,9 +1,9 @@
 package com.nupday.controller;
 
-import com.nupday.bo.DBBackupBo;
+import com.nupday.bo.DbBackupBo;
 import com.nupday.constant.Constants;
-import com.nupday.service.COSService;
-import com.nupday.service.DBService;
+import com.nupday.service.CosService;
+import com.nupday.service.DbService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
 import io.swagger.annotations.Api;
@@ -30,6 +30,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * BackupApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @RestController
 @RequestMapping("api")
 @Api
@@ -38,10 +43,10 @@ import java.util.List;
 public class BackupApi {
 
     @Autowired
-    public DBService dbService;
+    public DbService dbService;
 
     @Autowired
-    public COSService cosService;
+    public CosService cosService;
 
     @Value("${application.env}")
     private String env;
@@ -50,13 +55,13 @@ public class BackupApi {
     @PostMapping("dbBackup")
     @RequiresAuthentication
     @RequiresRoles(value = {Constants.OWNER})
-    public JsonEntity DBBackUp() {
+    public JsonEntity dBBackUp() {
         dbService.backUpDB();
         return ResponseHelper.ofNothing();
     }
 
     @GetMapping("dbBackups")
-    public JsonEntity<List<DBBackupBo>> getDBBackups() {
+    public JsonEntity<List<DbBackupBo>> getDBBackups() {
         return ResponseHelper.createInstance(dbService.getBackupList());
     }
 

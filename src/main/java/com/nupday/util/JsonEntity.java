@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * JsonEntity
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @ApiModel
 public class JsonEntity<T> implements Serializable {
     private static final long serialVersionUID = -1771426378340695807L;

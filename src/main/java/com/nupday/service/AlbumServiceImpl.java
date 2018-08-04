@@ -24,8 +24,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * AlbumServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
+@SuppressWarnings("ALL")
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class AlbumServiceImpl implements AlbumService {
 
     @Autowired
@@ -41,7 +47,7 @@ public class AlbumServiceImpl implements AlbumService {
     private PhotoRepository photoRepository;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private CommentService commentService;
@@ -52,14 +58,6 @@ public class AlbumServiceImpl implements AlbumService {
             return false;
         }
         return true;
-    }
-
-    public Boolean isVisible(Integer albumId) {
-        Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
-        if (album == null) {
-            return false;
-        }
-        return isVisible(album);
     }
 
     @Override
@@ -136,7 +134,8 @@ public class AlbumServiceImpl implements AlbumService {
     @Override
     public AlbumBo getAlbum(Integer albumId) {
         Album album = albumRepository.findByIdAndDeleteDatetimeIsNull(albumId);
-        if (album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen())) {
+        Boolean isAlbumUnVisible = album == null || (Role.VISITOR.equals(webService.getUserType()) && !album.getIsOpen());
+        if (isAlbumUnVisible) {
             throw new BizException("相册不存在");
         }
         return albumToBo(album, webService.getCurrentUser());

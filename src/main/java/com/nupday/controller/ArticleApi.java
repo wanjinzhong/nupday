@@ -30,6 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * ArticleApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @RestController
 @Api
 @RequiresAuthentication

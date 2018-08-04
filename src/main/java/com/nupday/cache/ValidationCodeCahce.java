@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ValidationCodeCahce
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ValidationCodeCahce {
     private static Map<Integer, List<ValidationCodeBo>> validationCode = new HashMap<>();
 

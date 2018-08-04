@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * CommentApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Api
 @RestController
 @RequestMapping("api")

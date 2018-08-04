@@ -15,6 +15,11 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Album
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table
 public class Album extends BaseDeleteEntity {

@@ -4,6 +4,11 @@ import com.nupday.constant.ValidationCodeType;
 
 import java.time.LocalDateTime;
 
+/**
+ * ValidationCodeBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ValidationCodeBo {
     private ValidationCodeType type;
     private String code;

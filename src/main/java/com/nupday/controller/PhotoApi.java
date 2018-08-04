@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * PhotoApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Api
 @RestController
 @RequiresAuthentication

@@ -9,9 +9,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * DbBackup
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Table(name = "db_backup")
 @Entity
-public class DBBackup {
+public class DbBackup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column

@@ -7,6 +7,11 @@ import com.nupday.exception.BizException;
 import com.nupday.util.Html2Plain;
 import org.springframework.stereotype.Service;
 
+/**
+ * HtmlServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
 public class HtmlServiceImpl implements HtmlService {
 

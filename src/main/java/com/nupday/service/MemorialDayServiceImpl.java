@@ -22,8 +22,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * MemorialDayServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class MemorialDayServiceImpl implements MemorialDayService {
 
     @Autowired

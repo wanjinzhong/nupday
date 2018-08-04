@@ -2,6 +2,11 @@ package com.nupday.bo;
 
 import java.time.LocalDateTime;
 
+/**
+ * AlbumBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class AlbumBo {
     private Integer id;
 

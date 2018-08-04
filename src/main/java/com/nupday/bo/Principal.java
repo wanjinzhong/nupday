@@ -1,6 +1,11 @@
 package com.nupday.bo;
 import com.nupday.constant.Role;
 
+/**
+ * Principal
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class Principal {
     private Role type;
     private String key;

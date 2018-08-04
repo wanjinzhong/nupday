@@ -2,6 +2,11 @@ package com.nupday.bo;
 
 import com.nupday.constant.Role;
 
+/**
+ * LoginUserRes
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class LoginUserRes extends SimpleOwnerBo{
     private Role type;
 

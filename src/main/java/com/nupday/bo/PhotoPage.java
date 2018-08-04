@@ -2,6 +2,11 @@ package com.nupday.bo;
 
 import java.util.List;
 
+/**
+ * PhotoPage
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class PhotoPage {
     private List<PhotoBo> photos;
     private PageBo page;

@@ -23,7 +23,12 @@ import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-@Transactional
+/**
+ * EmailNotificationServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class EmailNotificationServiceImpl implements EmailNotificationService {
 
@@ -197,8 +202,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
                 .append(url);
         List<Owner> owners = ownerRepository.findAll();
         for (Owner owner : owners) {
-            if (!(comment.getEntryUser() != null && owner.getId().equals(comment.getEntryUser().getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
-                    configurationService.needSendNotification(owner, NotificationType.COMMENT)) {
+            Boolean needSendEmail = !(comment.getEntryUser() != null && owner.getId().equals(comment.getEntryUser().getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
+                    configurationService.needSendNotification(owner, NotificationType.COMMENT);
+            if (needSendEmail) {
                 mailService.sendSimpleEmail(owner.getEmail(), subject.toString(), content.toString());
             }
         }
@@ -225,8 +231,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
                 .append(url + "/guestBook");
         List<Owner> owners = ownerRepository.findAll();
         for (Owner owner : owners) {
-            if (!(commenter != null && owner.getId().equals(commenter.getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
-                    configurationService.needSendNotification(owner, NotificationType.COMMENT)) {
+            Boolean needSendEmail = !(commenter != null && owner.getId().equals(commenter.getId())) && StringUtils.isNotBlank(owner.getEmail()) &&
+                    configurationService.needSendNotification(owner, NotificationType.COMMENT);
+            if (needSendEmail) {
                 mailService.sendSimpleEmail(owner.getEmail(), subject, content.toString());
             }
         }

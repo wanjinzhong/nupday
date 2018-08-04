@@ -3,6 +3,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+/**
+ * ValidatorUtil
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ValidatorUtil {
     /**
      * 整数

@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * GuestBookApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @RestController
 @Api
 @RequiresAuthentication

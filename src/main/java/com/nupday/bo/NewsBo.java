@@ -3,6 +3,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * NewsBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class NewsBo {
     private LocalDate date;
 

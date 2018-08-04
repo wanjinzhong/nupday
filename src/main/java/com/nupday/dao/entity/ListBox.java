@@ -7,6 +7,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * ListBox
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "list_box")
 public class ListBox {

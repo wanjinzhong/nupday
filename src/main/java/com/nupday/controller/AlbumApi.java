@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * AlbumApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Api
 @RequiresAuthentication
 @CrossOrigin

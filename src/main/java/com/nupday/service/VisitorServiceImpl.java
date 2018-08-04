@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.nupday.bo.EditVisitorBo;
 import com.nupday.bo.VisitorBo;
+import com.nupday.constant.Constants;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.entity.Visitor;
 import com.nupday.dao.repository.VisitorRepository;
@@ -18,8 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * VisitorServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class VisitorServiceImpl implements VisitorService {
 
     @Autowired
@@ -29,7 +35,7 @@ public class VisitorServiceImpl implements VisitorService {
     private WebService webService;
 
 
-    private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public List<VisitorBo> getAllVisitor() {
@@ -86,8 +92,8 @@ public class VisitorServiceImpl implements VisitorService {
         }
         Visitor visitor = new Visitor();
         visitor.setCode(visitorBo.getCode());
-        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), df));
-        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), df));
+        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), DF));
+        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), DF));
         visitor.setMaxCount(visitorBo.getMaxCount());
         visitor.setLoginCount(0);
         Owner me = webService.getCurrentUser();
@@ -107,11 +113,11 @@ public class VisitorServiceImpl implements VisitorService {
         if (StringUtils.isBlank(visitorBo.getCode())) {
             throw new BizException("访问码不能为空");
         }
-        if (visitorBo.getCode().length() < 6) {
+        if (visitorBo.getCode().length() < Constants.User.ACCESS_CODE_MIN_LENGTH) {
             throw new BizException("访问码至少6位");
         }
         if (visitorBo.getFrom() != null && visitorBo.getTo() != null &&
-                LocalDateTime.parse(visitorBo.getTo(), df).isBefore(LocalDateTime.parse(visitorBo.getFrom(), df))) {
+                LocalDateTime.parse(visitorBo.getTo(), DF).isBefore(LocalDateTime.parse(visitorBo.getFrom(), DF))) {
             throw new BizException("开始时间不能大于结束时间");
         }
 
@@ -133,8 +139,8 @@ public class VisitorServiceImpl implements VisitorService {
             throw new BizException("访问码已存在");
         }
         visitor.setCode(visitorBo.getCode());
-        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), df));
-        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), df));
+        visitor.setFrom(LocalDateTime.parse(visitorBo.getFrom(), DF));
+        visitor.setTo(LocalDateTime.parse(visitorBo.getTo(), DF));
         visitor.setMaxCount(visitorBo.getMaxCount());
         Owner me = webService.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();

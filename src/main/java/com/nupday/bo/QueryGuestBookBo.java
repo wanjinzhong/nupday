@@ -3,6 +3,11 @@ package com.nupday.bo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * QueryGuestBookBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class QueryGuestBookBo {
     private PageBo page;
     private List<CommentBo> data = new ArrayList<>();

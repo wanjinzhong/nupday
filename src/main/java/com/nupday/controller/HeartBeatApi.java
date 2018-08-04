@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * HeartBeatApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @RequiresAuthentication
 @Api
 @RequestMapping("api")

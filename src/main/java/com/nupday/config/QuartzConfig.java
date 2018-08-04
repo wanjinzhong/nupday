@@ -6,7 +6,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-
+/**
+ * QuartzConfig
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Configuration
 public class QuartzConfig {
 
@@ -23,7 +27,10 @@ public class QuartzConfig {
     }
 
 
-    // 创建schedule
+    /**
+     * 创建schedule
+     * @return
+     */
     @Bean(name = "scheduler")
     public Scheduler scheduler() {
         return schedulerFactoryBean().getScheduler();

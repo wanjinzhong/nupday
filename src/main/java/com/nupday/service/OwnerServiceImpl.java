@@ -7,6 +7,7 @@ import java.util.List;
 import com.nupday.bo.FullOwnerBo;
 import com.nupday.bo.OwnerBo;
 import com.nupday.bo.SimpleOwnerBo;
+import com.nupday.constant.Constants;
 import com.nupday.dao.entity.Owner;
 import com.nupday.dao.repository.OwnerRepository;
 import com.nupday.exception.BizException;
@@ -19,15 +20,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * OwnerServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class OwnerServiceImpl implements OwnerService {
 
     @Autowired
     private OwnerRepository ownerRepository;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private WebService webService;
@@ -143,7 +149,7 @@ public class OwnerServiceImpl implements OwnerService {
         if (StringUtils.isBlank(ownerBo.getName())) {
             throw new BizException("名字不能为空");
         }
-        if (ownerBo.getName().length() > 4) {
+        if (ownerBo.getName().length() > Constants.User.NAME_MAX_LENGTH) {
             throw new BizException("名字不能大于4位");
         }
         if (StringUtils.isBlank(ownerBo.getEmail())) {

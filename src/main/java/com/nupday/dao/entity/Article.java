@@ -15,6 +15,11 @@ import javax.persistence.Table;
 
 import com.nupday.dao.entity.base.BaseDeleteEntity;
 
+/**
+ * Article
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table
 public class Article extends BaseDeleteEntity {

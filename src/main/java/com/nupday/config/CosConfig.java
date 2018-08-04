@@ -8,8 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+/**
+ * COSConfig
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Component
-public class COSConfig {
+public class CosConfig {
 
     @Value("${COS.secretId}")
     private String secretId;

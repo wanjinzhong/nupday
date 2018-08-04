@@ -2,7 +2,7 @@ package com.nupday.controller;
 
 import com.nupday.constant.Constants;
 import com.nupday.constant.NotificationType;
-import com.nupday.service.COSService;
+import com.nupday.service.CosService;
 import com.nupday.service.ConfigurationService;
 import com.nupday.util.JsonEntity;
 import com.nupday.util.ResponseHelper;
@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ * ConfigurationApi
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Api
 @RestController
 @RequestMapping("api")
@@ -32,7 +36,7 @@ public class ConfigurationApi {
     private ConfigurationService configurationService;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @GetMapping("loginBackground")
     public JsonEntity<String> getLoginBackground() {

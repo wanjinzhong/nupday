@@ -8,6 +8,11 @@ import javax.persistence.MappedSuperclass;
 
 import com.nupday.dao.entity.Owner;
 
+/**
+ * BaseDeleteEntity
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @MappedSuperclass
 public class BaseDeleteEntity extends BaseUpdateEntity{
 

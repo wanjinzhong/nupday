@@ -2,6 +2,11 @@ package com.nupday.bo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * QueryNewsBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class QueryNewsBo {
     private PageBo page;
 

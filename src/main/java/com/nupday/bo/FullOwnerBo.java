@@ -1,6 +1,11 @@
 package com.nupday.bo;
 import java.time.LocalDate;
 
+/**
+ * FullOwnerBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class FullOwnerBo extends OwnerBo {
 
     private Boolean isMale;

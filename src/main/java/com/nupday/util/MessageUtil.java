@@ -8,6 +8,11 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+/**
+ * MessageUtil
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class MessageUtil {
     public static String getMessage(String template, String ...params) {
         List<String> paramList = newArrayList(params);

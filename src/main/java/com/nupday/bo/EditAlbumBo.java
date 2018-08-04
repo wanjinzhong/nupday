@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * EditAlbumBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class EditAlbumBo {
 
     private Integer id;

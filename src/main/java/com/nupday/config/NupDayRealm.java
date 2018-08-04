@@ -22,6 +22,11 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * NupDayRealm
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class NupDayRealm extends AuthorizingRealm {
 
     @Autowired
@@ -60,8 +65,9 @@ public class NupDayRealm extends AuthorizingRealm {
             throw new AuthenticationException("访问码超过最大访问次数");
         }
         LocalDateTime now = LocalDateTime.now();
-        if ((visitor.getFrom() != null && now.isBefore(visitor.getFrom())) ||
-            (visitor.getTo() != null && now.isAfter(visitor.getTo()))) {
+        Boolean isTimeNotOk = (visitor.getFrom() != null && now.isBefore(visitor.getFrom())) ||
+                (visitor.getTo() != null && now.isAfter(visitor.getTo()));
+        if (isTimeNotOk) {
             throw new AuthenticationException("该时间不在访问码有效时间段");
         }
         return new SimpleAuthenticationInfo(principal, Constants.ACCESS_CODE_PASSWORD, getName());

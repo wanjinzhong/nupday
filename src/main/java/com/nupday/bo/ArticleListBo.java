@@ -1,6 +1,11 @@
 package com.nupday.bo;
 import java.util.List;
 
+/**
+ * ArticleListBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ArticleListBo {
     private PageBo page;
     private List<NewsItemBo> articles;

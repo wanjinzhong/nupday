@@ -11,6 +11,11 @@ import javax.persistence.Table;
 
 import com.nupday.dao.entity.base.BaseCreateEntity;
 
+/**
+ * ArticlePhoto
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "article_photo")
 public class ArticlePhoto extends BaseCreateEntity {

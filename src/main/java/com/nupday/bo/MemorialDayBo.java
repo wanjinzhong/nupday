@@ -4,6 +4,11 @@ import java.time.Period;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * MemorialDayBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class MemorialDayBo {
     private Integer id;
 

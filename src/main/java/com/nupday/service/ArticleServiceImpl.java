@@ -9,10 +9,7 @@ import com.nupday.bo.NewsItemBo;
 import com.nupday.bo.OpenStatus;
 import com.nupday.bo.PageBo;
 import com.nupday.bo.QueryNewsBo;
-import com.nupday.constant.ArticleType;
-import com.nupday.constant.CommentTargetType;
-import com.nupday.constant.ListBoxCategory;
-import com.nupday.constant.Role;
+import com.nupday.constant.*;
 import com.nupday.dao.entity.Article;
 import com.nupday.dao.entity.ArticlePhoto;
 import com.nupday.dao.entity.ListBox;
@@ -39,8 +36,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * ArticleServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
@@ -53,7 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
     private WebService webService;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
     @Autowired
     private CommentService commentService;
@@ -240,16 +242,6 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Boolean isVisible(Integer articleId) {
-        Optional<Article> articleOptional = articleRepository.findById(articleId);
-        if (!articleOptional.isPresent()) {
-            return false;
-        }
-        Article article = articleOptional.get();
-        return isVisible(article);
-    }
-
-    @Override
     public Boolean isVisible(Article article) {
         if (!article.getIsOpen() && Role.VISITOR.equals(webService.getUserType())) {
             return false;
@@ -349,7 +341,7 @@ public class ArticleServiceImpl implements ArticleService {
             parser.parse(in);
             in.close();
             String plain = parser.getText();
-            if (plain.length() > 300) {
+            if (plain.length() > Constants.Article.PREVIEW_MAX_LENGTH) {
                 plain = plain.substring(0, 300);
             } else {
             }

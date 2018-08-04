@@ -12,6 +12,11 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * SwaggerConfig
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -49,7 +54,6 @@ public class SwaggerConfig {
             .title(title)
             .description(description)
             .termsOfServiceUrl(url)
-            .contact(author)
             .version(version)
             .build();
     }

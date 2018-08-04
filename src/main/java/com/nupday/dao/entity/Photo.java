@@ -11,6 +11,11 @@ import javax.persistence.Table;
 
 import com.nupday.dao.entity.base.BaseDeleteEntity;
 
+/**
+ * Photo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "photo")
 public class Photo extends BaseDeleteEntity {

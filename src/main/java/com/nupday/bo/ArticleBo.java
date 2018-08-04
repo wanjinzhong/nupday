@@ -3,6 +3,11 @@ import java.time.LocalDateTime;
 
 import com.nupday.constant.ArticleType;
 
+/**
+ * ArticleBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ArticleBo {
     private Integer id;
 

@@ -8,6 +8,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * NupDayApplication
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"com.nupday"})

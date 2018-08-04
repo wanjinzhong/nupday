@@ -2,7 +2,12 @@ package com.nupday.bo;
 
 import java.time.LocalDateTime;
 
-public class DBBackupBo {
+/**
+ * DbBackupBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
+public class DbBackupBo {
 
     private Integer id;
 

@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * ChangePasswordBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ChangePasswordBo {
     private Integer ownerId;
     private String code;

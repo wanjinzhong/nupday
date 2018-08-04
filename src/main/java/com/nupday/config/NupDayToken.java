@@ -5,6 +5,11 @@ import com.nupday.constant.Role;
 import com.nupday.exception.BizException;
 import org.apache.shiro.authc.AuthenticationToken;
 
+/**
+ * NupDayToken
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class NupDayToken implements AuthenticationToken {
     private LoginBo loginBo;
     public NupDayToken(LoginBo loginBo) {

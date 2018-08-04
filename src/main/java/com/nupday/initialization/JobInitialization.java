@@ -6,6 +6,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * JobInitialization
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Component
 @Order(value = 1)
 public class JobInitialization implements CommandLineRunner {

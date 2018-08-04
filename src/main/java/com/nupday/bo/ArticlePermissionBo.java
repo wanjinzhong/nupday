@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * ArticlePermissionBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class ArticlePermissionBo {
 
     private Boolean deletable;

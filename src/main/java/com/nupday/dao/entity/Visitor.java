@@ -11,6 +11,11 @@ import javax.persistence.Table;
 
 import com.nupday.dao.entity.base.BaseUpdateEntity;
 
+/**
+ * Visitor
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Entity
 @Table(name = "visitor")
 public class Visitor extends BaseUpdateEntity {

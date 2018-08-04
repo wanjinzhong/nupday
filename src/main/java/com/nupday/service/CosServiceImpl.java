@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.UUID;
 
+import com.nupday.constant.Constants;
 import com.nupday.exception.BizException;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.exception.CosClientException;
@@ -19,8 +20,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * COSServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-public class COSServiceImpl implements COSService {
+public class CosServiceImpl implements CosService {
     @Autowired
     private COSClient cosClient;
 
@@ -71,7 +77,7 @@ public class COSServiceImpl implements COSService {
                 .append("/")
                 .append(uuid);
         photoKey = uuid;
-        if (filename != null && filename.indexOf(".") > -1) {
+        if (filename != null && filename.indexOf(Constants.File.FILE_SPLICER) > -1) {
             String suffix = filename.substring(filename.lastIndexOf("."));
             fillKey.append(suffix);
             photoKey += suffix;
@@ -107,7 +113,7 @@ public class COSServiceImpl implements COSService {
                 .append("/")
                 .append(uuid);
         key = uuid;
-        if (filename != null && filename.indexOf(".") > -1) {
+        if (filename != null && filename.indexOf(Constants.File.FILE_SPLICER) > -1) {
             String suffix = filename.substring(filename.lastIndexOf("."));
             fillKey.append(suffix);
             key += suffix;

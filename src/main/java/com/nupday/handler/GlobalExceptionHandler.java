@@ -15,27 +15,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * GlobalExceptionHandler
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // @Autowired
-    // private SentryConfig sentryConfig;
-    //
-    // @PostConstruct
-    // private void init() {
-    //     if (sentryConfig != null && StringUtils.isNotBlank(sentryConfig.getDsn())) {
-    //         Sentry.init(sentryConfig.getDsn());
-    //     }
-    // }
-    //
-    // public void report(Throwable e) {
-    //     if (sentryConfig.getEnable() && !(e instanceof BizException)) {
-    //         Sentry.capture(e);
-    //     }
-    // }
-
-    // 捕捉shiro的异常
+    /**
+     * 捕捉shiro的异常
+     * @param e
+     * @return
+     */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(ShiroException.class)
     public JsonEntity handle401(ShiroException e) {
@@ -46,7 +39,10 @@ public class GlobalExceptionHandler {
         return jsonEntity;
     }
 
-    // 捕捉UnauthorizedException
+    /**
+     * 捕捉UnauthorizedException
+     * @return
+     */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(UnauthorizedException.class)
     public JsonEntity handle401() {
@@ -56,7 +52,11 @@ public class GlobalExceptionHandler {
         return jsonEntity;
     }
 
-    // 捕捉AccountException
+    /**
+     * 捕捉AccountException
+     * @param e
+     * @return
+     */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(AccountException.class)
     public JsonEntity handleAccountException(AccountException e) {
@@ -75,7 +75,12 @@ public class GlobalExceptionHandler {
         return jsonEntity;
     }
 
-    // 捕捉其他所有异常
+    /**
+     * 捕捉AccountException
+     * @param request
+     * @param e
+     * @return
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public JsonEntity globalException(HttpServletRequest request, Throwable e) {

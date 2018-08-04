@@ -1,5 +1,10 @@
 package com.nupday.bo;
 
+/**
+ * OwnerBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class OwnerBo extends SimpleOwnerBo{
 
     private String avatar;

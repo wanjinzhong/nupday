@@ -4,6 +4,11 @@ import java.util.List;
 
 import com.nupday.constant.ArticleType;
 
+/**
+ * NewsItemBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class NewsItemBo {
     private Integer id;
 

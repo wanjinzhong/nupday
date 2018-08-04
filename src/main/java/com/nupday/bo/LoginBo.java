@@ -1,6 +1,11 @@
 package com.nupday.bo;
 import com.nupday.constant.Role;
 
+/**
+ * LoginBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class LoginBo {
     private Role type;
     private String accessCode;

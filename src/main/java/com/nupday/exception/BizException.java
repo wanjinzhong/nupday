@@ -1,5 +1,10 @@
 package com.nupday.exception;
 
+/**
+ * BizException
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class BizException extends RuntimeException {
 
     public BizException() {

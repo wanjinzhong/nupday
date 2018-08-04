@@ -31,8 +31,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * CommentServiceImpl
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentRepository commentRepository;
@@ -62,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     private WebService webService;
 
     @Autowired
-    private COSService cosService;
+    private CosService cosService;
 
 
     @Override

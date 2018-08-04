@@ -3,6 +3,11 @@ package com.nupday.bo;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * CommentBo
+ * @author Neil Wan
+ * @create 18-8-4
+ */
 public class CommentBo extends CreateCommentBo {
     private Integer id;
 
