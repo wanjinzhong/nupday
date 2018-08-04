@@ -13,25 +13,31 @@
         <Input type="password" v-model="password" placeholder="密码" class="password" @focus="onFocus" @blur="onBlur"
                style="width: 300px;"/>
       </FormItem>
+      <div class="forget" @click="showChangePassword = true">忘记密码</div>
       <Button native-type="submit" type="primary" style="width:300px" @click.prevent="login" :disabled="loading" :loading="loading">登陆
       </Button>
     </Form>
+    <Dialog :visible.sync="showChangePassword" title="修改密码" width="600px">
+      <ChangePassword :id="selectedOwner" @close="showChangePassword = false"></ChangePassword>
+    </Dialog>
   </div>
 </template>
 
 <script>
-  import {Form, FormItem, Select, Option, Input, Button} from "element-ui"
+  import {Form, FormItem, Select, Option, Input, Button, Dialog} from "element-ui"
   import $ from "jquery"
+  import ChangePassword from "./ChangePassword"
 
   export default {
     name: "OwnerLogin",
-    components: {Form, FormItem, Select, Option, Input, Button},
+    components: {Form, FormItem, Select, Option, Input, Button, ChangePassword, Dialog},
     props: ["to"],
     data() {
       return {
         selectedOwner: 1,
         password: "",
-        loading: false
+        loading: false,
+        showChangePassword: false
       }
     },
     computed: {
@@ -127,5 +133,16 @@
 <style scoped>
   * {
     margin: 10px;
+  }
+  .forget {
+    font-size: 14px;
+    color: blue;
+    cursor: pointer;
+    text-align: right;
+    margin-right: 30px;
+  }
+  .el-dialog__body {
+    padding: 0px;
+    padding-bottom: 10px;
   }
 </style>
