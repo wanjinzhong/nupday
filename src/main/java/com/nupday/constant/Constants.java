@@ -21,4 +21,8 @@ public class Constants {
     public static final String ARTICLE_NOTIFICATION_TYPE_UPDATE = "更新";
 
     public static final String ARTICLE_NOTIFICATION_TEMPLATE = "他（她）{0}了一篇文章《{1}》。快去看看吧：{2}";
+
+    public static final String CHANGE_PASSWORD_EMAIL_SUBJECT = "修改密码";
+
+    public static final String CHANGE_PASSWORD_EMAIL_CONTENT = "您正在请求修改密码，验证码是{0}， 30分钟内有效。";
 }

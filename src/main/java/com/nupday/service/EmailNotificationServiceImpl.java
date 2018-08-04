@@ -75,7 +75,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         }
         subject = subject + " - 《" + article.getTitle() + "》";
         url = url + "/article/" + articleId;
-        String content = MessageUtil.getMessage(Constants.ARTICLE_NOTIFICATION_TEMPLATE, newArrayList(type, article.getTitle(), url));
+        String content = MessageUtil.getMessage(Constants.ARTICLE_NOTIFICATION_TEMPLATE, type, article.getTitle(), url);
 
         List<Owner> owners = ownerRepository.findAll();
         Owner currentOwner = webService.getCurrentUser();

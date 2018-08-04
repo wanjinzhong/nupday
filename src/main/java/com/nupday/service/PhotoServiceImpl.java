@@ -62,9 +62,6 @@ public class PhotoServiceImpl implements PhotoService {
     @Autowired
     private CommentService commentService;
 
-    @Autowired
-    private ArticleRepository articleRepository;
-
     @Override
     public Boolean isVisible(Integer photoId) {
         Photo photo = photoRepository.findByIdAndDeleteDatetimeIsNull(photoId);
