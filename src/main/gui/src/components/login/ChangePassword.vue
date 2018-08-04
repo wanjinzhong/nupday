@@ -118,12 +118,18 @@
         });
       },
       cleanData() {
-        this.selectedOwner = 1;
         this.code = "";
         this.email = "";
         this.newPwd = "";
         this.confirmPwd = "";
+        this.getValidateCodeBtn = "获取验证码";
+        this.cutdownCount = 60;
+        this.getValidateCodeDisabled = false;
+        window.clearInterval(this.validationCodeTimeInterval);
       }
+    },
+    mounted() {
+      this.selectedOwner = this.id;
     }
   }
 </script>

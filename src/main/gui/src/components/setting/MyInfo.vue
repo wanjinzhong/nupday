@@ -28,22 +28,26 @@
         <Radio :disabled="!edit" border v-model="male" :label="true">男</Radio>
         <Radio :disabled="!edit" border v-model="male" :label="false">女</Radio>
       </FormItem>
+      <div style="color: blue; margin-bottom: 20px; cursor: pointer; display: inline-block" @click="showChangePassword = true">修改密码</div>
       <div>
         <Button v-if="!edit" @click="edit = true" type="primary">编辑</Button>
         <Button v-if="edit" @click="save" type="primary">保存</Button>
       </div>
     </Form>
-
+    <Dialog :visible.sync="showChangePassword" title="修改密码" width="600px">
+      <ChangePassword :id="currentUser" @close="showChangePassword = false"></ChangePassword>
+    </Dialog>
   </div>
 </template>
 
 <script>
-  import {Form, FormItem, Button, Input, DatePicker, Upload, Radio} from 'element-ui'
+  import {Form, FormItem, Button, Input, DatePicker, Upload, Radio, Dialog} from 'element-ui'
+  import ChangePassword from"../login/ChangePassword"
   import {formatDate} from "../../utils/TimeFormater"
 
   export default {
     name: "MyInfo",
-    components: {Form, FormItem, Button, Input, DatePicker, Upload, Radio},
+    components: {Form, FormItem, Button, Input, DatePicker, Upload, Radio, Dialog, ChangePassword},
     data() {
       return {
         name: '',
@@ -54,11 +58,17 @@
         male: true,
         edit: false,
         loading: false,
-        avatarLoading: false
+        avatarLoading: false,
+        showChangePassword: false
       }
     },
     created() {
       this.reload();
+    },
+    computed: {
+      currentUser() {
+        return this.$store.getters.getUserId;
+      }
     },
     methods: {
       reload() {
