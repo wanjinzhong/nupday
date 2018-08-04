@@ -6,6 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * ViewController
+ *
  * @author Neil Wan
  * @create 18-8-4
  */
@@ -26,7 +27,8 @@ public class ViewController {
             "/settings/*",
             "/myInfo",
             "/guestBook",
-	    "/memorialDay"
+            "/dustbin*",
+            "/memorialDay"
     })
     public ModelAndView openIndexPage() {
         return new ModelAndView("/");

@@ -333,6 +333,10 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleType type = ArticleType.valueOf(article.getType().getCode());
         newsItemBo.setType(type);
         newsItemBo.setLikes(article.getLikes());
+        newsItemBo.setInDustbin(article.getDeleteUser() != null);
+        if (article.getDeleteUser() != null) {
+            newsItemBo.setDeleteUserId(article.getDeleteUser().getId());
+        }
         newsItemBo.setConfirmDeletable(article.getDeleteDatetime() != null && !owner.getId().equals(article.getDeleteUser().getId()));
         if (ArticleType.ARTICLE.equals(type)) {
             newsItemBo.setTitle(article.getTitle());
@@ -406,5 +410,18 @@ public class ArticleServiceImpl implements ArticleService {
         return articleListBo;
     }
 
-
+    @Override
+    public void revert(Integer id) {
+        Optional<Article> articleOptional = articleRepository.findById(id);
+        if (!articleOptional.isPresent()) {
+            throw new BizException("文章不存在");
+        }
+        Article article = articleOptional.get();
+        if (article.getDeleteUser() == null) {
+            throw new BizException("文章不在回收站");
+        }
+        article.setDeleteDatetime(null);
+        article.setDeleteUser(null);
+        articleRepository.save(article);
+    }
 }

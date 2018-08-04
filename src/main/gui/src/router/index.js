@@ -17,6 +17,10 @@ import MyInfo from "../components/setting/MyInfo"
 import GuestBook from "../components/guest_book/GuestBook"
 import DBBackup from "../components/setting/DBBackup"
 import MemorialDay from "../components/memorial_day/MemorialDay"
+import Dustbin from "../components/dustbin/Dustbin"
+import ArticleDustbin from "../components/dustbin/ArticleDustbin"
+import AlbumDustbin from "../components/dustbin/AlbumDustbin"
+import PhotoDustbin from "../components/dustbin/PhotoDustbin"
 
 Vue.use(Router);
 
@@ -33,15 +37,24 @@ export default new Router({
         {path: "/article/:articleId", name: "articleDetail", component: ArticleDetail, props: true},
         {path: "/albums", name: "album", component: Album},
         {path: "/album/:albumId", name: "albumDetail", component: AlbumDetail, props: true},
-        {path: "/myInfo", name: "myInfo", component:MyInfo},
-        {path: "/guestBook", name: "guestBook", component:GuestBook},
-        {path: "/memorialDay", name: "memorialDay", component:MemorialDay},
-        {path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children:[
-            {path: "/settings/accessCode", name: "visitor", component:Visitor},
-            {path: "/settings/background", name: "background", component:Background},
-            {path: "/settings/notification", name: "notification", component:Notification},
-            {path: "/settings/dbBackup", name: "dbBackup", component:DBBackup},
-          ]},
+        {path: "/myInfo", name: "myInfo", component: MyInfo},
+        {path: "/guestBook", name: "guestBook", component: GuestBook},
+        {path: "/memorialDay", name: "memorialDay", component: MemorialDay},
+        {
+          path: "/settings", name: "setting", redirect: "/settings/accessCode", component: Setting, children: [
+            {path: "/settings/accessCode", name: "visitor", component: Visitor},
+            {path: "/settings/background", name: "background", component: Background},
+            {path: "/settings/notification", name: "notification", component: Notification},
+            {path: "/settings/dbBackup", name: "dbBackup", component: DBBackup},
+          ]
+        },
+        {
+          path: "/dustbin", name: "dustbin", redirect: "/dustbin/article", component: Dustbin, children: [
+            {path: "/dustbin/article", name: "articleDustbin", component: ArticleDustbin},
+            {path: "/dustbin/album", name: "albumDustbin", component: AlbumDustbin},
+            {path: "/dustbin/photo", name: "photoDustbin", component: PhotoDustbin}
+          ]
+        }
       ]
     },
   ]

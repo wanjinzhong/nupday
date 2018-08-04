@@ -98,12 +98,13 @@ public class ArticleApi {
     }
 
     @GetMapping("/articles")
-    public JsonEntity<ArticleListBo> getArticles(Integer page, Integer size) {
-        return ResponseHelper.createInstance(articleService.getArticles(false, page, size));
+    public JsonEntity<ArticleListBo> getArticles(Boolean dustbin, Integer page, Integer size) {
+        return ResponseHelper.createInstance(articleService.getArticles(dustbin, page, size));
     }
 
-    @GetMapping("/articles/dustbin")
-    public JsonEntity<ArticleListBo> getArticlesInDustbin(Integer page, Integer size) {
-        return ResponseHelper.createInstance(articleService.getArticles(true, page, size));
+    @PutMapping("article/revert/{id}")
+    public JsonEntity revert(@PathVariable("id") Integer id) {
+        articleService.revert(id);
+        return ResponseHelper.ofNothing();
     }
 }

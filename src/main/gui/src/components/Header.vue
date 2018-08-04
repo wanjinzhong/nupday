@@ -10,6 +10,8 @@
         <MenuItem index="album" class="menuItems" :route="{name:'album'}"><span>相册</span></MenuItem>
         <MenuItem index="guestBook" class="menuItems" :route="{name: 'guestBook'}"><span>留言</span></MenuItem>
         <MenuItem index="memorialDay" class="menuItems" :route="{name: 'memorialDay'}"><span>纪念日</span></MenuItem>
+        <MenuItem index="dustbin" class="menuItems" :route="{name: 'dustbin'}" v-if="$store.getters.getType == 'OWNER'">
+          <span>回收站</span></MenuItem>
         <Button plain v-if="$store.getters.getType == 'OWNER'" type="danger" size="small" round
                 style="margin-left: 10px" @click="$router.push({name: 'newArticle'})">发文章
         </Button>

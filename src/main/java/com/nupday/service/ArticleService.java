@@ -86,4 +86,10 @@ public interface ArticleService {
      * @return
      */
     ArticleListBo getArticles(Boolean inDustBin, Integer page, Integer size);
+
+    /**
+     * 从垃圾箱恢复文章
+     * @param id
+     */
+    void revert(Integer id);
 }

@@ -28,6 +28,18 @@ public class NewsItemBo {
 
     private Boolean confirmDeletable;
 
+    private Boolean inDustbin;
+
+    private Integer deleteUserId;
+
+    public Boolean getInDustbin() {
+        return inDustbin;
+    }
+
+    public void setInDustbin(Boolean inDustbin) {
+        this.inDustbin = inDustbin;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -98,5 +110,13 @@ public class NewsItemBo {
 
     public void setConfirmDeletable(Boolean confirmDeletable) {
         this.confirmDeletable = confirmDeletable;
+    }
+
+    public Integer getDeleteUserId() {
+        return deleteUserId;
+    }
+
+    public void setDeleteUserId(Integer deleteUserId) {
+        this.deleteUserId = deleteUserId;
     }
 }

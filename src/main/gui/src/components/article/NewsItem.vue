@@ -1,7 +1,20 @@
 <template>
   <div>
-
-    <div class="title" @click="$router.push('/article/' + item.id)">{{item.title}}</div>
+    <div style="position: relative;margin: 10px 0;"><span class="title" @click="goToArticle">{{item.title}}</span>
+      <span style="position: absolute; right: 20px" v-if="item.inDustbin">
+        <Tooltip content="恢复" effect="light" :open-delay="500" style="cursor: pointer">
+              <svg class="icon" aria-hidden="true" @click="revert">
+                <use xlink:href="#icon-chexiao"></use>
+              </svg>
+            </Tooltip>&nbsp;
+        <Tooltip content="彻底删除" effect="light" :open-delay="500" style="cursor: pointer"
+                 v-if="item.deleteUserId != currentUserId">
+              <svg class="icon" aria-hidden="true" @click="forceDelete">
+                <use xlink:href="#icon-shanchu"></use>
+              </svg>
+            </Tooltip>
+      </span>
+    </div>
     <div class="info">{{item.owner}}&nbsp;&nbsp;&nbsp;{{new Date(item.dateTime) | formatDate('DATETIME')}}
       &nbsp;&nbsp;
       <svg class="icon" aria-hidden="true">
@@ -16,9 +29,42 @@
 </template>
 
 <script>
+  import {Tooltip} from "element-ui"
+
   export default {
     name: "NewsItem",
-    props: ["item"]
+    components: {Tooltip},
+    props: ["item"],
+    computed: {
+      currentUserId() {
+        return this.$store.getters.getUserId;
+      }
+    },
+    methods: {
+      goToArticle() {
+        if (!this.item.inDustbin) {
+          this.$router.push('/article/' + this.item.id);
+        }
+      },
+      revert() {
+        let that = this;
+        this.$confirm("确定要恢复这篇文章吗？", "恢复文章", {type: "warning"}).then(() => {
+          this.axios.put("/api/article/revert/" + this.item.id).then(res => {
+            that.$message({message: "恢复文章成功", type: "success"});
+            that.$emit("reload");
+          })
+        });
+      },
+      forceDelete() {
+        let that = this;
+        this.$confirm("确定要彻底删除这篇文章吗？删除后不可恢复", "删除文章", {type: "warning"}).then(() => {
+          this.axios.delete("/api/article/" + this.item.id).then(res => {
+            that.$message({message: "删除文章成功", type: "success"});
+            that.$emit("reload");
+          })
+        });
+      }
+    }
   }
 </script>
 
@@ -32,7 +78,6 @@
   .title {
     font-size: 20px;
     color: #555;
-    margin: 10px 0;
     font-weight: bold;
     cursor: pointer;
   }
