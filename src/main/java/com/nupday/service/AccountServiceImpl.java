@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
         if (StringUtils.isBlank(changePasswordBo.getCode())) {
             throw new BizException("验证码不能为空");
         }
-        if (StringUtils.isBlank(changePasswordBo.getPassword()) || changePasswordBo.getPassword().length() < Constants.PASSWORD_MIN_LENGTH) {
+        if (StringUtils.isBlank(changePasswordBo.getPassword()) || changePasswordBo.getPassword().length() < Constants.User.PASSWORD_MIN_LENGTH) {
             throw new BizException("密码至少6位");
         }
         Optional<Owner> ownerOptional = ownerRepository.findById(changePasswordBo.getOwnerId());
