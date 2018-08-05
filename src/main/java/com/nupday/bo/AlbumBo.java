@@ -28,7 +28,7 @@ public class AlbumBo {
 
     private LocalDateTime entryDatetime;
 
-    private Boolean confirmDeletable;
+    private Integer deleteUserId;
 
     public Integer getId() {
         return id;
@@ -110,11 +110,11 @@ public class AlbumBo {
         this.entryUser = entryUser;
     }
 
-    public Boolean getConfirmDeletable() {
-        return confirmDeletable;
+    public Integer getDeleteUserId() {
+        return deleteUserId;
     }
 
-    public void setConfirmDeletable(Boolean confirmDeletable) {
-        this.confirmDeletable = confirmDeletable;
+    public void setDeleteUserId(Integer deleteUserId) {
+        this.deleteUserId = deleteUserId;
     }
 }

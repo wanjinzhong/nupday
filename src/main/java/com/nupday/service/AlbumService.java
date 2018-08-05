@@ -59,4 +59,10 @@ public interface AlbumService {
      * @param coverId
      */
     void setCover(Integer albumId, Integer coverId);
+
+    /**
+     * 从回收站恢复相册
+     * @param id
+     */
+    void revert(Integer id);
 }

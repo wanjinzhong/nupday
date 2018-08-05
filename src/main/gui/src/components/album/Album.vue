@@ -26,7 +26,7 @@
         </div>
       </Form>
     </Dialog>
-    <AlbumList v-loading="loading" :albums="albums"></AlbumList>
+    <AlbumList v-loading="loading" :albums="albums" @reload="refresh"></AlbumList>
   </div>
 </template>
 
@@ -76,8 +76,11 @@
       },
       refresh() {
         this.loading = true;
-        var that = this;
-        this.axios.get("/api/albums").then(res => {
+        let that = this;
+        let param = {
+          dustbin: false
+        }
+        this.axios.get("/api/albums", {params: param}).then(res => {
           that.loading = false;
           that.name = '';
           that.description = '';

@@ -99,7 +99,9 @@ public class AlbumServiceImpl implements AlbumService {
         albumBo.setName(album.getName());
         albumBo.setIsOpen(album.getIsOpen());
         albumBo.setEntryUser(album.getEntryUser().getName());
-        albumBo.setConfirmDeletable(album.getDeleteDatetime() != null && !owner.getId().equals(album.getDeleteUser().getId()));
+        if (album.getDeleteUser() != null) {
+            albumBo.setDeleteUserId(album.getDeleteUser().getId());
+        }
         if (album.getUpdateDatetime() != null) {
             album.setEntryDatetime(album.getUpdateDatetime());
         } else {
@@ -221,6 +223,21 @@ public class AlbumServiceImpl implements AlbumService {
         album.setCover(photo);
         album.setUpdateUser(webService.getCurrentUser());
         album.setUpdateDatetime(LocalDateTime.now());
+        albumRepository.save(album);
+    }
+
+    @Override
+    public void revert(Integer id) {
+        Optional<Album> albumOptional = albumRepository.findById(id);
+        if (!albumOptional.isPresent()) {
+            throw new BizException("相册不存在");
+        }
+        Album album = albumOptional.get();
+        if (album.getDeleteUser() == null) {
+            throw new BizException("相册不在回收站");
+        }
+        album.setDeleteDatetime(null);
+        album.setDeleteUser(null);
         albumRepository.save(album);
     }
 }

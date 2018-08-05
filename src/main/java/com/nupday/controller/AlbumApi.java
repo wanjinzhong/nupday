@@ -30,8 +30,8 @@ public class AlbumApi {
     private AlbumService albumService;
 
     @GetMapping("albums")
-    public JsonEntity<List<AlbumBo>> getAlbums() {
-        return ResponseHelper.createInstance(albumService.getAlbums(false));
+    public JsonEntity<List<AlbumBo>> getAlbums(@RequestParam("dustbin") Boolean dustbin) {
+        return ResponseHelper.createInstance(albumService.getAlbums(dustbin));
     }
 
     @PostMapping("album")
@@ -65,8 +65,9 @@ public class AlbumApi {
         return ResponseHelper.ofNothing();
     }
 
-    @GetMapping("albums/dustbin")
-    public JsonEntity<List<AlbumBo>> getAlbumInDustbin() {
-        return ResponseHelper.createInstance(albumService.getAlbums(true));
+    @PutMapping("album/revert/{id}")
+    public JsonEntity revert(@PathVariable("id") Integer id) {
+        albumService.revert(id);
+        return ResponseHelper.ofNothing();
     }
 }
