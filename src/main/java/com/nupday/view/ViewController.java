@@ -22,12 +22,15 @@ public class ViewController {
             "/newArticle",
             "/editArticle/*",
             "/article/*",
+            "/articles",
             "/album/*",
+            "/albums",
             "/news",
             "/settings/*",
             "/myInfo",
             "/guestBook",
-            "/dustbin*",
+            "/dustbin",
+            "/dustbin/*",
             "/memorialDay"
     })
     public ModelAndView openIndexPage() {
