@@ -19,7 +19,7 @@ let apiUrl = '';
 // 命令：npm run build -- test ，process.env.HOST就设置为：'test'
 let HOST = process.env.HOST;
 HOST = HOST === 'prod' ? '' :  HOST + '-';
-apiUrl = 'http://' + HOST +'love.potafish.com';
+apiUrl = 'http://' + HOST +'love.nupday.com';
 
 axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;
