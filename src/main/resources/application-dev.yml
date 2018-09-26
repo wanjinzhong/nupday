@@ -1,0 +1,59 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+nupday:
+  swagger:
+    enable: true
+    title: Nupday Swagger UI
+    description:
+    url: http://love.nupday.com
+    version: 1.0
+    author: Neil Wan(1051750377@qq.com)
+
+COS:
+  secretId: AKIDtis4A9UaUJxQtE5v672oSxLYbTB2N3FF
+  secretKey:
+  region: ap-chengdu
+  bucketName: ijiaqi-1252535357
+
+spring:
+      application:
+         name: nupday
+      datasource:
+         driverClassName: com.mysql.jdbc.Driver
+         url: jdbc:mysql://mysql.nupday.com:3408/NUP_DAY_TEST?zeroDateTimeBehavior=convertToNull&verifyServerCertificate=false&useSSL=true&useUnicode=true&characterEncoding=utf-8
+         username: root
+         password:
+      jackson:
+         date-format: yyyy-MM-dd HH:mm:ss
+         time-zone: GMT+8
+      jpa:
+         show-sql: true
+         database-platform: org.hibernate.dialect.MySQL5Dialect
+      mail:
+        host: smtp.163.com
+        username: wan_neil@163.com
+        password:
+        default-encoding: UTF-8
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+                required: true
+              ssl:
+                enable: true
+        port: 465
+      servlet:
+        multipart:
+          max-file-size: 10MB
+          max-request-size: 10MB
+
+mail:
+      from: wan_neil@163.com
+
+application:
+      env: dev
